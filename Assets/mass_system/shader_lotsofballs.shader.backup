@@ -1,0 +1,376 @@
+﻿Shader "mass_system/shader_lotsofballs"
+{
+    Properties
+    {
+		_BallRadius( "Ball Radius", float ) = 0.1
+    }
+    SubShader
+    {
+        Tags { "RenderType"="Opaque" }
+        LOD 100
+
+		ZWrite Off
+
+        Pass
+        {
+		
+            CGINCLUDE
+			
+			#include "/Assets/hashwithoutsine/hashwithoutsine.cginc"
+
+			
+            #pragma vertex MyCustomRenderTextureVertexShader
+            #pragma fragment frag
+			#pragma target 4.0
+            #include "UnityCG.cginc"
+
+
+			float _BallRadius;
+
+			//Mostly from:
+            //#include "UnityCustomRenderTexture.cginc"
+			#define kCustomTextureBatchSize 16			
+			texture3D<float4>   _SelfTexture3D;
+			struct appdata_customrendertexture
+			{
+				uint    vertexID    : SV_VertexID;
+			};
+
+			// User facing vertex to fragment shader structure
+			struct v2f_customrendertexture
+			{
+				float4 vertex           : SV_POSITION;
+				float3 localTexcoord    : TEXCOORD0;    // Texcoord local to the update zone (== globalTexcoord if no partial update zone is specified)
+				float3 globalTexcoord   : TEXCOORD1;    // Texcoord relative to the complete custom texture
+				uint primitiveID        : TEXCOORD2;    // Index of the update zone (correspond to the index in the updateZones of the Custom Texture)
+				//float3 direction        : TEXCOORD3;    // For cube textures, direction of the pixel being rendered in the cubemap
+			};
+
+			float4      CustomRenderTextureCenters[kCustomTextureBatchSize];
+			float4      CustomRenderTextureSizesAndRotations[kCustomTextureBatchSize];
+			float       CustomRenderTexturePrimitiveIDs[kCustomTextureBatchSize];
+
+			float4      CustomRenderTextureParameters;
+			#define     CustomRenderTextureUpdateSpace  CustomRenderTextureParameters.x // Normalized(0)/PixelSpace(1)
+			#define     CustomRenderTexture3DTexcoordW  CustomRenderTextureParameters.y
+			#define     CustomRenderTextureIs3D         CustomRenderTextureParameters.z
+
+			// User facing uniform variables
+			float4      _CustomRenderTextureInfo; // x = width, y = height, z = depth, w = face/3DSlice
+
+			// Helpers
+			#define _CustomRenderTextureWidth   _CustomRenderTextureInfo.x
+			#define _CustomRenderTextureHeight  _CustomRenderTextureInfo.y
+			#define _CustomRenderTextureDepth   _CustomRenderTextureInfo.z
+
+			// Those two are mutually exclusive so we can use the same slot
+			#define _CustomRenderTextureCubeFace    _CustomRenderTextureInfo.w
+			#define _CustomRenderTexture3DSlice     _CustomRenderTextureInfo.w
+
+
+			// standard custom texture vertex shader that should always be used
+			v2f_customrendertexture MyCustomRenderTextureVertexShader(appdata_customrendertexture IN)
+			{
+				v2f_customrendertexture OUT;
+
+			#if UNITY_UV_STARTS_AT_TOP
+				const float2 vertexPositions[6] =
+				{
+					{ -1.0f,  1.0f },
+					{ -1.0f, -1.0f },
+					{  1.0f, -1.0f },
+					{  1.0f,  1.0f },
+					{ -1.0f,  1.0f },
+					{  1.0f, -1.0f }
+				};
+
+				const float2 texCoords[6] =
+				{
+					{ 0.0f, 0.0f },
+					{ 0.0f, 1.0f },
+					{ 1.0f, 1.0f },
+					{ 1.0f, 0.0f },
+					{ 0.0f, 0.0f },
+					{ 1.0f, 1.0f }
+				};
+			#else
+				const float2 vertexPositions[6] =
+				{
+					{  1.0f,  1.0f },
+					{ -1.0f, -1.0f },
+					{ -1.0f,  1.0f },
+					{ -1.0f, -1.0f },
+					{  1.0f,  1.0f },
+					{  1.0f, -1.0f }
+				};
+
+				const float2 texCoords[6] =
+				{
+					{ 1.0f, 1.0f },
+					{ 0.0f, 0.0f },
+					{ 0.0f, 1.0f },
+					{ 0.0f, 0.0f },
+					{ 1.0f, 1.0f },
+					{ 1.0f, 0.0f }
+				};
+			#endif
+
+				uint primitiveID = IN.vertexID / 6;
+				uint vertexID = IN.vertexID % 6;
+				float3 updateZoneCenter = CustomRenderTextureCenters[primitiveID].xyz;
+				float3 updateZoneSize = CustomRenderTextureSizesAndRotations[primitiveID].xyz;
+				float rotation = CustomRenderTextureSizesAndRotations[primitiveID].w * UNITY_PI / 180.0f;
+
+			#if !UNITY_UV_STARTS_AT_TOP
+				rotation = -rotation;
+			#endif
+
+				// Normalize rect if needed
+				if (CustomRenderTextureUpdateSpace > 0.0) // Pixel space
+				{
+					// Normalize xy because we need it in clip space.
+					updateZoneCenter.xy /= _CustomRenderTextureInfo.xy;
+					updateZoneSize.xy /= _CustomRenderTextureInfo.xy;
+				}
+				else // normalized space
+				{
+					// Un-normalize depth because we need actual slice index for culling
+					updateZoneCenter.z *= _CustomRenderTextureInfo.z;
+					updateZoneSize.z *= _CustomRenderTextureInfo.z;
+				}
+
+				// Compute rotation
+				float2 clipSpaceCenter = updateZoneCenter.xy * 2.0 - 1.0;
+				float2 pos = vertexPositions[vertexID] * updateZoneSize.xy;
+
+				pos.x += clipSpaceCenter.x;
+			#if UNITY_UV_STARTS_AT_TOP
+				pos.y += clipSpaceCenter.y;
+			#else
+				pos.y -= clipSpaceCenter.y;
+			#endif
+
+				// For 3D texture, cull quads outside of the update zone
+				// This is neeeded in additional to the preliminary minSlice/maxSlice done on the CPU because update zones can be disjointed.
+				// ie: slices [1..5] and [10..15] for two differents zones so we need to cull out slices 0 and [6..9]
+				if (CustomRenderTextureIs3D > 0.0)
+				{
+					int minSlice = (int)(updateZoneCenter.z - updateZoneSize.z * 0.5);
+					int maxSlice = minSlice + (int)updateZoneSize.z;
+					if (_CustomRenderTexture3DSlice < minSlice || _CustomRenderTexture3DSlice >= maxSlice)
+					{
+						pos.xy = float2(1000.0, 1000.0); // Vertex outside of ncs
+					}
+				}
+
+				OUT.vertex = float4(pos, 0.0, 1.0);
+				OUT.primitiveID = asuint(CustomRenderTexturePrimitiveIDs[primitiveID]);
+				OUT.localTexcoord = float3(texCoords[vertexID], CustomRenderTexture3DTexcoordW);
+				OUT.globalTexcoord = float3(pos.xy * 0.5 + 0.5, CustomRenderTexture3DTexcoordW);
+			#if UNITY_UV_STARTS_AT_TOP
+				OUT.globalTexcoord.y = 1.0 - OUT.globalTexcoord.y;
+			#endif
+				//OUT.direction = CustomRenderTextureComputeCubeDirection(OUT.globalTexcoord.xy);
+
+				return OUT;
+			}
+			
+
+
+			ENDCG
+
+			Name "Initialize"
+			
+            CGPROGRAM
+			
+
+            float4 frag (v2f_customrendertexture IN) : SV_Target
+            {
+				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
+				uint3 ball = floor( coord * float3( 1, 1, 0.5 ) );
+				int ballid = ball.x + ball.y *_CustomRenderTextureInfo.x + ball.z * (_CustomRenderTextureInfo.y * _CustomRenderTextureInfo.y);
+				
+				bool is_position = 0 == ( coord.z & 1 );
+
+				if( is_position )
+				{
+					return float4( hash33( IN.globalTexcoord.xyz * 10. ) * 10., ballid );
+				}
+				else
+				{
+					return float4( 0., 0., 0., _BallRadius );
+				}
+            }
+            ENDCG
+        }
+
+		
+		Pass
+		{
+			Name "Sort"
+			
+			CGPROGRAM
+
+            float4 frag (v2f_customrendertexture IN) : SV_Target
+            {
+				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
+				int pid = IN.primitiveID;
+				bool is_position = 0 == ( coord.z & 1 );
+
+				uint3 ball = floor( coord * float3( 1, 1, 0.5 ) );
+
+				uint3 cwhichball = ball & 1;
+				uint3 cbaseball = ball & ~1;
+
+				if( 1 )
+				{
+					if( (pid % 6) == 1 )
+					{
+						cbaseball.x += (cwhichball.x?1:-1);
+						cwhichball.x = !cwhichball.x;
+					}
+					if( (pid % 6) == 3 )
+					{
+						cbaseball.y += (cwhichball.y?1:-1);
+						cwhichball.y = !cwhichball.y;
+					}
+					if( (pid % 6) == 5 )
+					{
+						cbaseball.z += (cwhichball.z?1:-1);
+						cwhichball.z = !cwhichball.z;
+					}
+				}
+				else
+				{
+					if( (pid % 2) == 1 )
+					{
+						cbaseball += (cwhichball?uint3(1,1,1):uint3(-1,-1,-1));
+						cwhichball = !cwhichball;
+					}
+				}
+					
+				//We're actually splitting this into groups of 2x2, with potential offset.
+				//A Sort is even pairs, so no weird edge cases.
+
+				//We're actually splitting this into groups of 2x2, with potential offset.
+				//A Sort is even pairs, so no weird edge cases.
+
+				float4 Position[2][2][2];
+				float4 Velocity[2][2][2];
+
+				uint3 trans;
+				for( trans.x = 0; trans.x < 2; trans.x++ )
+				for( trans.y = 0; trans.y < 2; trans.y++ )
+				for( trans.z = 0; trans.z < 2; trans.z++ )
+				{
+					uint3 rtrans = trans;
+					Position[trans.x][trans.y][trans.z] = _SelfTexture3D[(cbaseball + trans) * uint3( 1, 1, 2 ) + int3( 0, 0, 0 )];
+					Velocity[trans.x][trans.y][trans.z] = _SelfTexture3D[(cbaseball + trans) * uint3( 1, 1, 2 ) + int3( 0, 0, 1 )];
+				}
+
+				//Potentially flip Z values. 
+				if( (pid/2) % 3 == 2 )
+				{
+					for( trans.x = 0; trans.x < 2; trans.x++ )
+					for( trans.y = 0; trans.y < 2; trans.y++ )
+					{
+						if( Position[trans.x][trans.y][1].z < Position[trans.x][trans.y][0].z )
+						{
+							float4 tmpP = Position[trans.x][trans.y][1];
+							float4 tmpV = Velocity[trans.x][trans.y][1];
+							Position[trans.x][trans.y][1] = Position[trans.x][trans.y][0];
+							Velocity[trans.x][trans.y][1] = Velocity[trans.x][trans.y][0];
+							Position[trans.x][trans.y][0] = tmpP;
+							Velocity[trans.x][trans.y][0] = tmpV;
+						}
+					}
+				}
+
+				if( (pid/2) % 3 == 1 )
+				{
+					for( trans.x = 0; trans.x < 2; trans.x++ )
+					for( trans.z = 0; trans.z < 2; trans.z++ )
+					{
+						if( Position[trans.x][1][trans.z].y < Position[trans.x][0][trans.z].y )
+						{
+							float4 tmpP = Position[trans.x][1][trans.z];
+							float4 tmpV = Velocity[trans.x][1][trans.z];
+							Position[trans.x][1][trans.z] = Position[trans.x][0][trans.z];
+							Velocity[trans.x][1][trans.z] = Velocity[trans.x][0][trans.z];
+							Position[trans.x][0][trans.z] = tmpP;
+							Velocity[trans.x][0][trans.z] = tmpV;
+						}
+					}
+				}
+
+				if( (pid/2) % 3 == 0 )
+				{
+					for( trans.y = 0; trans.y < 2; trans.y++ )
+					for( trans.z = 0; trans.z < 2; trans.z++ )
+					{
+						if( Position[1][trans.y][trans.z].x < Position[0][trans.y][trans.z].x )
+						{
+							float4 tmpP = Position[1][trans.y][trans.z];
+							float4 tmpV = Velocity[1][trans.y][trans.z];
+							Position[1][trans.y][trans.z] = Position[0][trans.y][trans.z];
+							Velocity[1][trans.y][trans.z] = Velocity[0][trans.y][trans.z];
+							Position[0][trans.y][trans.z] = tmpP;
+							Velocity[0][trans.y][trans.z] = tmpV;
+						}
+					}
+				}
+				
+				if( is_position )
+				{
+					return Position[cwhichball.x][cwhichball.y][cwhichball.z];
+				}
+				else
+				{
+					return Velocity[cwhichball.x][cwhichball.y][cwhichball.z];
+				}
+            }
+			ENDCG
+		}
+		
+		Pass
+		{
+			Name "Run Step Physics"
+			
+			CGPROGRAM
+			
+            float4 frag (v2f_customrendertexture IN) : SV_Target
+            {
+				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
+				uint3 ball = floor( coord * float3( 1, 1, 0.5 ) );
+				
+				bool is_position = 0 == ( coord.z & 1 );
+				coord.z &= ~1;
+				
+				float4 Position = _SelfTexture3D[coord];
+				float4 Velocity = _SelfTexture3D[coord + int3( 0, 0, 1 )];
+
+				Velocity.y -= 9.8*unity_DeltaTime.x;
+				
+				Position.xyz = Position.xyz + Velocity.xyz * unity_DeltaTime.x;
+				
+				if( Position.y < 0 )
+				{
+					Position.y = -Position.y;
+					Velocity.y = -Velocity.y * .999;
+				}
+
+				if( is_position )
+				{
+					return Position;
+				}
+				else
+				{
+					return Velocity;
+				}
+            }
+			ENDCG
+		}
+
+
+    }
+}
