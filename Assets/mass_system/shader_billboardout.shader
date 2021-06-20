@@ -5,7 +5,7 @@ Shader "mass_system/billboardout"
 	Properties 
 	{
 		_SpriteTex ("Base (RGB)", 2D) = "white" {}
-		_RVData ("RV Data", 3D) = "" {}
+		_RVData ("RV Data", 2D) = "" {}
 	}
 
 	SubShader 
@@ -13,7 +13,7 @@ Shader "mass_system/billboardout"
 
 		Pass
 		{
-			Tags { "RenderType"="Opaque" }
+			Tags { "RenderType"="Opaque" "LightModel"="ForwardBase"}
 			LOD 200
 		
 			CGPROGRAM
@@ -37,13 +37,17 @@ Shader "mass_system/billboardout"
 				float4	pos		: POSITION;
 				float2  uv	: TEXCOORD0;
 				float4  color   : COLOR;
+				float4  ballcenter : TEXCOORD1;
+				float3  hitworld : TEXCOORD2;
+				float4  props : TEXCOORD3;
 			};
 
 			float4x4 _VP;
 			Texture2D _SpriteTex;
 			SamplerState sampler_SpriteTex;
 			
-			texture3D<float4> _RVData;
+			texture2D<float4> _RVData;
+			float4 _RVData_TexelSize;
 
 			v2g VS_Main(appdata_base v)
 			{
@@ -73,8 +77,9 @@ Shader "mass_system/billboardout"
 					oposid += transadd * 16;
 					
 					// Set based on data
-					float4 DataPos = _RVData[oposid * uint3( 1, 1, 2 ) + uint3( 0, 0, 0 )];
-					float4 DataVel = _RVData[oposid * uint3( 1, 1, 2 ) + uint3( 0, 0, 1 )];
+					uint2 opo = uint2( oposid.x + oposid.y * 32, oposid.z * 2 );
+					float4 DataPos = _RVData[opo + uint2( 0, 0 )];
+					float4 DataVel = _RVData[opo + uint2( 0, 1 )];
 					
 					rvpos = DataPos;
 
@@ -89,10 +94,13 @@ Shader "mass_system/billboardout"
 					right = normalize(right);
 
 					float4 color = 
-							( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
-							//float4( hash33((DataPos.www*10.+10.1)), 1. );
+							//float4( DataVel.xyz, 1 );
+							//( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
+							//( float4( oposid.xyz, 1. ) )/32;
+							float4( hash33((DataVel.www*10.+10.1)), 1. );
+							//float4(DataVel.www,1);
 
-					float size = DataVel.w;
+					float size = DataPos.w*2+.1; //DataPos.w is radius. (Add a little to not clip edges.)
 					float halfS = 0.5f * size;
 							
 					float4 v[4];
@@ -107,30 +115,87 @@ Shader "mass_system/billboardout"
 					pIn.pos = mul(vp, v[0]);
 					pIn.uv = float2(1.0f, 0.0f);
 					pIn.color = color;
+					pIn.ballcenter = DataPos.xyzw;
+					pIn.hitworld = v[0];
+					pIn.props = float4( DataVel.w, 0, 0, 1 );
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[1]);
 					pIn.uv = float2(1.0f, 1.0f);
 					pIn.color = color;
+					pIn.hitworld = v[1];
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[2]);
 					pIn.uv = float2(0.0f, 0.0f);
 					pIn.color = color;
+					pIn.hitworld = v[2];
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[3]);
 					pIn.uv = float2(0.0f, 1.0f);
 					pIn.color = color;
+					pIn.hitworld = v[3];
 					triStream.Append(pIn);
 					triStream.RestartStrip();
 				}
 			}
 
-			float4 FS_Main(g2f input) : COLOR
+			float4 FS_Main(g2f input, out float outDepth : SV_DepthLessEqual) : COLOR
 			{
-				if( length(input.uv-0.5) > 0.5 ) discard;
-				return _SpriteTex.Sample(sampler_SpriteTex, input.uv) * input.color * ( 1.- length( input.uv-0.3 ) );
+				float4 props = input.props;
+				float3 s0 = input.ballcenter;
+				float sr = input.ballcenter.w;
+				float3 hitworld = input.hitworld;
+				float3 ro = _WorldSpaceCameraPos;
+				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
+				
+			    float a = dot(rd, rd);
+				float3 s0_r0 = ro - s0;
+				float b = 2.0 * dot(rd, s0_r0);
+				float c = dot(s0_r0, s0_r0) - (sr * sr);
+				
+				float disc = b * b - 4.0 * a* c;
+
+				if (disc < 0.0)
+					discard;
+				float2 answers = float2(-b - sqrt(disc), -b + sqrt(disc)) / (2.0 * a);
+				float minr = min( answers.x, answers.y );
+	
+	
+				float3 worldhit = ro + rd * minr;
+				float3 hitnorm = worldhit-s0;
+				
+				float4 albcolor = dot( _WorldSpaceLightPos0.xyz, hitnorm );
+				
+				
+				const float shininessVal = 8;
+				const float Kd = 1;
+				const float Ks = 1;
+				
+				float3 N = normalize(hitnorm);
+				float3 L = normalize(_WorldSpaceLightPos0);
+				// Lambert's cosine law
+				float lambertian = max(dot(N, L), 0.0);
+				float specular = 0.0;
+				if(lambertian > 0.0) {
+					float3 R = reflect(-L, N);      // Reflected light vector
+					float3 V = normalize(-rd); // Vector to viewer
+					// Compute the specular term
+					float specAngle = max(dot(R, V), 0.0);
+					specular = pow(specAngle, shininessVal);
+				}
+				albcolor = float4( float3(.1,.1,.1) +
+					   Kd * lambertian * input.color +
+					   Ks * specular * float3(1.,1.,1.), 1.0);
+			   
+
+                UNITY_APPLY_FOG(i.fogCoord, col);
+				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
+				outDepth = clipPos.z / clipPos.w;
+				
+				
+				return _SpriteTex.Sample(sampler_SpriteTex, input.uv) * input.color * albcolor;
 			}
 
 			ENDCG

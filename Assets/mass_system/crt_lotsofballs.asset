@@ -12,8 +12,8 @@ CustomRenderTexture:
     Hash: 00000000000000000000000000000000
   m_ForcedFallbackFormat: 4
   m_DownscaleFallback: 0
-  m_Width: 32
-  m_Height: 32
+  m_Width: 1024
+  m_Height: 64
   m_AntiAliasing: 1
   m_DepthFormat: 0
   m_ColorFormat: 11
@@ -25,12 +25,12 @@ CustomRenderTexture:
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 0
-    m_Aniso: 5
+    m_Aniso: 0
     m_MipBias: 0
     m_WrapU: 1
     m_WrapV: 1
     m_WrapW: 1
-  m_Dimension: 3
+  m_Dimension: 2
   m_VolumeDepth: 64
   m_Material: {fileID: 2100000, guid: a3a505c50c8aaf44190121362aba9813, type: 2}
   m_InitSource: 1
@@ -42,38 +42,48 @@ CustomRenderTexture:
   m_UpdateZoneSpace: 1
   m_CurrentUpdateZoneSpace: 1
   m_UpdateZones:
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 32, z: 64}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
-    passIndex: 8
+    passIndex: 1
     needSwap: 1
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 30, y: 32, z: 64}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
-    passIndex: 8
+    passIndex: 2
     needSwap: 1
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 32, z: 64}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
-    passIndex: 8
+    passIndex: 3
     needSwap: 1
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 30, z: 64}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
-    passIndex: 8
+    passIndex: 4
     needSwap: 1
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 32, z: 64}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
     passIndex: 5
     needSwap: 1
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 32, z: 60}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 60}
+    rotation: 0
+    passIndex: 6
+    needSwap: 1
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
+    rotation: 0
+    passIndex: 7
+    needSwap: 1
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
     passIndex: 8
     needSwap: 1
-  - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 32, z: 64}
+  - updateZoneCenter: {x: 512, y: 32, z: 32}
+    updateZoneSize: {x: 1024, y: 64, z: 64}
     rotation: 0
     passIndex: 8
     needSwap: 1

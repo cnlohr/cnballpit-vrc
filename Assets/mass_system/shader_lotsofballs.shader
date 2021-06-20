@@ -3,6 +3,8 @@
     Properties
     {
 		_BallRadius( "Ball Radius", float ) = 0.1
+        _DepthMapAbove ("Above Depth", 2D) = "white" {}
+        _DepthMapBelow ("Below Depth", 2D) = "white" {}
     }
     SubShader
     {
@@ -31,6 +33,8 @@
             //#include "UnityCustomRenderTexture.cginc"
 			#define kCustomTextureBatchSize 16			
 			texture3D<float4>   _SelfTexture3D;
+			texture2D<float4>   _SelfTexture2D;
+			float4   _SelfTexture2D_TexelSize;
 			struct appdata_customrendertexture
 			{
 				uint    vertexID    : SV_VertexID;
@@ -167,8 +171,9 @@
 				OUT.vertex = float4(pos, 0.0, 1.0);
 				OUT.primitiveID = asuint(CustomRenderTexturePrimitiveIDs[primitiveID]);
 				OUT.primitiveIDRaw = primitiveID;
-				OUT.localTexcoord = float3(texCoords[vertexID], CustomRenderTexture3DTexcoordW);
-				OUT.globalTexcoord = float3(pos.xy * 0.5 + 0.5, CustomRenderTexture3DTexcoordW);
+				//XXX CNL - Fix this Z component.
+				OUT.localTexcoord = float3(texCoords[vertexID], CustomRenderTexture3DTexcoordW ); //+ 0.5/_CustomRenderTextureInfo.z);
+				OUT.globalTexcoord = float3(pos.xy * 0.5 + 0.5, CustomRenderTexture3DTexcoordW ); //+ 0.5/_CustomRenderTextureInfo.z);
 			#if UNITY_UV_STARTS_AT_TOP
 				OUT.globalTexcoord.y = 1.0 - OUT.globalTexcoord.y;
 			#endif
@@ -177,7 +182,18 @@
 				return OUT;
 			}
 			
+			
+			static const int3 balldims = uint3( 32, 32, 32 );
 
+			float4 GetBD( uint3 coord, uint dataid )
+			{
+				return _SelfTexture2D[uint2(coord.x+coord.y*balldims.x,coord.z*2+dataid)];
+			}
+			
+			texture2D<float> _DepthMapAbove;
+			float4 _DepthMapAbove_TexelSize;
+			texture2D<float> _DepthMapBelow;
+			float4 _DepthMapBelow_TexelSize;
 
 			ENDCG
 
@@ -188,19 +204,19 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				uint3 ball = floor( coord * float3( 1, 1, 0.5 ) );
-				int ballid = ball.x + ball.y *_CustomRenderTextureInfo.x + ball.z * (_CustomRenderTextureInfo.y * _CustomRenderTextureInfo.y);
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+				int ballid = ball.x + ( ball.y + ball.z * balldims.y ) * balldims.x;
 				
-				bool is_position = 0 == ( coord.z & 1 );
+				bool is_position = 0 == ( coord.y & 1 );
 
 				if( is_position )
 				{
-					return float4( hash33( IN.globalTexcoord.xyz * 10. ) * 10., ballid );
+					return float4( hash33( ball ) * 10., _BallRadius );
 				}
 				else
 				{
-					return float4( 0., 0., 0., _BallRadius );
+					return float4( 0., 0., 0., ballid );
 				}
             }
             ENDCG
@@ -209,34 +225,68 @@
 		
 		Pass
 		{
+			Name "InitializeIfNotInitialized"
+			
+			CGPROGRAM
+
+            float4 frag (v2f_customrendertexture IN) : SV_Target
+            {
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				float4 st = _SelfTexture2D[coord];
+				if( st.x == 0 && st.y == 0 && st.z == 0 && st.w == 0 )
+				{
+					
+					uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+					uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+					int ballid = ball.x + ( ball.y + ball.z * balldims.y ) * balldims.x;
+					
+					bool is_position = 0 == ( coord.y & 1 );
+
+					if( is_position )
+					{
+						return float4( hash33( ball ) * 10., _BallRadius );
+					}
+					else
+					{
+						return float4( 0., 0., 0., ballid );
+					}
+				}
+				return _SelfTexture2D[coord];
+
+
+            }
+			ENDCG
+		}
+		Pass
+		{
 			Name "SortX0"
 			
 			CGPROGRAM
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				bool is_position = !( coord.z & 1 );
-				uint3 ball = coord / uint3( 1, 1, 2 );
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				bool is_position = !(coord.y & 1);
+
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
 				bool secondpixel;
 				
 				// Sorting X
 				secondpixel = (ball.x & 1);
-				ball.x &= ~1;
 				
-				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
-				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
-				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + uint3( 1, 0, 0 )];
-				Bv = _SelfTexture3D[basecoord + uint3( 1, 0, 1 )];
+				ball.x &= ~1;
+				Ap = GetBD( ball + uint3( 0, 0, 0 ), 0 );
+				Av = GetBD( ball + uint3( 0, 0, 0 ), 1 );
+				Bp = GetBD( ball + uint3( 1, 0, 0 ), 0 );
+				Bv = GetBD( ball + uint3( 1, 0, 0 ), 1 );
 				if( (Ap.x > Bp.x) )
 				{
 					Tp = Ap; Tv = Av;
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
-				
 
 				if( !secondpixel )
 					return is_position?Ap:Av;
@@ -253,28 +303,30 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				bool is_position = !( coord.z & 1 );
-				uint3 ball = coord / uint3( 1, 1, 2 );
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				if( ball.x < 1 || ball.x > balldims.x-2 ) return _SelfTexture2D[coord];
+	
+				bool is_position = !(coord.y & 1);
+
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
+				bool secondpixel;
 				
 				// Sorting X
-				bool secondpixel = (ball.x & 1);
-				ball.x += (ball.x&1)?1:-1;
-				ball.x = ((ball.x+1) & ~1);
-
-				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
-				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
-				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + int3( -1, 0, 0 )];
-				Bv = _SelfTexture3D[basecoord + int3( -1, 0, 1 )];
-				if( (Ap.x < Bp.x) )
+				secondpixel = !(ball.x & 1);
+				
+				ball.x = ( ( ball.x + 1 ) & ~1 ) - 1;
+				Ap = GetBD( ball + uint3( 0, 0, 0 ), 0 );
+				Av = GetBD( ball + uint3( 0, 0, 0 ), 1 );
+				Bp = GetBD( ball + uint3( 1, 0, 0 ), 0 );
+				Bv = GetBD( ball + uint3( 1, 0, 0 ), 1 );
+				if( (Ap.x > Bp.x) )
 				{
 					Tp = Ap; Tv = Av;
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
-				
 
 				if( !secondpixel )
 					return is_position?Ap:Av;
@@ -284,7 +336,7 @@
 			ENDCG
 		}
 
-		
+
 		Pass
 		{
 			Name "SortY0"
@@ -293,27 +345,29 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				bool is_position = !( coord.z & 1 );
-				uint3 ball = coord / uint3( 1, 1, 2 );
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				bool is_position = !(coord.y & 1);
+
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
 				bool secondpixel;
 				
 				// Sorting Y
 				secondpixel = (ball.y & 1);
-				ball.y &= ~1;
 				
-				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
-				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
-				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + uint3( 0, 1, 0 )];
-				Bv = _SelfTexture3D[basecoord + uint3( 0, 1, 1 )];
+				ball.y &= ~1;
+				Ap = GetBD( ball + uint3( 0, 0, 0 ), 0 );
+				Av = GetBD( ball + uint3( 0, 0, 0 ), 1 );
+				Bp = GetBD( ball + uint3( 0, 1, 0 ), 0 );
+				Bv = GetBD( ball + uint3( 0, 1, 0 ), 1 );
 				if( (Ap.y > Bp.y) )
 				{
 					Tp = Ap; Tv = Av;
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
+
 				if( !secondpixel )
 					return is_position?Ap:Av;
 				else
@@ -329,22 +383,25 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				bool is_position = !( coord.z & 1 );
-				uint3 ball = coord / uint3( 1, 1, 2 );
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				if( ball.y < 1 || ball.y > balldims.y-2 ) return _SelfTexture2D[coord];
+	
+				bool is_position = !(coord.y & 1);
+
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
+				bool secondpixel;
 				
 				// Sorting Y
-				bool secondpixel = (ball.y & 1);
-				ball.y += (ball.y&1)?1:-1;
-				ball.y = ((ball.y+1) & ~1);
-
-				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
-				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
-				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + int3( 0, -1, 0 )];
-				Bv = _SelfTexture3D[basecoord + int3( 0, -1, 1 )];
-				if( (Ap.y < Bp.y) )
+				secondpixel = !(ball.y & 1);
+				
+				ball.y = ( ( ball.y + 1 ) & ~1 ) - 1;
+				Ap = GetBD( ball + uint3( 0, 0, 0 ), 0 );
+				Av = GetBD( ball + uint3( 0, 0, 0 ), 1 );
+				Bp = GetBD( ball + uint3( 0, 1, 0 ), 0 );
+				Bv = GetBD( ball + uint3( 0, 1, 0 ), 1 );
+				if( (Ap.y > Bp.y) )
 				{
 					Tp = Ap; Tv = Av;
 					Ap = Bp; Av = Bv;
@@ -360,8 +417,6 @@
 		}
 
 
-
-		
 		Pass
 		{
 			Name "SortZ0"
@@ -370,22 +425,22 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * float3( 32, 32, 64 );
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				bool is_position = !(coord.y & 1);
 
-				bool is_position = !( coord.z & 1 );
-				uint3 ball = coord / uint3( 1, 1, 2 );
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
 				bool secondpixel;
 				
 				// Sorting Z
 				secondpixel = (ball.z & 1);
-				ball.z &= ~1;
 				
-				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
-				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
-				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + uint3( 0, 0, 2 )];
-				Bv = _SelfTexture3D[basecoord + uint3( 0, 0, 3 )];
+				ball.z &= ~1;
+				Ap = GetBD( ball + uint3( 0, 0, 0 ), 0 );
+				Av = GetBD( ball + uint3( 0, 0, 0 ), 1 );
+				Bp = GetBD( ball + uint3( 0, 0, 1 ), 0 );
+				Bv = GetBD( ball + uint3( 0, 0, 1 ), 1 );
 				if( (Ap.z > Bp.z) )
 				{
 					Tp = Ap; Tv = Av;
@@ -408,22 +463,25 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * float3( 32, 32, 64 );
-				bool is_position = !( coord.z & 1 );
-				uint3 ball = coord / uint3( 1, 1, 2 );
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				if( ball.z < 1 || ball.z > balldims.z-2 ) return _SelfTexture2D[coord];
+	
+				bool is_position = !(coord.y & 1);
+
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
+				bool secondpixel;
 				
 				// Sorting Z
-				bool secondpixel = (ball.z & 1);
-				ball.z += (ball.z&1)?1:-1;
-				ball.z = ((ball.z+1) & ~1);
-
-				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
-				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
-				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + int3( 0, 0, -2 )];
-				Bv = _SelfTexture3D[basecoord + int3( 0, 0, -1 )];
-				if( (Ap.z < Bp.z) )
+				secondpixel = !(ball.z & 1);
+				
+				ball.z = ( ( ball.z + 1 ) & ~1 ) - 1;
+				Ap = GetBD( ball + uint3( 0, 0, 0 ), 0 );
+				Av = GetBD( ball + uint3( 0, 0, 0 ), 1 );
+				Bp = GetBD( ball + uint3( 0, 0, 1 ), 0 );
+				Bv = GetBD( ball + uint3( 0, 0, 1 ), 1 );
+				if( (Ap.z > Bp.z ) )
 				{
 					Tp = Ap; Tv = Av;
 					Ap = Bp; Av = Bv;
@@ -440,6 +498,12 @@
 
 
 
+
+
+
+
+
+
 		
 		Pass
 		{
@@ -447,26 +511,192 @@
 			
 			CGPROGRAM
 			
+			
+			inline float DebufferizeDepth( float z )
+			{
+				const float near = 1;
+				const float far = 20;
+				//const float4 zbp = float4( 1-far/near, far/near, (1-far/near)/far, (far/near)/far );
+				//return 1.0 / (zbp.z * z + zbp.w);
+				//return 1.0 / ( z + 1 );
+				return z * 20;
+			}
+
+
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				uint3 ball = floor( coord * float3( 1, 1, 0.5 ) );
-				
-				bool is_position = 0 == ( coord.z & 1 );
-				coord.z &= ~1;
-				
-				float4 Position = _SelfTexture3D[coord];
-				float4 Velocity = _SelfTexture3D[coord + int3( 0, 0, 1 )];
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				uint3 ball = uint3( coord.x % balldims.x, coord.x / balldims.x, coord.y / 2 );
+	
+				bool is_position = !(coord.y & 1);
 
-				Velocity.y -= 9.8*unity_DeltaTime.x;
-				
-				Position.xyz = Position.xyz + Velocity.xyz * unity_DeltaTime.x;
-				
-				if( Position.y < 0 )
+				float4 Position = GetBD( ball, 0 );
+				float4 Velocity = GetBD( ball, 1 );
+
+				const float cfmVelocity = 1.8;
+				const float cfmPosition = .02;
+
+				// Step 1 find collisions.
+				const int3 neighborhood = int3( 8, 15, 8 );
+				int3 ballneighbor;
+				for( ballneighbor.x = -neighborhood.x; ballneighbor.x <= neighborhood.x; ballneighbor.x++ )
+				for( ballneighbor.y = -neighborhood.y; ballneighbor.y <= neighborhood.y; ballneighbor.y++ )
+				for( ballneighbor.z = -neighborhood.z; ballneighbor.z <= neighborhood.z; ballneighbor.z++ )
 				{
-					Position.y = -Position.y;
-					Velocity.y = -Velocity.y * .999;
+					int3 ab = ballneighbor + ball;
+					bool3 okvec = ab >= 0 && ab < balldims;
+					if( okvec.x && okvec.y && okvec.z )
+					{
+						float4 otherball = GetBD( ab, 0 );
+						float len = length( Position.xyz - otherball.xyz );
+						
+						//Do we collide AND are we NOT the other ball?
+						if( len < otherball.w + Position.w && len > 0.01 )
+						{
+							// Collision! (Todo, smarter)
+							// We only edit us, not the other ball.
+							float penetration = ( otherball.w + Position.w ) - len;
+							float3 vectortome = normalize(Position.xyz - otherball.xyz);
+							Velocity.xyz += penetration * vectortome * cfmVelocity;
+							Position.xyz += penetration * vectortome * cfmPosition;
+							Velocity.xyz *= 1;
+						}
+					}
 				}
+
+				//Collide with edges.
+				
+				static const float edgecfm = 1.5;
+				static const float edgecfmv = 1.5;
+				
+				// A bowl (not in use right now)
+				if( 0 )
+				{
+					//Bowl Collision.
+					float3 bowlcenter = float3( 0., 31., 0. );
+					float bowlradius = 30;				
+					float exitlength = length( Position.xyz - bowlcenter ) - bowlradius;
+					if( exitlength > 0 )
+					{
+						float3 enterdir = Position.xyz - bowlcenter;
+						Velocity.xyz -= (normalize( enterdir ) * exitlength) * edgecfmv;
+						Position.xyz -= (normalize( enterdir ) * exitlength)*edgecfm;
+					}
+				}
+
+				const float2 WorldSize = float2( 10, 10 );
+				const float2 HalfWorldSize = WorldSize/2;
+				
+				// World Edges
+				if( 1 )
+				{
+					float protrudelen;
+					protrudelen = Position.x - HalfWorldSize.x + Position.w;
+					if( protrudelen > 0 )
+					{
+						Velocity.xyz -= float3( 1, 0, 0 ) * protrudelen * edgecfmv;
+						Position.xyz -= float3( 1, 0, 0 ) * protrudelen * edgecfm;
+					}
+
+					protrudelen = -HalfWorldSize.x-Position.x + Position.w;
+					if( protrudelen > 0 )
+					{
+						Velocity.xyz -= float3( -1, 0, 0 ) * protrudelen * edgecfmv;
+						Position.xyz -= float3( -1, 0, 0 ) * protrudelen * edgecfm;
+					}
+
+					protrudelen = -Position.y + Position.w;
+					if( protrudelen > 0 )
+					{
+						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
+						Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
+					}
+					protrudelen = Position.z - HalfWorldSize.y + Position.w;
+					if( protrudelen > 0 )
+					{
+						Velocity.xyz -= float3( 0, 0, 1 ) * protrudelen;
+						Position.xyz -= float3( 0, 0, 1 ) * protrudelen * edgecfm;
+					}
+
+					protrudelen = -HalfWorldSize.y-Position.z + Position.w;
+					if( protrudelen > 0 )
+					{
+						Velocity.xyz -= float3( 0, 0, -1 ) * protrudelen;
+						Position.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfm;
+					}
+				}
+
+				{
+					float heightcfm = 1.8;
+					float heightcfmv = 80.;
+					float4 StorePos = Position;
+					float4 StoreVel = Velocity;
+					//Collision with depth map.
+					int2 DepthMapCoord = ( (Position.xz) / WorldSize + 0.5 ) * _DepthMapAbove_TexelSize.zw;
+					float2 DepthMapDeltaMeters = WorldSize * _DepthMapAbove_TexelSize.xy;
+					int2 neighborhood = ceil( Position.w / DepthMapDeltaMeters );
+					int2 ln;
+					for( ln.x = -neighborhood.x; ln.x < neighborhood.x; ln.x++ )
+					for( ln.y = -neighborhood.y; ln.y < neighborhood.y; ln.y++ )
+					{
+						int2 coord = ln + DepthMapCoord;
+
+						if( coord.x < 0 || coord.y < 0 || coord.x >= _DepthMapAbove_TexelSize.z || coord.y >= _DepthMapAbove_TexelSize.w )
+							continue;
+
+							
+						float topY = (_DepthMapAbove[coord])*20;
+						int2 bottomcoord = int2( coord.x, coord.y );
+						float bottomY = ((_DepthMapAbove[bottomcoord])*20);
+
+						float2 xzWorldPos = ((coord * _DepthMapAbove_TexelSize.xy) - 0.5 ) * WorldSize;
+						float3 CollisionPosition = float3( xzWorldPos.x, topY, xzWorldPos.y );
+						
+						//Tricky: If we are above the bottom part and below the top, we are "inside" so zero the Y.
+						if( StorePos.y < topY && StorePos.y > bottomY )
+						{
+							CollisionPosition.y = StorePos.y;
+						}
+
+
+						float3 deltap = StorePos.xyz - CollisionPosition;
+
+						float penetration = StorePos.w - length(deltap);
+						if( penetration > 0 )
+						{
+							float neighborderate = neighborhood.x *neighborhood.y;
+							deltap = normalize( deltap );
+							Velocity.xyz += deltap * penetration * heightcfmv / neighborderate;
+							Position.xyz += deltap * penetration * heightcfm / neighborderate;
+						}
+					}
+				}
+				
+				//Fountain
+				if( 1 )
+				{
+					if( Position.x < -4 && Position.z < -4 && Position.y < 4 )
+					{
+						Velocity.xyz += float3( .01, .1, .01 );
+					}
+				}
+				
+				//Velocity.w = 0.5;
+
+	//			texture2D<float> _DepthMapAbove;
+	//			float4 _DepthMapAbove_TexelSize;
+	//			texture2D<float> _DepthMapBelow;
+	//			float4 _DepthMapBelow_TexelSize;
+
+
+
+				// Step 2: Actually perform physics.
+				float dt = 0.01;//unity_DeltaTime.x;
+				Velocity.y -= 9.8*dt;
+				
+				Position.xyz = Position.xyz + Velocity.xyz * dt;
+				
+				Velocity.xyz = Velocity.xyz * .995;
 
 				if( is_position )
 				{
@@ -489,24 +719,9 @@
 			
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
-				uint3 ball = floor( coord * float3( 1, 1, 0.5 ) );
-				
-				bool is_position = 0 == ( coord.z & 1 );
-				coord.z &= ~1;
-				
-				float4 Position = _SelfTexture3D[coord];
-				float4 Velocity = _SelfTexture3D[coord + int3( 0, 0, 1 )];
-
-				if( is_position )
-				{
-					return Position;
-				}
-				else
-				{
-					return Velocity;
-				}
-            }
+				uint2 coord = IN.globalTexcoord.xy * _SelfTexture2D_TexelSize.zw;
+				return _SelfTexture2D[coord];
+			}
 			ENDCG
 		}
 
