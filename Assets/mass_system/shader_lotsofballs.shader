@@ -533,11 +533,11 @@
 				float4 Position = GetBD( ball, 0 );
 				float4 Velocity = GetBD( ball, 1 );
 
-				const float cfmVelocity = 1.8;
-				const float cfmPosition = .02;
+				const float cfmVelocity = 4.8;
+				const float cfmPosition = .01;
 
 				// Step 1 find collisions.
-				const int3 neighborhood = int3( 8, 15, 8 );
+				const int3 neighborhood = int3( 7, 15, 7 );
 				int3 ballneighbor;
 				for( ballneighbor.x = -neighborhood.x; ballneighbor.x <= neighborhood.x; ballneighbor.x++ )
 				for( ballneighbor.y = -neighborhood.y; ballneighbor.y <= neighborhood.y; ballneighbor.y++ )
@@ -563,11 +563,11 @@
 						}
 					}
 				}
-
+				
 				//Collide with edges.
 				
 				static const float edgecfm = 1.5;
-				static const float edgecfmv = 1.5;
+				static const float edgecfmv = 3.5;
 				
 				// A bowl (not in use right now)
 				if( 0 )
@@ -628,7 +628,7 @@
 
 				{
 					float heightcfm = 1.8;
-					float heightcfmv = 80.;
+					float heightcfmv = 100.;
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
@@ -675,9 +675,9 @@
 				//Fountain
 				if( 1 )
 				{
-					if( Position.x < -4 && Position.z < -4 && Position.y < 4 )
+					if( Position.x < -4 && Position.z < -4 && Position.y < 3 )
 					{
-						Velocity.xyz += float3( .01, .1, .01 );
+						Velocity.xyz += float3( .01, .3, .01 );
 					}
 				}
 				

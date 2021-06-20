@@ -94,14 +94,17 @@ Shader "mass_system/billboardout"
 					right = normalize(right);
 
 					float4 color = 
-							//float4( DataVel.xyz, 1 );
+							abs(float4( DataVel.xyz, 1 ));
 							//( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
 							//( float4( oposid.xyz, 1. ) )/32;
-							float4( hash33((DataVel.www*10.+10.1)), 1. );
+							//float4( hash33((DataVel.www*10.+10.1)), 1. );
 							//float4(DataVel.www,1);
 
 					float size = DataPos.w*2+.1; //DataPos.w is radius. (Add a little to not clip edges.)
 					float halfS = 0.5f * size;
+					
+					//Pushthe view plane away a tiny bit, to prevent nastiness when doing the SV_DepthLessEqual for perf.
+					rvpos += look*.04;
 							
 					float4 v[4];
 					v[0] = float4(rvpos + halfS * right - halfS * up, 1.0f);

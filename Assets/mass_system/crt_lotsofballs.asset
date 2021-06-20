@@ -82,11 +82,6 @@ CustomRenderTexture:
     rotation: 0
     passIndex: 8
     needSwap: 1
-  - updateZoneCenter: {x: 512, y: 32, z: 32}
-    updateZoneSize: {x: 1024, y: 64, z: 64}
-    rotation: 0
-    passIndex: 8
-    needSwap: 1
   m_UpdatePeriod: 0
   m_ShaderPass: 0
   m_CubemapFaceMask: 4294967295
