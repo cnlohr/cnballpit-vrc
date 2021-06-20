@@ -89,7 +89,7 @@ Shader "mass_system/billboardout"
 					right = normalize(right);
 
 					float4 color = 
-							( float4( oposid.xyz, 1. ) )/32;
+							( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
 							//float4( hash33((DataPos.www*10.+10.1)), 1. );
 
 					float size = DataVel.w;

@@ -25,11 +25,11 @@ CustomRenderTexture:
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 0
-    m_Aniso: 1
+    m_Aniso: 5
     m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
   m_Dimension: 3
   m_VolumeDepth: 64
   m_Material: {fileID: 2100000, guid: a3a505c50c8aaf44190121362aba9813, type: 2}
@@ -42,25 +42,25 @@ CustomRenderTexture:
   m_UpdateZoneSpace: 1
   m_CurrentUpdateZoneSpace: 1
   m_UpdateZones:
-  - updateZoneCenter: {x: 16, y: 16, z: 16}
+  - updateZoneCenter: {x: 16, y: 16, z: 32}
     updateZoneSize: {x: 32, y: 32, z: 64}
     rotation: 0
-    passIndex: 1
+    passIndex: 8
     needSwap: 1
   - updateZoneCenter: {x: 16, y: 16, z: 32}
     updateZoneSize: {x: 30, y: 32, z: 64}
     rotation: 0
-    passIndex: 2
+    passIndex: 8
     needSwap: 1
   - updateZoneCenter: {x: 16, y: 16, z: 32}
     updateZoneSize: {x: 32, y: 32, z: 64}
     rotation: 0
-    passIndex: 3
+    passIndex: 8
     needSwap: 1
   - updateZoneCenter: {x: 16, y: 16, z: 32}
     updateZoneSize: {x: 32, y: 30, z: 64}
     rotation: 0
-    passIndex: 4
+    passIndex: 8
     needSwap: 1
   - updateZoneCenter: {x: 16, y: 16, z: 32}
     updateZoneSize: {x: 32, y: 32, z: 64}
@@ -68,9 +68,9 @@ CustomRenderTexture:
     passIndex: 5
     needSwap: 1
   - updateZoneCenter: {x: 16, y: 16, z: 32}
-    updateZoneSize: {x: 32, y: 32, z: 0}
+    updateZoneSize: {x: 32, y: 32, z: 60}
     rotation: 0
-    passIndex: 6
+    passIndex: 8
     needSwap: 1
   - updateZoneCenter: {x: 16, y: 16, z: 32}
     updateZoneSize: {x: 32, y: 32, z: 64}

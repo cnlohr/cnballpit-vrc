@@ -236,6 +236,7 @@
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
+				
 
 				if( !secondpixel )
 					return is_position?Ap:Av;
@@ -273,6 +274,7 @@
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
+				
 
 				if( !secondpixel )
 					return is_position?Ap:Av;
@@ -359,6 +361,7 @@
 
 
 
+		
 		Pass
 		{
 			Name "SortZ0"
@@ -367,7 +370,8 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
+				uint3 coord = IN.globalTexcoord.xyz * float3( 32, 32, 64 );
+
 				bool is_position = !( coord.z & 1 );
 				uint3 ball = coord / uint3( 1, 1, 2 );
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
@@ -388,6 +392,7 @@
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
+
 				if( !secondpixel )
 					return is_position?Ap:Av;
 				else
@@ -395,7 +400,6 @@
             }
 			ENDCG
 		}
-		
 		Pass
 		{
 			Name "SortZ1"
@@ -404,7 +408,7 @@
 
             float4 frag (v2f_customrendertexture IN) : SV_Target
             {
-				uint3 coord = IN.globalTexcoord.xyz * _CustomRenderTextureInfo.xyz;
+				uint3 coord = IN.globalTexcoord.xyz * float3( 32, 32, 64 );
 				bool is_position = !( coord.z & 1 );
 				uint3 ball = coord / uint3( 1, 1, 2 );
 				float4 Ap, Av, Bp, Bv, Tp, Tv;
@@ -417,18 +421,14 @@
 				uint3 basecoord = (ball) * uint3( 1, 1, 2 );
 				Ap = _SelfTexture3D[basecoord + uint3( 0, 0, 0 )];
 				Av = _SelfTexture3D[basecoord + uint3( 0, 0, 1 )];
-				Bp = _SelfTexture3D[basecoord + int3( 0,  0, -2 )];
-				Bv = _SelfTexture3D[basecoord + int3( 0,  0, -1 )];
+				Bp = _SelfTexture3D[basecoord + int3( 0, 0, -2 )];
+				Bv = _SelfTexture3D[basecoord + int3( 0, 0, -1 )];
 				if( (Ap.z < Bp.z) )
 				{
 					Tp = Ap; Tv = Av;
 					Ap = Bp; Av = Bv;
 					Bp = Tp; Bv = Tv;
 				}
-
-				Av.w = ball.z/32.;
-				Bv.w = ball.z/32.;
-
 
 				if( !secondpixel )
 					return is_position?Ap:Av;
@@ -437,6 +437,7 @@
             }
 			ENDCG
 		}
+
 
 
 		
