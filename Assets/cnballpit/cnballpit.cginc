@@ -15,8 +15,11 @@ float4 GetVelocity( uint ballid )
 	return _VelocitiesIn[uint2(ballid%1024,ballid/1024)];
 }
 
+//NOTE BY CNL: Doing a hash appears to peform much worse than
+// a procedural path, not in speed (though that's true) but it gets worse collisions.
 #define ACTUALLY_DO_COMPLEX_HASH_FUNCTION 0
 //The size of each hashed bucket.
+
 static const float3 HashCellRange = float3( 12, 12, 12 );
 
 uint2 Hash3ForAdjacency( int3 rlcoord )
@@ -32,7 +35,7 @@ uint2 Hash3ForAdjacency( int3 rlcoord )
 	uint3 hvb = xvb * rlc;
 	return uint2( hva.x+hva.y+hva.z, hvb.x+hvb.y+hvb.z) % 2048;
 #else
-	return uint2( rlcoord.x + (rlcoord.z%8)*136, rlcoord.y + (rlcoord.z/8)*64 ) % 2048;
 
+	return uint2( rlcoord.x + (rlcoord.z%8)*136, rlcoord.y + (rlcoord.z/8)*64 ) % 2048;
 #endif
 }
