@@ -628,7 +628,7 @@
 
 				{
 					float heightcfm = 1.8;
-					float heightcfmv = 100.;
+					float heightcfmv = 200.;
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
