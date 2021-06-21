@@ -8,8 +8,9 @@ Shader "cnballpit/shaderCalcPrimary"
 		_BallRadius( "Default Ball Radius", float ) = 0.1
 		_PositionsIn ("Positions", 2D) = "white" {}
 		_VelocitiesIn ("Velocities", 2D) = "white" {}
-		_AdjacencyMapIn ("Adjacencies", 2D) = "white" {}
-		_AdjacencyMapInSecond ("AdjacenciesSecond", 2D) = "white" {}
+		_Adjacency0 ("Adjacencies 0", 2D) = "white" {}
+		_Adjacency1 ("Adjacencies 1", 2D) = "white" {}
+		_Adjacency2 ("Adjacencies 2", 2D) = "white" {}
         _DepthMapAbove ("Above Depth", 2D) = "white" {}
         _DepthMapBelow ("Below Depth", 2D) = "white" {}
 		_DebugFloat("Debug", float) = 0
@@ -82,13 +83,14 @@ Shader "cnballpit/shaderCalcPrimary"
 				int did_find_self = 0;
 				//Collide with other balls
 				{
-					const float cfmVelocity = 10.0;
-					const float cfmPosition = .01;
+					const float cfmVelocity = 8.0;
+					const float cfmPosition = .005;
 					
 					// Step 1 find collisions.
 					const int3 neighborhood = int3( 3, 3, 3 );
 					int3 ballneighbor;
 					int3 ballhashcell = int3(Position.xyz * HashCellRange);
+					[unroll]
 					for( ballneighbor.x = -neighborhood.x; ballneighbor.x <= neighborhood.x; ballneighbor.x++ )
 					for( ballneighbor.y = -neighborhood.y; ballneighbor.y <= neighborhood.y; ballneighbor.y++ )
 					for( ballneighbor.z = -neighborhood.z; ballneighbor.z <= neighborhood.z; ballneighbor.z++ )
@@ -96,14 +98,19 @@ Shader "cnballpit/shaderCalcPrimary"
 						int3 ab = ballneighbor + ballhashcell;
 						
 						int j;
-						for( j = 0; j < 2; j++ )
+						uint2 hashed = Hash3ForAdjacency(ab);
+						for( j = 0; j < 3; j++ )
 						{
 							uint obid;
 							if( j == 0 )
-								obid = _AdjacencyMapIn[Hash3ForAdjacency(ab)] - 1;
-							else
-								obid = _AdjacencyMapInSecond[Hash3ForAdjacency(ab)] - 1;
+								obid = _Adjacency0[hashed];
+							else if( j == 1 )
+								obid = _Adjacency1[hashed];
+							else if( j == 1 )
+								obid = _Adjacency2[hashed];
+							obid--;
 							if( obid == 0 ) break;
+
 							if( obid == ballid )
 							{
 								did_find_self = 1;
@@ -270,7 +277,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				
 				Position.xyz = Position.xyz + Velocity.xyz * dt;
 				
-				Velocity.xyz = Velocity.xyz * .995;
+				Velocity.xyz = Velocity.xyz * .992;
 
 				ret.Pos = Position;
 				ret.Vel = Velocity;

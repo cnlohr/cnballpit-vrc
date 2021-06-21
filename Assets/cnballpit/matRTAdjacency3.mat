@@ -19,6 +19,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Adjacency0:
+        m_Texture: {fileID: 8400000, guid: 09cac7b7a64ce0443bfd7b7028941b95, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Adjacency1:
+        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _AdjacencyMapIn:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
