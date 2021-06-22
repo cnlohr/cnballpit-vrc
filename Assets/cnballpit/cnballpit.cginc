@@ -1,9 +1,17 @@
 
 texture2D< float4 > _PositionsIn;
 texture2D< float4 > _VelocitiesIn;
-texture2D< float > _Adjacency0;
-texture2D< float > _Adjacency1;
-texture2D< float > _Adjacency2;
+texture2D< float4 > _Adjacency0;
+texture2D< float4 > _Adjacency1;
+texture2D< float4 > _Adjacency2;
+texture2D< float4 > _Adjacency3;
+
+float4 _PositionsIn_TexelSize;
+float4 _VelocitiesIn_TexelSize;
+float4 _Adjacency0_TexelSize;
+float4 _Adjacency1_TexelSize;
+float4 _Adjacency2_TexelSize;
+float4 _Adjacency3_TexelSize;
 
 float4 GetPosition( uint ballid )
 {
@@ -20,9 +28,11 @@ float4 GetVelocity( uint ballid )
 #define ACTUALLY_DO_COMPLEX_HASH_FUNCTION 0
 //The size of each hashed bucket.
 
-static const float3 HashCellRange = float3( 12, 12, 12 );
+//@ .9 -> Tested: 9 is good, 8 oooccasssionallyyy tweaks.  10 is cruising.
+//@ .8 -> Tested: 10 is almost perfect ... switch to 11.
+static const float3 HashCellRange = float3( 11, 11, 11 );
 
-uint2 Hash3ForAdjacency( int3 rlcoord )
+uint2 Hash3ForAdjacency( float3 rlcoord )
 {
 	//This may be a heavy handed hash algo.  It's currently 8 instructions.
 	// Thanks, @D4rkPl4y3r for suggesting the hash buckets.
@@ -35,7 +45,7 @@ uint2 Hash3ForAdjacency( int3 rlcoord )
 	uint3 hvb = xvb * rlc;
 	return uint2( hva.x+hva.y+hva.z, hvb.x+hvb.y+hvb.z) % 2048;
 #else
-
-	return uint2( rlcoord.x + (rlcoord.z%8)*136, rlcoord.y + (rlcoord.z/8)*64 ) % 2048;
+	uint3 normcoord = int3(rlcoord*HashCellRange + HashCellRange * 10);
+	return uint2( normcoord.x + (normcoord.z%8)*120, normcoord.y + (normcoord.z/8)*64 ) % 1024;
 #endif
 }

@@ -8,9 +8,10 @@ Shader "cnballpit/shaderCalcPrimary"
 		_BallRadius( "Default Ball Radius", float ) = 0.1
 		_PositionsIn ("Positions", 2D) = "white" {}
 		_VelocitiesIn ("Velocities", 2D) = "white" {}
-		_Adjacency0 ("Adjacencies 0", 2D) = "white" {}
-		_Adjacency1 ("Adjacencies 1", 2D) = "white" {}
-		_Adjacency2 ("Adjacencies 2", 2D) = "white" {}
+		_Adjacency0 ("Adjacencies0", 2D) = "white" {}
+		_Adjacency1 ("Adjacencies1", 2D) = "white" {}
+		_Adjacency2 ("Adjacencies2", 2D) = "white" {}
+		_Adjacency3 ("Adjacencies3", 2D) = "white" {}
         _DepthMapAbove ("Above Depth", 2D) = "white" {}
         _DepthMapBelow ("Below Depth", 2D) = "white" {}
 		_DebugFloat("Debug", float) = 0
@@ -83,41 +84,36 @@ Shader "cnballpit/shaderCalcPrimary"
 				int did_find_self = 0;
 				//Collide with other balls
 				{
-					const float cfmVelocity = 8.0;
-					const float cfmPosition = .005;
+					const float cfmVelocity = 15.0;
+					const float cfmPosition = .008;
 					
 					// Step 1 find collisions.
-					const int3 neighborhood = int3( 3, 3, 3 );
+					const int3 neighborhood = int3( 2, 2, 2 );
 					int3 ballneighbor;
-					int3 ballhashcell = int3(Position.xyz * HashCellRange);
-					[unroll]
+					bool foundself = false;
 					for( ballneighbor.x = -neighborhood.x; ballneighbor.x <= neighborhood.x; ballneighbor.x++ )
 					for( ballneighbor.y = -neighborhood.y; ballneighbor.y <= neighborhood.y; ballneighbor.y++ )
 					for( ballneighbor.z = -neighborhood.z; ballneighbor.z <= neighborhood.z; ballneighbor.z++ )
 					{
-						int3 ab = ballneighbor + ballhashcell;
-						
 						int j;
-						uint2 hashed = Hash3ForAdjacency(ab);
-						for( j = 0; j < 3; j++ )
+						uint2 hashed = Hash3ForAdjacency(ballneighbor/HashCellRange+Position.xyz);
+						
+						for( j = 0; j < 4; j++ )
 						{
 							uint obid;
-							if( j == 0 )
-								obid = _Adjacency0[hashed];
-							else if( j == 1 )
-								obid = _Adjacency1[hashed];
-							else if( j == 1 )
-								obid = _Adjacency2[hashed];
-							obid--;
-							if( obid == 0 ) break;
+							if( j == 0 )      obid = _Adjacency0[hashed];
+							else if( j == 0 ) obid = _Adjacency1[hashed];
+							else if( j == 0 ) obid = _Adjacency2[hashed];
+							else              obid = _Adjacency3[hashed];
 
+							obid--;
+							//See if we hit ourselves.
 							if( obid == ballid )
 							{
-								did_find_self = 1;
+								foundself = true;
 								continue;
-								//Do something?
 							}
-							//XXX NOTE CHARLES DIV 65k?
+							
 							float4 otherball = GetPosition( obid );
 							float len = length( Position.xyz - otherball.xyz );
 							
@@ -134,13 +130,14 @@ Shader "cnballpit/shaderCalcPrimary"
 							}
 						}
 					}
+					if( !foundself )
+					{
+						//Velocity.w = 1;
+					}
 
 				}
+				
 
-				if( !did_find_self )
-				{
-					//Velocity.w = 1;
-				}
 
 
 				//Collide with edges.
@@ -209,8 +206,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Use depth cameras.
 				if(1) 
 				{
+					//Tested at 1.8/100 on 6/22/2021 AM early.
 					float heightcfm = 1.8;
-					float heightcfmv = 100.;
+					float heightcfmv = 200.;
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.

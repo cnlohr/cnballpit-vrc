@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RTBallsPositionA 1
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Name: mat_DebugAdjacency
+  m_Shader: {fileID: 4800000, guid: 0a58062f0e36517418c24e5e1fdb7473, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,6 +19,26 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Adjacency:
+        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Adjacency0:
+        m_Texture: {fileID: 8400000, guid: 09cac7b7a64ce0443bfd7b7028941b95, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Adjacency1:
+        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Adjacency2:
+        m_Texture: {fileID: 8400000, guid: e550220f35a74914685a45b8ae9962bd, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Adjacency3:
+        m_Texture: {fileID: 8400000, guid: 6fb2633108f66d94d925821e0f31a748, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -40,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 8400000, guid: 872604ce9c183694ea93190da494840c, type: 2}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
