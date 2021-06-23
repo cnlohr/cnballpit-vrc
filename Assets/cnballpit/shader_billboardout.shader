@@ -10,21 +10,21 @@ Shader "mass_system/billboardout"
 
 	SubShader 
 	{
+	
+        // shadow caster rendering pass, implemented manually
+        // using macros from UnityCG.cginc
+        Pass
+        {
+            Tags {"LightMode"="ShadowCaster"}
 
-		Pass
-		{
-			Tags { "RenderType"="Opaque" "LightModel"="ForwardBase"}
-			LOD 200
-		
-			CGPROGRAM
+			CGINCLUDE
+			
 			#include "/Assets/hashwithoutsine/hashwithoutsine.cginc"
+            #pragma vertex vert
+            #pragma geometry geo
+            #pragma multi_compile_shadowcaster
 			#pragma target 5.0
-			#pragma vertex VS_Main
-			#pragma fragment FS_Main
-			#pragma geometry GS_Main
-			#include "UnityCG.cginc" 
-			
-			
+            #include "UnityCG.cginc"
 			#include "cnballpit.cginc"
 
 			struct v2g
@@ -39,10 +39,10 @@ Shader "mass_system/billboardout"
 			{
 				float4	pos		: POSITION;
 				float2  uv	: TEXCOORD0;
-				float4  color   : COLOR;
 				float4  ballcenter : TEXCOORD1;
 				float3  hitworld : TEXCOORD2;
 				float4  props : TEXCOORD3;
+				float4  color : TEXCOORD4;
 			};
 
 			float4x4 _VP;
@@ -50,7 +50,7 @@ Shader "mass_system/billboardout"
 			texture2D<float4> _RVData;
 			float4 _RVData_TexelSize;
 
-			v2g VS_Main(appdata_base v)
+			v2g vert(appdata_base v)
 			{
 				v2g output = (v2g)0;
 
@@ -63,7 +63,7 @@ Shader "mass_system/billboardout"
 			}
 
 			[maxvertexcount(32)]
-			void GS_Main(point v2g p[1], inout TriangleStream<g2f> triStream, uint id : SV_PrimitiveID)
+			void geo(point v2g p[1], inout TriangleStream<g2f> triStream, uint id : SV_PrimitiveID)
 			{
 				int transadd;
 				for( transadd = 0; transadd < 8; transadd++ )
@@ -94,13 +94,6 @@ Shader "mass_system/billboardout"
 					up = normalize(cross( look, right ));
 					right = normalize(right);
 
-					float4 color = 
-							//abs(float4( DataVel.xyz, 1 ));
-							//( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
-							//( float4( oposid.xyz, 1. ) )/32;
-							float4( hash33((DataVel.www*10.+10.1)), 1. );
-							//float4(DataVel.www,1);
-
 					float size = DataPos.w*2+.1; //DataPos.w is radius. (Add a little to not clip edges.)
 					float halfS = 0.5f * size;
 					
@@ -115,35 +108,90 @@ Shader "mass_system/billboardout"
 
 					float4x4 vp = mul( UNITY_MATRIX_MVP, unity_WorldToObject);
 
+
+					float4 color =
+						//abs(float4( DataVel.xyz, 1 ));
+						//( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
+						//( float4( oposid.xyz, 1. ) )/32;
+						float4( hash33((DataVel.www*10.+10.1)), 1. );
+						//float4(DataVel.www,1);
+
 					g2f pIn;
 					pIn.pos = mul(vp, v[0]);
 					pIn.uv = float2(1.0f, 0.0f);
-					pIn.color = color;
 					pIn.ballcenter = DataPos.xyzw;
 					pIn.hitworld = v[0];
 					pIn.props = float4( DataVel.w, 0, 0, 1 );
+					pIn.color = color;
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[1]);
 					pIn.uv = float2(1.0f, 1.0f);
-					pIn.color = color;
 					pIn.hitworld = v[1];
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[2]);
 					pIn.uv = float2(0.0f, 0.0f);
-					pIn.color = color;
 					pIn.hitworld = v[2];
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[3]);
 					pIn.uv = float2(0.0f, 1.0f);
-					pIn.color = color;
 					pIn.hitworld = v[3];
 					triStream.Append(pIn);
 					triStream.RestartStrip();
 				}
 			}
+
+			ENDCG
+
+            CGPROGRAM
+
+            #pragma fragment frag
+
+			float4 frag(g2f input, out float outDepth : SV_DepthLessEqual) : COLOR
+			{
+				float4 props = input.props;
+				float3 s0 = input.ballcenter;
+				float sr = input.ballcenter.w;
+				float3 hitworld = input.hitworld;
+				float3 ro = _WorldSpaceCameraPos;
+				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
+				
+			    float a = dot(rd, rd);
+				float3 s0_r0 = ro - s0;
+				float b = 2.0 * dot(rd, s0_r0);
+				float c = dot(s0_r0, s0_r0) - (sr * sr);
+				
+				float disc = b * b - 4.0 * a* c;
+
+				if (disc < 0.0)
+					discard;
+				float2 answers = float2(-b - sqrt(disc), -b + sqrt(disc)) / (2.0 * a);
+				float minr = min( answers.x, answers.y );
+	
+	
+				float3 worldhit = ro + rd * minr;
+				float3 hitnorm = worldhit-s0;
+				
+				float3 dist = worldhit.xyz - _LightPositionRange.xyz;
+
+				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
+				outDepth = clipPos.z / clipPos.w;
+
+				return UnityEncodeCubeShadowDepth(length(dist) * _LightPositionRange.w);;
+			}
+
+            ENDCG
+        }
+
+		Pass
+		{
+			Tags { "RenderType"="Opaque" "LightModel"="ForwardBase"}
+			LOD 200
+		
+			CGPROGRAM
+			#pragma fragment FS_Main
 
 			float4 FS_Main(g2f input, out float outDepth : SV_DepthLessEqual) : COLOR
 			{
