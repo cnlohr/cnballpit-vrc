@@ -191,15 +191,25 @@ Shader "cnballpit/shaderCalcPrimary"
 					protrudelen = Position.z - HighXZ.y + Position.w;
 					if( protrudelen > 0 )
 					{
-						Velocity.xyz -= float3( 0, 0, 1 ) * protrudelen;
+						Velocity.xyz -= float3( 0, 0, 1 ) * protrudelen * edgecfmv;
 						Position.xyz -= float3( 0, 0, 1 ) * protrudelen * edgecfm;
 					}
 
 					protrudelen = LowXZ.y-Position.z + Position.w;
 					if( protrudelen > 0 )
 					{
-						Velocity.xyz -= float3( 0, 0, -1 ) * protrudelen;
+						Velocity.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfmv;
 						Position.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfm;
+					}
+					
+					//Island
+					float3 diff = Position.xyz - float3( 0, -1, 0 );
+					protrudelen = -length( diff ) + 1.5 + Position.w;
+					if( protrudelen > 0 )
+					{
+						diff = normalize( diff  ) * protrudelen;
+						Velocity.xyz += diff * edgecfmv;
+						Position.xyz += diff * edgecfm;
 					}
 				}
 
