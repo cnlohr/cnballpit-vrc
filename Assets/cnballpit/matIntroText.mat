@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: mat_Billboardify
-  m_Shader: {fileID: 4800000, guid: 117ab85b39b224f4596e9f5374b93229, type: 3}
+  m_Name: matIntroText
+  m_Shader: {fileID: 4800000, guid: db3c0874b43b2604e8cf83c73554a18b, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -55,45 +55,26 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _PositionsIn:
-        m_Texture: {fileID: 8400000, guid: 872604ce9c183694ea93190da494840c, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _RVData:
-        m_Texture: {fileID: 8600000, guid: 8d1269c32b1fc334da20bedf9f25bc90, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SpriteTex:
+    - _TextData:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _VelocitiesIn:
-        m_Texture: {fileID: 8400000, guid: 01782c54ca21894419e50e1d02878177, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Albedo: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Emission: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
-    - _Mode: 3
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PlaidWatch: 0
-    - _Size: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _StippleFreq: 10
-    - _StippleMix: 0.5
     - _UVSec: 0
-    - _WorldScale: 1
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

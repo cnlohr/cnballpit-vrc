@@ -14,7 +14,10 @@ Shader "cnballpit/shaderCalcPrimary"
 		_Adjacency3 ("Adjacencies3", 2D) = "white" {}
         _DepthMapAbove ("Above Depth", 2D) = "white" {}
         _DepthMapBelow ("Below Depth", 2D) = "white" {}
+		_Friction( "Friction", float ) = .008
 		_DebugFloat("Debug", float) = 0
+		_ResetBalls("Reset", float) = 0
+		_GravityValue( "Gravity", float ) = 9.8
 	}
 	SubShader
 	{
@@ -49,7 +52,7 @@ Shader "cnballpit/shaderCalcPrimary"
 			};
 
 			#include "cnballpit.cginc"
-			float _BallRadius, _DebugFloat;
+			float _BallRadius, _DebugFloat, _ResetBalls, _GravityValue, _Friction;
 			texture2D<float> _DepthMapAbove;
 			float4 _DepthMapAbove_TexelSize;
 			texture2D<float> _DepthMapBelow;
@@ -73,9 +76,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				
 				float4 Position = GetPosition( ballid );
 				float4 Velocity = GetVelocity( ballid );
-				if( _Time.y < 3 || Position.w == 0 || _DebugFloat > 0 )
+				if( _Time.y < 3 || Position.w == 0 || _ResetBalls > 0 )
 				{
-					ret.Pos = float4( hash33( ballid.xxx ) * 10., _BallRadius );
+					ret.Pos = float4( hash33( ballid.xxx ) * 10. + float3( -5, 0, -5 ), _BallRadius );
 					ret.Vel = float4( 0., 0., 0., ballid );
 					return ret;
 				}
@@ -203,8 +206,8 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 					
 					//Island
-					float3 diff = Position.xyz - float3( 0, -1, 0 );
-					protrudelen = -length( diff ) + 1.5 + Position.w;
+					float3 diff = Position.xyz - float3( 0, -1.25, 0 );
+					protrudelen = -length( diff ) + 2 + Position.w;
 					if( protrudelen > 0 )
 					{
 						diff = normalize( diff  ) * protrudelen;
@@ -281,11 +284,11 @@ Shader "cnballpit/shaderCalcPrimary"
 
 
 				// Step 2: Actually perform physics.
-				Velocity.y -= 9.8*dt;
+				Velocity.y -= _GravityValue*dt;
 				
 				Position.xyz = Position.xyz + Velocity.xyz * dt;
 				
-				Velocity.xyz = Velocity.xyz * .992;
+				Velocity.xyz = Velocity.xyz * (1 - _Friction );
 
 				ret.Pos = Position;
 				ret.Vel = Velocity;

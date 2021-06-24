@@ -95,9 +95,9 @@ Shader "cnballpit/shaderAdjacency"
 				
 				float fault = 0;
 				
-				if( (int)(_Adjacency0[coordout].x) == idplus1norm ) discard;
-				if( (int)(_Adjacency1[coordout].x) == idplus1norm ) discard;
-				if( (int)(_Adjacency2[coordout].x) == idplus1norm ) discard;
+				if( (uint)(_Adjacency0[coordout].x) == idplus1norm ) discard;
+				if( (uint)(_Adjacency1[coordout].x) == idplus1norm ) discard;
+				if( (uint)(_Adjacency2[coordout].x) == idplus1norm ) discard;
 				
 				return idplus1norm;
 			}

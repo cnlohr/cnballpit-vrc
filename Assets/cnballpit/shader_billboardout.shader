@@ -6,6 +6,7 @@ Shader "mass_system/billboardout"
 	{
 		_PositionsIn ("Positions", 2D) = "" {}
 		_VelocitiesIn ("Velocities", 2D) = "" {}
+		_Mode ("Mode", float) = 0
 	}
 
 	SubShader 
@@ -20,6 +21,7 @@ Shader "mass_system/billboardout"
 			CGINCLUDE
 			
 			#include "/Assets/hashwithoutsine/hashwithoutsine.cginc"
+			#include "/Assets/AudioLink/Shaders/AudioLink.cginc"
             #pragma vertex vert
             #pragma geometry geo
             #pragma multi_compile_shadowcaster
@@ -42,14 +44,18 @@ Shader "mass_system/billboardout"
 				float4  ballcenter : TEXCOORD1;
 				float3  hitworld : TEXCOORD2;
 				float4  props : TEXCOORD3;
-				float4  color : TEXCOORD4;
+				float4  colorDiffuse : TEXCOORD4;
+				float4  colorAmbient : TEXCOORD5;
+				float4  colorSpecular : TEXCOORD6;
 			};
 
 			float4x4 _VP;
 			
+			float _Mode;
 			texture2D<float4> _RVData;
 			float4 _RVData_TexelSize;
-
+			fixed4 _LightColor0;
+			
 			v2g vert(appdata_base v)
 			{
 				v2g output = (v2g)0;
@@ -109,12 +115,34 @@ Shader "mass_system/billboardout"
 					float4x4 vp = mul( UNITY_MATRIX_MVP, unity_WorldToObject);
 
 
-					float4 color =
-						//abs(float4( DataVel.xyz, 1 ));
-						//( float4( oposid.xyz, 1. ) )/32 * float4( 0, 0, 1, 1 );
-						//( float4( oposid.xyz, 1. ) )/32;
-						float4( hash33((DataVel.www*10.+10.1)), 1. );
-						//float4(DataVel.www,1);
+					float4 colorDiffuse = float4( hash33((DataVel.www*10.+10.1)), 1. ) - .1;
+					
+					float3 SmoothHue = AudioLinkHSVtoRGB( float3(  frac(ballid/1024. + AudioLinkDecodeDataAsSeconds(ALPASS_GENERALVU_NETWORK_TIME)*.05), 1, .8 ) );
+					
+					if( _Mode == 1 )
+					{
+						colorDiffuse = abs(float4( 1.-abs(glsl_mod(DataPos.xyz,2)), 1 )) * .8;
+					}
+					else if( _Mode == 2 )
+					{
+						colorDiffuse.xyz = SmoothHue;
+					}
+					else if( _Mode == 3 )
+					{
+						float dfc = length( DataPos.xz ) / 15;
+						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .1 );
+						colorDiffuse.xyz = SmoothHue;
+						colorDiffuse *= intensity; 
+					}
+					else if( _Mode == 4 )
+					{
+						float intensity = saturate( AudioLinkData( ALPASS_FILTEREDAUDIOLINK + uint2( 4, ( ballid / 128 ) % 4 ) ) * 6 + .1);
+						float4 rnote =  AudioLinkData( ALPASS_CCINTERNAL + uint2( ballid % 4, 0 ) );
+						colorDiffuse.xyz = AudioLinkCCtoRGB( rnote.x, intensity, 0 );
+
+					}
+					float4 colorAmbient   = colorDiffuse * .05;
+					float4 colorSpecular = .2*_LightColor0;
 
 					g2f pIn;
 					pIn.pos = mul(vp, v[0]);
@@ -122,7 +150,9 @@ Shader "mass_system/billboardout"
 					pIn.ballcenter = DataPos.xyzw;
 					pIn.hitworld = v[0];
 					pIn.props = float4( DataVel.w, 0, 0, 1 );
-					pIn.color = color;
+					pIn.colorDiffuse = colorDiffuse;
+					pIn.colorSpecular = colorSpecular;
+					pIn.colorAmbient = colorAmbient;
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[1]);
@@ -237,9 +267,9 @@ Shader "mass_system/billboardout"
 					float specAngle = max(dot(R, V), 0.0);
 					specular = pow(specAngle, shininessVal);
 				}
-				albcolor = float4( float3(.1,.1,.1) +
-					   Kd * lambertian * input.color +
-					   Ks * specular * float3(1.,1.,1.), 1.0);
+				albcolor = float4( input.colorAmbient.xyz +
+					   Kd * lambertian * input.colorDiffuse +
+					   Ks * specular * input.colorSpecular, 1.0);
 			   
 
                 UNITY_APPLY_FOG(i.fogCoord, col);
@@ -247,7 +277,7 @@ Shader "mass_system/billboardout"
 				outDepth = clipPos.z / clipPos.w;
 				
 				
-				return input.color * albcolor;
+				return albcolor;
 			}
 
 			ENDCG
