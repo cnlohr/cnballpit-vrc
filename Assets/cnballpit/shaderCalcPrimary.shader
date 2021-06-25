@@ -163,7 +163,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 				}
 
-				const float2 WorldSize = float2( 10, 10 );
+				const float2 WorldSize = float2( 12, 12 );
 				const float2 HighXZ = float2( 5, 5 );
 				const float2 LowXZ = float2( -5, -5 );
 				
@@ -171,6 +171,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				if( 1 )
 				{
 					float protrudelen;
+					
+#if 0
+//Box
 					protrudelen = Position.x - HighXZ.x + Position.w;
 					if( protrudelen > 0 )
 					{
@@ -185,11 +188,11 @@ Shader "cnballpit/shaderCalcPrimary"
 						Position.xyz -= float3( -1, 0, 0 ) * protrudelen * edgecfm;
 					}
 
-					protrudelen = -Position.y + Position.w;
+					protrudelen = LowXZ.y-Position.z + Position.w;
 					if( protrudelen > 0 )
 					{
-						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
-						Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
+						Velocity.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfmv;
+						Position.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfm;
 					}
 					protrudelen = Position.z - HighXZ.y + Position.w;
 					if( protrudelen > 0 )
@@ -198,13 +201,24 @@ Shader "cnballpit/shaderCalcPrimary"
 						Position.xyz -= float3( 0, 0, 1 ) * protrudelen * edgecfm;
 					}
 
-					protrudelen = LowXZ.y-Position.z + Position.w;
+#else
+
+					protrudelen = -Position.y + Position.w;
 					if( protrudelen > 0 )
 					{
-						Velocity.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfmv;
-						Position.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfm;
+						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
+						Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
 					}
-					
+
+					protrudelen = length( Position.xz ) + Position.w - 5.95;
+					if( protrudelen > 0 )
+					{
+						float3 norm = float3( normalize( Position.xz ).x, 0, normalize( Position.xz ).y );
+						Velocity.xyz -= norm * protrudelen * edgecfmv;
+						Position.xyz -= norm * protrudelen * edgecfm;
+					}
+#endif
+
 					//Island
 					float3 diff = Position.xyz - float3( 0, -1.25, 0 );
 					protrudelen = -length( diff ) + 2 + Position.w;
@@ -219,7 +233,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Use depth cameras.
 				if(1) 
 				{
-					//Tested at 1.8/100 on 6/22/2021 AM early.
+					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
 					float heightcfm = 1.8;
 					float heightcfmv = 200.;
 					float4 StorePos = Position;
@@ -239,11 +253,14 @@ Shader "cnballpit/shaderCalcPrimary"
 
 							
 						float topY = (_DepthMapAbove[coord])*20;
-						int2 bottomcoord = int2( coord.x, coord.y );
-						float bottomY = ((_DepthMapAbove[bottomcoord])*20);
+						int2 bottomcoord = int2( coord.x, _DepthMapAbove_TexelSize.w -coord.y );
+						float bottomY = 19.5-((_DepthMapBelow[bottomcoord])*20);
 
 						float2 xzWorldPos = ((coord * _DepthMapAbove_TexelSize.xy) - 0.5 ) * WorldSize;
-						float3 CollisionPosition = float3( xzWorldPos.x, topY, xzWorldPos.y );
+						
+						//Figure out which side we're coming from.
+						float CenterY = (bottomY + topY) / 2;
+						float3 CollisionPosition = float3( xzWorldPos.x, (StorePos.y > CenterY )?topY:bottomY, xzWorldPos.y );
 						
 						//Tricky: If we are above the bottom part and below the top, we are "inside" so zero the Y.
 						if( StorePos.y < topY && StorePos.y > bottomY )
@@ -268,7 +285,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Fountain
 				if( 1 )
 				{
-					if( Position.x < -4.5 && Position.z < -4.5 && Position.y < 3 )
+					if( Position.x < -5.4 && Position.z < .5 && Position.z > 0 && Position.y < 3 )
 					{
 						Velocity.xyz += float3( -.01, .13, 0 );
 					}

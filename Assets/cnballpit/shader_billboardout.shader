@@ -76,7 +76,7 @@ Shader "mass_system/billboardout"
 				{
 					//based on https://github.com/MarekKowalski/LiveScan3D-Hololens/blob/master/HololensReceiver/Assets/GS%20Billboard.shader
 
-					// float3 rvpos = p[0].pos;	// World pos of center of object.
+					float3 worldoffset = p[0].pos;	// World pos of center of system.
 					//int3  oposid = p[0].opos * float3( -1, 1, 1 ) + float3( 0., 0., 0. );
 					
 					//oposid += transadd * 16;
@@ -86,7 +86,9 @@ Shader "mass_system/billboardout"
 					int ballid = id * 8 + transadd;
 					
 					float4 DataPos = GetPosition(ballid);
+					float3 PositionRelativeToCenterOfBallpit = DataPos;
 					float4 DataVel = GetVelocity(ballid);
+					DataPos.xyz += worldoffset ;
 					
 					float3 rvpos = DataPos;
 
@@ -121,7 +123,7 @@ Shader "mass_system/billboardout"
 					
 					if( _Mode == 1 )
 					{
-						colorDiffuse = abs(float4( 1.-abs(glsl_mod(DataPos.xyz,2)), 1 )) * .8;
+						colorDiffuse = abs(float4( 1.-abs(glsl_mod(PositionRelativeToCenterOfBallpit.xyz,2)), 1 )) * .8;
 					}
 					else if( _Mode == 2 )
 					{
@@ -129,7 +131,7 @@ Shader "mass_system/billboardout"
 					}
 					else if( _Mode == 3 )
 					{
-						float dfc = length( DataPos.xz ) / 15;
+						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
 						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .1 );
 						colorDiffuse.xyz = SmoothHue;
 						colorDiffuse *= intensity; 

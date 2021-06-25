@@ -30,7 +30,7 @@ float4 GetVelocity( uint ballid )
 
 //@ .9 -> Tested: 9 is good, 8 oooccasssionallyyy tweaks.  10 is cruising.
 //@ .8 -> Tested: 10 is almost perfect ... switch to 11.
-static const float3 HashCellRange = float3( 11, 11, 11 );
+static const float3 HashCellRange = float3( 10,10,10 );
 
 uint2 Hash3ForAdjacency( float3 rlcoord )
 {
