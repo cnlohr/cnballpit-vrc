@@ -6,9 +6,10 @@ using VRC.Udon;
 
 public class cnballpitCalc : UdonSharpBehaviour
 {
-	public Camera CamTop;
-	public Camera CamBottom;
-
+	//public Camera CamTop;
+	//public Camera CamBottom;
+	public Camera CamCompositeDepth;
+	
 	public Camera CamCalcA;
 	public Camera CamCalcB;
 	public Camera CamAdj0;
@@ -28,8 +29,10 @@ public class cnballpitCalc : UdonSharpBehaviour
 	
     void Start()
     {
-		CamTop.enabled = false;
-		CamBottom.enabled = false;
+		Debug.Log( "Setting up cnballpit cameras\n" );
+		//CamTop.enabled = false;
+		//CamBottom.enabled = false;
+		CamCompositeDepth.enabled = false;
 		CamCalcA.enabled = false;
 		CamCalcB.enabled = false;
 		CamAdj0.enabled = false;
@@ -45,15 +48,16 @@ public class cnballpitCalc : UdonSharpBehaviour
 		CamCalcA.SetTargetBuffers(renderBuffersA, rtPositionA.depthBuffer);
 		RenderBuffer[] renderBuffersB = new RenderBuffer[] { rtPositionB.colorBuffer, rtVelocityB.colorBuffer };
 		CamCalcB.SetTargetBuffers(renderBuffersB, rtPositionB.depthBuffer);
-
+		Debug.Log( "Setting up cnballpit cameras complete.\n" );
     }
 	
-	void OnPreCull()
+	void Update()
 	{
 		if( CamAdj0 )
 		{
-			CamTop.Render();
-			CamBottom.Render();
+			//CamTop.Render();
+			//CamBottom.Render();
+			CamCompositeDepth.Render();
 
 			CamAdj0.Render();
 			CamAdj1.Render();

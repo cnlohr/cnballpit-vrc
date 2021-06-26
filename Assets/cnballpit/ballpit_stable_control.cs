@@ -21,7 +21,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 			gravityF = 9.8f;
 			friction = .008f;
 		}
-
+		Debug.Log( "ballpit stable control " + gravityF + " / " + friction );
 	}
 	void Update()
 	{

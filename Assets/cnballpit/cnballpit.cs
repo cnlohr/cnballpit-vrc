@@ -13,6 +13,7 @@ public class cnballpit : UdonSharpBehaviour
 
     void Start()
     {
+		Debug.Log( "cnballpit - initialization script - should be unused." );
 		selCamera = GetComponent<Camera>();
 		//Debug.Log( selCamera.name + " ===>>> " + rtPosition.name + " / " + rtVelocity );
 		renderBuffers = new RenderBuffer[] { rtPosition.colorBuffer, rtVelocity.colorBuffer };

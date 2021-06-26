@@ -59,6 +59,10 @@ Material:
         m_Texture: {fileID: 8400000, guid: ca45e4deaf1d9bb449c496b9f6bfd356, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DepthMapComposite:
+        m_Texture: {fileID: 8400000, guid: 71a39c9f2aad4cc4a94f45b86ba13023, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -103,7 +107,7 @@ Material:
     - _BallRadius: 0.08
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _DebugFloat: -4.16
+    - _DebugFloat: -5.62
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Friction: 0.008

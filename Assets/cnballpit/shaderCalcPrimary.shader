@@ -12,8 +12,7 @@ Shader "cnballpit/shaderCalcPrimary"
 		_Adjacency1 ("Adjacencies1", 2D) = "white" {}
 		_Adjacency2 ("Adjacencies2", 2D) = "white" {}
 		_Adjacency3 ("Adjacencies3", 2D) = "white" {}
-        _DepthMapAbove ("Above Depth", 2D) = "white" {}
-        _DepthMapBelow ("Below Depth", 2D) = "white" {}
+        _DepthMapComposite ("Composite Depth", 2D) = "white" {}
 		_Friction( "Friction", float ) = .008
 		_DebugFloat("Debug", float) = 0
 		_ResetBalls("Reset", float) = 0
@@ -53,10 +52,8 @@ Shader "cnballpit/shaderCalcPrimary"
 
 			#include "cnballpit.cginc"
 			float _BallRadius, _DebugFloat, _ResetBalls, _GravityValue, _Friction;
-			texture2D<float> _DepthMapAbove;
-			float4 _DepthMapAbove_TexelSize;
-			texture2D<float> _DepthMapBelow;
-			float4 _DepthMapBelow_TexelSize;
+			texture2D<float2> _DepthMapComposite;
+			float4 _DepthMapComposite_TexelSize;
 
 			v2f vert (appdata v)
 			{
@@ -211,12 +208,12 @@ Shader "cnballpit/shaderCalcPrimary"
 				{
 					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
 					float heightcfm = 1.8;
-					float heightcfmv = 200. * 4;
+					float heightcfmv = 200. * 2;
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
-					int2 DepthMapCoord = ( (Position.xz) / WorldSize + 0.5 ) * _DepthMapAbove_TexelSize.zw;
-					float2 DepthMapDeltaMeters = WorldSize * _DepthMapAbove_TexelSize.xy;
+					int2 DepthMapCoord = ( (Position.xz) / WorldSize + 0.5 ) * _DepthMapComposite_TexelSize.zw;
+					float2 DepthMapDeltaMeters = WorldSize * _DepthMapComposite_TexelSize.xy;
 					int2 neighborhood = ceil( Position.w / DepthMapDeltaMeters );
 					int2 ln;
 					for( ln.x = -neighborhood.x; ln.x < neighborhood.x; ln.x++ )
@@ -226,24 +223,24 @@ Shader "cnballpit/shaderCalcPrimary"
 
 						// Note: Out-of-bounds checking seems unncessary. 
 							
-						float topY = _DepthMapAbove[coord];
+						float2 Y = _DepthMapComposite[coord];
 						
 						// No top pixels - early out!
-						if( topY <= 0 ) continue;
+						if( Y.x <= 0 ) continue;
 						
-						topY *= 20;
+						Y *= 20;
 
-						int2 bottomcoord = int2( coord.x, _DepthMapAbove_TexelSize.w -coord.y );
-						float bottomY = 19.5-((_DepthMapBelow[bottomcoord])*20);
+						//int2 bottomcoord = int2( coord.x, _DepthMapComposite_TexelSize.w -coord.y );
+						Y.y = 19.5-((Y.y));
 
-						float2 xzWorldPos = ((coord * _DepthMapAbove_TexelSize.xy) - 0.5 ) * WorldSize;
+						float2 xzWorldPos = ((coord * _DepthMapComposite_TexelSize.xy) - 0.5 ) * WorldSize;
 						
 						//Figure out which side we're coming from.
-						float CenterY = (bottomY + topY) / 2;
-						float3 CollisionPosition = float3( xzWorldPos.x, (StorePos.y > CenterY )?topY:bottomY, xzWorldPos.y );
+						float CenterY = (Y.y + Y.x) / 2;
+						float3 CollisionPosition = float3( xzWorldPos.x, (StorePos.y > CenterY )?Y.x:Y.y, xzWorldPos.y );
 						
 						//Tricky: If we are above the bottom part and below the top, we are "inside" so zero the Y.
-						if( StorePos.y < topY && StorePos.y > bottomY )
+						if( StorePos.y < Y.x && StorePos.y > Y.y )
 						{
 							CollisionPosition.y = StorePos.y;
 						}

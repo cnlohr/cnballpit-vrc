@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: cnballpitCalc
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 054f1005cc36b644a836d2f199e1a728,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 25c56ea0b748abd48a3356525e2f5309,
     type: 2}
   udonAssembly: 
   assemblyError: 
@@ -43,13 +43,13 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 16
+      Data: 15
     - Name: 
       Entry: 7
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamTop
+      Data: CamCompositeDepth
     - Name: $v
       Entry: 7
       Data: 2|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -76,10 +76,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamTop
+      Data: CamCompositeDepth
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamTop
+      Data: CamCompositeDepth
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -112,7 +112,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamBottom
+      Data: CamCalcA
     - Name: $v
       Entry: 7
       Data: 6|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -133,10 +133,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamBottom
+      Data: CamCalcA
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamBottom
+      Data: CamCalcA
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -169,7 +169,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamCalcA
+      Data: CamCalcB
     - Name: $v
       Entry: 7
       Data: 9|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -190,10 +190,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamCalcA
+      Data: CamCalcB
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamCalcA
+      Data: CamCalcB
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -226,7 +226,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamCalcB
+      Data: CamAdj0
     - Name: $v
       Entry: 7
       Data: 12|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -247,10 +247,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamCalcB
+      Data: CamAdj0
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamCalcB
+      Data: CamAdj0
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -283,7 +283,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj0
+      Data: CamAdj1
     - Name: $v
       Entry: 7
       Data: 15|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -304,10 +304,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj0
+      Data: CamAdj1
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj0
+      Data: CamAdj1
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -340,7 +340,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj1
+      Data: CamAdj2
     - Name: $v
       Entry: 7
       Data: 18|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -361,10 +361,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj1
+      Data: CamAdj2
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj1
+      Data: CamAdj2
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -397,7 +397,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj2
+      Data: CamAdj3
     - Name: $v
       Entry: 7
       Data: 21|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -418,10 +418,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj2
+      Data: CamAdj3
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj2
+      Data: CamAdj3
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -454,7 +454,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj3
+      Data: CamAdj4
     - Name: $v
       Entry: 7
       Data: 24|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -475,10 +475,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj3
+      Data: CamAdj4
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj3
+      Data: CamAdj4
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -511,7 +511,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj4
+      Data: CamAdj5
     - Name: $v
       Entry: 7
       Data: 27|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -532,10 +532,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj4
+      Data: CamAdj5
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj4
+      Data: CamAdj5
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -568,7 +568,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj5
+      Data: CamAdj6
     - Name: $v
       Entry: 7
       Data: 30|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -589,10 +589,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj5
+      Data: CamAdj6
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj5
+      Data: CamAdj6
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -625,7 +625,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj6
+      Data: CamAdj7
     - Name: $v
       Entry: 7
       Data: 33|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -646,10 +646,10 @@ MonoBehaviour:
       Data: UnityEngineCamera
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj6
+      Data: CamAdj7
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj6
+      Data: CamAdj7
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -682,7 +682,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CamAdj7
+      Data: rtPositionA
     - Name: $v
       Entry: 7
       Data: 36|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -690,8 +690,14 @@ MonoBehaviour:
       Entry: 7
       Data: 37|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
-      Entry: 9
-      Data: 4
+      Entry: 7
+      Data: 38|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: UnityEngine.RenderTexture, UnityEngine.CoreModule
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -700,13 +706,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineCamera
+      Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: CamAdj7
+      Data: rtPositionA
     - Name: symbolUniqueName
       Entry: 1
-      Data: CamAdj7
+      Data: rtPositionA
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -715,7 +721,7 @@ MonoBehaviour:
       Data: 
     - Name: fieldAttributes
       Entry: 7
-      Data: 38|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+      Data: 39|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -739,22 +745,16 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtPositionA
+      Data: rtVelocityA
     - Name: $v
       Entry: 7
-      Data: 39|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+      Data: 40|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: fieldSymbol
       Entry: 7
-      Data: 40|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+      Data: 41|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
-      Entry: 7
-      Data: 41|System.RuntimeType, mscorlib
-    - Name: 
-      Entry: 1
-      Data: UnityEngine.RenderTexture, UnityEngine.CoreModule
-    - Name: 
-      Entry: 8
-      Data: 
+      Entry: 9
+      Data: 38
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -766,10 +766,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtPositionA
+      Data: rtVelocityA
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtPositionA
+      Data: rtVelocityA
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -802,7 +802,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtVelocityA
+      Data: rtPositionB
     - Name: $v
       Entry: 7
       Data: 43|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -811,7 +811,7 @@ MonoBehaviour:
       Data: 44|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 9
-      Data: 41
+      Data: 38
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -823,10 +823,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtVelocityA
+      Data: rtPositionB
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtVelocityA
+      Data: rtPositionB
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -859,7 +859,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtPositionB
+      Data: rtVelocityB
     - Name: $v
       Entry: 7
       Data: 46|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -868,7 +868,7 @@ MonoBehaviour:
       Data: 47|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 9
-      Data: 41
+      Data: 38
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -880,10 +880,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtPositionB
+      Data: rtVelocityB
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtPositionB
+      Data: rtVelocityB
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -893,63 +893,6 @@ MonoBehaviour:
     - Name: fieldAttributes
       Entry: 7
       Data: 48|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: userBehaviourSource
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 1
-      Data: rtVelocityB
-    - Name: $v
-      Entry: 7
-      Data: 49|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
-    - Name: fieldSymbol
-      Entry: 7
-      Data: 50|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
-    - Name: internalType
-      Entry: 9
-      Data: 41
-    - Name: declarationType
-      Entry: 3
-      Data: 1
-    - Name: syncMode
-      Entry: 3
-      Data: 0
-    - Name: symbolResolvedTypeName
-      Entry: 1
-      Data: UnityEngineRenderTexture
-    - Name: symbolOriginalName
-      Entry: 1
-      Data: rtVelocityB
-    - Name: symbolUniqueName
-      Entry: 1
-      Data: rtVelocityB
-    - Name: symbolDefaultValue
-      Entry: 6
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: fieldAttributes
-      Entry: 7
-      Data: 51|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
