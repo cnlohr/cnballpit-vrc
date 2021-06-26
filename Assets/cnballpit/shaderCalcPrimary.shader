@@ -208,11 +208,11 @@ Shader "cnballpit/shaderCalcPrimary"
 				{
 					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
 					float heightcfm = 1.8;
-					float heightcfmv = 200. * 2;
+					float heightcfmv = 200. * 1; //Should have been *4 because we /4'd our texture?
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
-					int2 DepthMapCoord = ( (Position.xz) / WorldSize + 0.5 ) * _DepthMapComposite_TexelSize.zw;
+					int2 DepthMapCoord = ( (Position.xz) / WorldSize + 0.5 ) * _DepthMapComposite_TexelSize.zw ;
 					float2 DepthMapDeltaMeters = WorldSize * _DepthMapComposite_TexelSize.xy;
 					int2 neighborhood = ceil( Position.w / DepthMapDeltaMeters );
 					int2 ln;
@@ -230,10 +230,10 @@ Shader "cnballpit/shaderCalcPrimary"
 						
 						Y *= 20;
 
-						//int2 bottomcoord = int2( coord.x, _DepthMapComposite_TexelSize.w -coord.y );
 						Y.y = 19.5-((Y.y));
 
-						float2 xzWorldPos = ((coord * _DepthMapComposite_TexelSize.xy) - 0.5 ) * WorldSize;
+						//coord + 0.5 because we went from 2048 to 1024 here.
+						float2 xzWorldPos = (((coord + 0.5)* _DepthMapComposite_TexelSize.xy) - 0.5 ) * WorldSize;
 						
 						//Figure out which side we're coming from.
 						float CenterY = (Y.y + Y.x) / 2;

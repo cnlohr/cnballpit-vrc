@@ -51,7 +51,7 @@ public class cnballpitCalc : UdonSharpBehaviour
 		Debug.Log( "Setting up cnballpit cameras complete.\n" );
     }
 	
-	void Update()
+	void LateUpdate()
 	{
 		if( CamAdj0 )
 		{
