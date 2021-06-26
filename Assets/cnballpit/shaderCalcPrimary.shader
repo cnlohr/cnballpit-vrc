@@ -85,20 +85,26 @@ Shader "cnballpit/shaderCalcPrimary"
 				
 				Position.w = _BallRadius;
 				int did_find_self = 0;
-				//Collide with other balls
+				
+				//Collide with other balls - this section of code is about 490us
+				if( 1 )
 				{
 					const float cfmVelocity = 15.0;
 					const float cfmPosition = .008;
 					
 					// Step 1 find collisions.
-					const int3 neighborhood = int3( 2, 2, 2 );
+					
 					int3 ballneighbor;
 					bool foundself = false;
-					for( ballneighbor.x = -neighborhood.x; ballneighbor.x <= neighborhood.x; ballneighbor.x++ )
-					for( ballneighbor.y = -neighborhood.y; ballneighbor.y <= neighborhood.y; ballneighbor.y++ )
-					for( ballneighbor.z = -neighborhood.z; ballneighbor.z <= neighborhood.z; ballneighbor.z++ )
+					for( ballneighbor.x = -SearchExtents; ballneighbor.x <= SearchExtents; ballneighbor.x++ )
+					for( ballneighbor.y = -SearchExtents; ballneighbor.y <= SearchExtents; ballneighbor.y++ )
+					for( ballneighbor.z = -SearchExtents; ballneighbor.z <= SearchExtents; ballneighbor.z++ )
 					{
 						int j;
+						
+						//Determined experimentally - we do not need to check the cells at the far diagonals.
+						if( length( ballneighbor ) > SeachExtentsRange ) continue;
+						
 						uint2 hashed = Hash3ForAdjacency(ballneighbor/HashCellRange+Position.xyz);
 						
 						for( j = 0; j < 4; j++ )
@@ -171,38 +177,8 @@ Shader "cnballpit/shaderCalcPrimary"
 				if( 1 )
 				{
 					float protrudelen;
-					
-#if 0
-//Box
-					protrudelen = Position.x - HighXZ.x + Position.w;
-					if( protrudelen > 0 )
-					{
-						Velocity.xyz -= float3( 1, 0, 0 ) * protrudelen * edgecfmv;
-						Position.xyz -= float3( 1, 0, 0 ) * protrudelen * edgecfm;
-					}
 
-					protrudelen = LowXZ.x-Position.x + Position.w;
-					if( protrudelen > 0 )
-					{
-						Velocity.xyz -= float3( -1, 0, 0 ) * protrudelen * edgecfmv;
-						Position.xyz -= float3( -1, 0, 0 ) * protrudelen * edgecfm;
-					}
-
-					protrudelen = LowXZ.y-Position.z + Position.w;
-					if( protrudelen > 0 )
-					{
-						Velocity.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfmv;
-						Position.xyz -= float3( 0, 0, -1 ) * protrudelen * edgecfm;
-					}
-					protrudelen = Position.z - HighXZ.y + Position.w;
-					if( protrudelen > 0 )
-					{
-						Velocity.xyz -= float3( 0, 0, 1 ) * protrudelen * edgecfmv;
-						Position.xyz -= float3( 0, 0, 1 ) * protrudelen * edgecfm;
-					}
-
-#else
-
+					// Floot
 					protrudelen = -Position.y + Position.w;
 					if( protrudelen > 0 )
 					{
@@ -210,6 +186,7 @@ Shader "cnballpit/shaderCalcPrimary"
 						Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
 					}
 
+					// Diameter of pit, cylindrically.
 					protrudelen = length( Position.xz ) + Position.w - 5.95;
 					if( protrudelen > 0 )
 					{
@@ -217,7 +194,6 @@ Shader "cnballpit/shaderCalcPrimary"
 						Velocity.xyz -= norm * protrudelen * edgecfmv;
 						Position.xyz -= norm * protrudelen * edgecfm;
 					}
-#endif
 
 					//Island
 					float3 diff = Position.xyz - float3( 0, -1.25, 0 );
@@ -231,11 +207,11 @@ Shader "cnballpit/shaderCalcPrimary"
 				}
 
 				//Use depth cameras.
-				if(1) 
+				if( 1 ) 
 				{
 					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
 					float heightcfm = 1.8;
-					float heightcfmv = 200.;
+					float heightcfmv = 200. * 4;
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
@@ -248,11 +224,15 @@ Shader "cnballpit/shaderCalcPrimary"
 					{
 						int2 coord = ln + DepthMapCoord;
 
-						if( coord.x < 0 || coord.y < 0 || coord.x >= _DepthMapAbove_TexelSize.z || coord.y >= _DepthMapAbove_TexelSize.w )
-							continue;
-
+						// Note: Out-of-bounds checking seems unncessary. 
 							
-						float topY = (_DepthMapAbove[coord])*20;
+						float topY = _DepthMapAbove[coord];
+						
+						// No top pixels - early out!
+						if( topY <= 0 ) continue;
+						
+						topY *= 20;
+
 						int2 bottomcoord = int2( coord.x, _DepthMapAbove_TexelSize.w -coord.y );
 						float bottomY = 19.5-((_DepthMapBelow[bottomcoord])*20);
 

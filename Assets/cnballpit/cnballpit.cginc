@@ -29,8 +29,11 @@ float4 GetVelocity( uint ballid )
 //The size of each hashed bucket.
 
 //@ .9 -> Tested: 9 is good, 8 oooccasssionallyyy tweaks.  10 is cruising.
-//@ .8 -> Tested: 10 is almost perfect ... switch to 11.
-static const float3 HashCellRange = float3( 10,10,10 );
+//@ .8 -> Tested: 10 is almost perfect ... switch to 11 (if on 10M edge cube)
+//@ .8 -> Tested: 9 is almost perfect on cylinder... But needs to be 10.
+static const float3 HashCellRange = float3( 10, 10, 10);
+static const int SearchExtents = 2;
+static const float SeachExtentsRange = 2.45; //2.4 NOT OK; 2.45 OK. (range of 6) ... Setting to range of sqrt(7) to be safe.
 
 uint2 Hash3ForAdjacency( float3 rlcoord )
 {

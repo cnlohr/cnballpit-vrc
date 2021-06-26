@@ -6,6 +6,9 @@ using VRC.Udon;
 
 public class cnballpitCalc : UdonSharpBehaviour
 {
+	public Camera CamTop;
+	public Camera CamBottom;
+
 	public Camera CamCalcA;
 	public Camera CamCalcB;
 	public Camera CamAdj0;
@@ -25,6 +28,8 @@ public class cnballpitCalc : UdonSharpBehaviour
 	
     void Start()
     {
+		CamTop.enabled = false;
+		CamBottom.enabled = false;
 		CamCalcA.enabled = false;
 		CamCalcB.enabled = false;
 		CamAdj0.enabled = false;
@@ -43,18 +48,24 @@ public class cnballpitCalc : UdonSharpBehaviour
 
     }
 	
-	void LateUpdate()
+	void OnPreCull()
 	{
-		CamAdj0.Render();
-		CamAdj1.Render();
-		CamAdj2.Render();
-		CamAdj3.Render();
-		CamCalcB.Render();
-	
-		CamAdj4.Render();
-		CamAdj5.Render();
-		CamAdj6.Render();
-		CamAdj7.Render();
-		CamCalcA.Render();
+		if( CamAdj0 )
+		{
+			CamTop.Render();
+			CamBottom.Render();
+
+			CamAdj0.Render();
+			CamAdj1.Render();
+			CamAdj2.Render();
+			CamAdj3.Render();
+			CamCalcB.Render();
+		
+			CamAdj4.Render();
+			CamAdj5.Render();
+			CamAdj6.Render();
+			CamAdj7.Render();
+			CamCalcA.Render();
+		}
 	}
 }
