@@ -83,7 +83,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				Position.w = _BallRadius;
 				int did_find_self = 0;
 				
-				//Collide with other balls - this section of code is about 490us
+				//Collide with other balls - this section of code is about 350us per pass.
 				if( 1 )
 				{
 					const float cfmVelocity = 15.0;
@@ -203,7 +203,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 				}
 
-				//Use depth cameras.
+				//Use depth cameras (Totals around 150us per camera on a 2070 laptop)
 				if( 1 ) 
 				{
 					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
@@ -214,9 +214,12 @@ Shader "cnballpit/shaderCalcPrimary"
 					//Collision with depth map.
 					int2 DepthMapCoord = ( (Position.xz) / WorldSize + 0.5 ) * _DepthMapComposite_TexelSize.zw ;
 					float2 DepthMapDeltaMeters = WorldSize * _DepthMapComposite_TexelSize.xy;
-					int2 neighborhood = ceil( Position.w / DepthMapDeltaMeters );
+
+
+					int2 neighborhood = 7;//ceil( Position.w / DepthMapDeltaMeters );
 					int2 ln;
 					for( ln.x = -neighborhood.x; ln.x < neighborhood.x; ln.x++ )
+					[unroll]
 					for( ln.y = -neighborhood.y; ln.y < neighborhood.y; ln.y++ )
 					{
 						int2 coord = ln + DepthMapCoord;
