@@ -18,6 +18,9 @@ public class GlobalProfileHandler : UdonSharpBehaviour
 
     int currentFrame = -1;
     float elapsedTime = 0f;
+	int frame400count  = 0;
+	float elapsed400total = 0f;
+	float lastframe400 = 0f;
 
     private void FixedUpdate()
     {
@@ -42,7 +45,15 @@ public class GlobalProfileHandler : UdonSharpBehaviour
     private void LateUpdate()
     {
         elapsedTime += (float)kickoff.stopwatch.Elapsed.TotalSeconds * 1000f;
-
-        timeText.text = $"Update time:\n{elapsedTime:F4}ms";
+		elapsed400total += Time.deltaTime;
+		frame400count ++;
+		if( frame400count >= 400 )
+		{
+			lastframe400 = elapsed400total / .4f;
+			frame400count = 0;
+			elapsed400total = 0;
+		}
+		
+        timeText.text = $"Frame: {elapsedTime:F3}ms\nTotal:{lastframe400:F3}";
     }
 }

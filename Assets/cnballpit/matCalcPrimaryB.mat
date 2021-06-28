@@ -109,6 +109,7 @@ Material:
     - _Cutoff: 0.5
     - _DebugFloat: -5.62
     - _DetailNormalMapScale: 1
+    - _DontPerformStep: 0
     - _DstBlend: 0
     - _Friction: 0.008
     - _GlossMapScale: 1
@@ -123,6 +124,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TargetFPS: 155
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

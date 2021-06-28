@@ -138,9 +138,20 @@ Shader "mass_system/billboardout"
 					}
 					else if( _Mode == 4 )
 					{
-						float intensity = saturate( AudioLinkData( ALPASS_FILTEREDAUDIOLINK + uint2( 4, ( ballid / 128 ) % 4 ) ) * 6 + .1);
-						float4 rnote =  AudioLinkData( ALPASS_CCINTERNAL + uint2( ballid % 4, 0 ) );
-						colorDiffuse.xyz = AudioLinkCCtoRGB( rnote.x, intensity, 0 );
+						//float intensity = saturate( AudioLinkData( ALPASS_FILTEREDAUDIOLINK + uint2( 4, ( ballid / 128 ) % 4 ) ) * 6 + .1);
+
+						int selccnote = 0;
+						int balldiv = ballid % 7;
+						if( balldiv < 3 ) selccnote = 0;
+						else if( balldiv < 5 ) selccnote = 1;
+						else if( balldiv < 6 ) selccnote = 2;
+						else selccnote = 3;
+						float4 rnote =  AudioLinkData( ALPASS_CCINTERNAL + uint2( selccnote % 4, 0 ) );
+						float rgbcol;
+						if( rnote.x >= 0 )
+							colorDiffuse.xyz = AudioLinkCCtoRGB( rnote.x, rnote.z * 0.1 + 0.1, 0 );
+						else
+							colorDiffuse.xyz = SmoothHue * 0.1;
 
 					}
 					float4 colorAmbient   = colorDiffuse * .05;

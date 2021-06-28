@@ -1,5 +1,12 @@
 ﻿//XXX TODO: Remember to credit d4kpl4y3r with the bucketing tech.
 //XXX TODO: ACTUALLY_DO_COMPLEX_HASH_FUNCTION and try it.
+//
+// Camera Comparison
+//   All on UI Layer: 7.1ms ish
+//   Cameras on Default, looking at other layer: 7.6ms? ish
+//   All cameras on and looking at PlayerLocal: 7.1ms-7.6ms
+//   All cameras on and looking at PickupNoLocal: 6.4-6.9ms???
+
 
 Shader "cnballpit/shaderCalcPrimary"
 {
@@ -15,8 +22,10 @@ Shader "cnballpit/shaderCalcPrimary"
         _DepthMapComposite ("Composite Depth", 2D) = "white" {}
 		_Friction( "Friction", float ) = .008
 		_DebugFloat("Debug", float) = 0
-		_ResetBalls("Reset", float) = 0
+		[ToggleUI] _ResetBalls("Reset", float) = 0
 		_GravityValue( "Gravity", float ) = 9.8
+		_TargetFPS ("Target FPS", float ) = 120
+		[ToggleUI] _DontPerformStep( "Don't Perform Step", float ) = 0
 	}
 	SubShader
 	{
@@ -51,9 +60,11 @@ Shader "cnballpit/shaderCalcPrimary"
 			};
 
 			#include "cnballpit.cginc"
-			float _BallRadius, _DebugFloat, _ResetBalls, _GravityValue, _Friction;
+			float _BallRadius, _DebugFloat, _ResetBalls, _GravityValue, _Friction, _DontPerformStep;
 			texture2D<float2> _DepthMapComposite;
 			float4 _DepthMapComposite_TexelSize;
+			float _TargetFPS;
+
 
 			v2f vert (appdata v)
 			{
@@ -69,7 +80,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				int2 screenCoord = i.vertex.xy;
 				uint ballid = screenCoord.y * 1024 + screenCoord.x;
 
-				float dt = 0.006;//unity_DeltaTime.x;
+				float dt = 1./_TargetFPS;//unity_DeltaTime.x;
 				
 				float4 Position = GetPosition( ballid );
 				float4 Velocity = GetVelocity( ballid );
@@ -77,6 +88,14 @@ Shader "cnballpit/shaderCalcPrimary"
 				{
 					ret.Pos = float4( hash33( ballid.xxx ) * 10. + float3( -5, 0, -5 ), _BallRadius );
 					ret.Vel = float4( 0., 0., 0., ballid );
+					return ret;
+				}
+				
+				//Potentially skip step.
+				if( _DontPerformStep > 0.5 )
+				{
+					ret.Pos = Position;
+					ret.Vel = Velocity;
 					return ret;
 				}
 				
