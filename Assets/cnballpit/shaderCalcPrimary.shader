@@ -80,7 +80,10 @@ Shader "cnballpit/shaderCalcPrimary"
 				int2 screenCoord = i.vertex.xy;
 				uint ballid = screenCoord.y * 1024 + screenCoord.x;
 
-				float dt = 1./_TargetFPS;//unity_DeltaTime.x;
+				float dt;
+				
+				dt = 1./_TargetFPS;
+				//dt = clamp( unity_DeltaTime.x/2., 0, .006 );
 				
 				float4 Position = GetPosition( ballid );
 				float4 Velocity = GetVelocity( ballid );
