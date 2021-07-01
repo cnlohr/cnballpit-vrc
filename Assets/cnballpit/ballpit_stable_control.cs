@@ -29,6 +29,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		ballpitB.SetFloat( "_GravityValue", gravityF );
 		ballpitA.SetFloat( "_Friction", friction );
 		ballpitB.SetFloat( "_Friction", friction );
+		Physics.gravity = new Vector3( 0, gravityF*.85f-1.5f, 0 );
 	}
 }
 

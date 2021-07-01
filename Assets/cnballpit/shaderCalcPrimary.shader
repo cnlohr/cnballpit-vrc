@@ -188,7 +188,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 				}
 
-				const float2 WorldSize = float2( 12, 12 );
+				const float2 WorldSize = float2( 16, 16 );
 				const float2 HighXZ = float2( 5, 5 );
 				const float2 LowXZ = float2( -5, -5 );
 				
@@ -204,14 +204,28 @@ Shader "cnballpit/shaderCalcPrimary"
 						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
 						Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
 					}
+					
+					//Outer floor
+					if( length( Position.xz ) + Position.w > 8. )
+					{
+						protrudelen = -Position.y + Position.w + .7;
+						if( protrudelen > 0 )
+						{
+							Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
+							Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
+						}						
+					}
+
+
+					float adv = 0.001;
 
 					// Diameter of pit, cylindrically.
 					protrudelen = length( Position.xz ) + Position.w - 5.95;
 					if( protrudelen > 0 )
 					{
 						float3 norm = float3( normalize( Position.xz ).x, 0, normalize( Position.xz ).y );
-						Velocity.xyz -= norm * protrudelen * edgecfmv;
-						Position.xyz -= norm * protrudelen * edgecfm;
+						Velocity.xyz -= norm * protrudelen * edgecfmv * adv;
+						Position.xyz -= norm * protrudelen * edgecfm * adv;
 					}
 
 					//Island
@@ -255,6 +269,7 @@ Shader "cnballpit/shaderCalcPrimary"
 						
 						Y *= 20;
 
+						if( Y.y == 0 ) Y.y = 19.5;
 						Y.y = 19.5-((Y.y));
 
 						//coord + 0.5 because we went from 2048 to 1024 here.
