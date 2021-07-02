@@ -28,6 +28,8 @@ ModelImporter:
     100044: BallpitArea
     100046: Ocean
     100048: Beach
+    100050: TikiHutRoof
+    100052: TikiHutWalls
     400000: //RootNode
     400002: Cube
     400004: Cube.001
@@ -53,6 +55,8 @@ ModelImporter:
     400044: BallpitArea
     400046: Ocean
     400048: Beach
+    400050: TikiHutRoof
+    400052: TikiHutWalls
     2100000: Material
     2100002: Material.001
     2100004: mat_Main
@@ -81,6 +85,8 @@ ModelImporter:
     2300042: BallpitArea
     2300044: Ocean
     2300046: Beach
+    2300048: TikiHutRoof
+    2300050: TikiHutWalls
     3300000: Cube
     3300002: Cube.001
     3300004: WorldMesh
@@ -105,6 +111,8 @@ ModelImporter:
     3300042: BallpitArea
     3300044: Ocean
     3300046: Beach
+    3300048: TikiHutRoof
+    3300050: TikiHutWalls
     4300000: Cube
     4300002: WorldMesh
     4300004: Cube.001
@@ -129,6 +137,8 @@ ModelImporter:
     4300042: BallpitArea
     4300044: Ocean
     4300046: Beach
+    4300048: TikiHutWalls
+    4300050: TikiHutRoof
   externalObjects: {}
   materials:
     importMaterials: 1
