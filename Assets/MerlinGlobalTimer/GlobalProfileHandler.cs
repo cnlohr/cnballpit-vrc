@@ -4,6 +4,10 @@
 using UdonSharp;
 using UnityEngine;
 
+using VRC.SDK3.Components;
+using VRC.SDKBase;
+using VRC.Udon;
+
 [DefaultExecutionOrder(1000000000)]
 public class GlobalProfileHandler : UdonSharpBehaviour
 {
@@ -54,6 +58,7 @@ public class GlobalProfileHandler : UdonSharpBehaviour
 			elapsed400total = 0;
 		}
 		
-        timeText.text = $"Frame: {elapsedTime:F3}ms\nTotal:{lastframe400:F3}";
+		VRCPlayerApi owner = Networking.GetOwner(gameObject);
+        timeText.text = $"Frame: {elapsedTime:F3}ms\nTotal:{lastframe400:F3}\n{owner.displayName}";
     }
 }
