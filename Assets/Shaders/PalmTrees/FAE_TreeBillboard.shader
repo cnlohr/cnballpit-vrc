@@ -19,12 +19,13 @@ Shader "FAE/Tree Billboard"
 		CGPROGRAM
 		#include "UnityShaderVariables.cginc"
 		#pragma target 3.0
-		#pragma multi_compile_instancing
+		//#pragma multi_compile_instancing
 		#include "VS_InstancedIndirect.cginc"
-		#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup forwardadd
-		#pragma multi_compile GPU_FRUSTUM_ON __
-		#pragma exclude_renderers xbox360 psp2 n3ds wiiu 
-		#pragma surface surf Lambert keepalpha addshadow fullforwardshadows nolightmap  nodirlightmap dithercrossfade vertex:vertexDataFunc 
+		//#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup forwardadd
+		//#pragma multi_compile GPU_FRUSTUM_ON __
+		//#pragma exclude_renderers xbox360 psp2 n3ds wiiu 
+		#pragma surface surf Lambert keepalpha addshadow fullforwardshadows vertex:vertexDataFunc 
+		//nolightmap  nodirlightmap dithercrossfade 
 		struct Input
 		{
 			half2 uv_texcoord;

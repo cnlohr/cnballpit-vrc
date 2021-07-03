@@ -15,7 +15,7 @@ Shader "FAE/Tree Branch"
 		_WindAmplitudeMultiplier("WindAmplitudeMultiplier", Float) = 1
 		_GradientBrightness("GradientBrightness", Range( 0 , 2)) = 1
 		_Smoothness("Smoothness", Range( 0 , 1)) = 0
-		[Toggle]_UseSpeedTreeWind("UseSpeedTreeWind", Float) = 0
+		[UIToggle]_UseSpeedTreeWind("UseSpeedTreeWind", Float) = 0
 		[HDR]_Color("Color", Color) = (1,1,1,1)
 		[HideInInspector] _texcoord2( "", 2D ) = "white" {}
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
@@ -25,17 +25,19 @@ Shader "FAE/Tree Branch"
 	SubShader
 	{
 		Tags{ "RenderType" = "TransparentCutout"  "Queue" = "AlphaTest+0" "IsEmissive" = "true"  }
+		AlphaToMask On
 		Cull Off
 		CGPROGRAM
 		#include "UnityShaderVariables.cginc"
 		#include "UnityCG.cginc"
 		#pragma target 3.0
-		#pragma multi_compile_instancing
+		//#pragma multi_compile_instancing
 		#include "VS_InstancedIndirect.cginc"
-		#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup forwardadd
-		#pragma multi_compile GPU_FRUSTUM_ON __
-		#pragma exclude_renderers xbox360 psp2 n3ds wiiu 
-		#pragma surface surf Standard keepalpha addshadow fullforwardshadows nodirlightmap dithercrossfade vertex:vertexDataFunc 
+		//#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup forwardadd
+		//#pragma multi_compile GPU_FRUSTUM_ON __
+		//#pragma exclude_renderers xbox360 psp2 n3ds wiiu alpha
+		#pragma surface surf Standard keepalpha addshadow fullforwardshadows vertex:vertexDataFunc 
+		//nodirlightmap dithercrossfade 
 		struct Input
 		{
 			float3 worldPos;
@@ -125,10 +127,15 @@ Shader "FAE/Tree Branch"
 			float lerpResult53 = lerp( 1.0 , 0.0 , ( _AmbientOcclusion * ( 1.0 - i.vertexColor.r ) ));
 			float AmbientOcclusion218 = lerpResult53;
 			o.Occlusion = AmbientOcclusion218;
-			o.Alpha = 1;
 			float Alpha31 = tex2DNode19.a;
 			float lerpResult101 = lerp( Alpha31 , 1.0 , _WindDebug);
+			#define SMARTALPHA
+			#ifdef SMARTALPHA
+			o.Alpha = (lerpResult101 - _Cutoff)*1.5+0.5;
+			#else
+			o.Alpha = 1;
 			clip( lerpResult101 - _Cutoff );
+			#endif
 		}
 
 		ENDCG

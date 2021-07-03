@@ -1,6 +1,6 @@
 // UNITY_SHADER_NO_UPGRADE
 
-Shader "mass_system/billboardout" 
+Shader "cnballpit/billboardout" 
 {
 	Properties 
 	{
@@ -243,7 +243,10 @@ Shader "mass_system/billboardout"
 				float disc = b * b - 4.0 * a* c;
 
 				if (disc < 0.0)
-					discard;
+				{
+					outDepth = 0;
+					return 0;
+				}
 				float2 answers = float2(-b - sqrt(disc), -b + sqrt(disc)) / (2.0 * a);
 				float minr = min( answers.x, answers.y );
 	

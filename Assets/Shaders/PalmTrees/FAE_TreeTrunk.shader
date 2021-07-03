@@ -8,7 +8,7 @@ Shader "FAE/Tree Trunk"
 		_BumpMap("BumpMap", 2D) = "white" {}
 		_GradientBrightness("GradientBrightness", Range( 0 , 2)) = 1
 		_AmbientOcclusion("Ambient Occlusion", Range( 0 , 1)) = 0.5
-		[Toggle]_UseSpeedTreeWind("UseSpeedTreeWind", Float) = 0
+		[ToggleUI]_UseSpeedTreeWind("UseSpeedTreeWind", Float) = 0
 		_Smoothness("Smoothness", Range( 0 , 1)) = 0
 		[HideInInspector] _texcoord2( "", 2D ) = "white" {}
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
@@ -22,12 +22,13 @@ Shader "FAE/Tree Trunk"
 		CGPROGRAM
 		#include "UnityShaderVariables.cginc"
 		#pragma target 3.0
-		#pragma multi_compile_instancing
+		//#pragma multi_compile_instancing
 		#include "VS_InstancedIndirect.cginc"
-		#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup
-		#pragma multi_compile GPU_FRUSTUM_ON __
-		#pragma exclude_renderers xbox360 psp2 n3ds wiiu 
-		#pragma surface surf Standard keepalpha addshadow fullforwardshadows dithercrossfade vertex:vertexDataFunc 
+		//#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup
+		//#pragma multi_compile GPU_FRUSTUM_ON __
+		//#pragma exclude_renderers xbox360 psp2 n3ds wiiu 
+		#pragma surface surf Standard keepalpha addshadow fullforwardshadows  vertex:vertexDataFunc 
+		//dithercrossfade
 		struct Input
 		{
 			float2 uv_texcoord;

@@ -302,7 +302,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Fountain
 				if( 1 )
 				{
-					if( Position.x < -5.4 && Position.z < .5 && Position.z > 0 && Position.y < 3 )
+					if( Position.x < -5.4 && Position.x > -6.4 && Position.z < .5 && Position.z > 0 && Position.y < 3 )
 					{
 						Velocity.xyz += float3( -.01, .13, 0 );
 					}

@@ -1,6 +1,6 @@
 // UNITY_SHADER_NO_UPGRADE
 
-Shader "mass_system/billboardoutMSAA" 
+Shader "cnballpit/billboardoutMSAA" 
 {
 	Properties 
 	{
