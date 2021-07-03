@@ -1,0 +1,227 @@
+fileFormatVersion: 2
+guid: 6ac8809194a167c43a4071c3f1459c15
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Cube
+    100004: Cube.001
+    100006: WorldMesh
+    100008: 2x4x12_01
+    100010: 2x4x12_02
+    100012: 2x4x12_03
+    100014: 2x4x12_04
+    100016: 2x4x12_05
+    100018: 2x4x12_06
+    100020: 2x4x4_01
+    100022: 2x4x4_02
+    100024: 2x4x4_03
+    100026: 2x4x4_04
+    100028: 2x4x4_05
+    100030: 2x4x4_06
+    100032: 2x4x8_01
+    100034: 2x4x8_02
+    100036: 2x4x8_03
+    100038: 2x4x8_04
+    100040: 2x4x8_05
+    100042: 2x4x8_06
+    100044: BallpitArea
+    100046: Ocean
+    100048: Beach
+    100050: TikiHutRoof
+    100052: TikiHutWalls
+    400000: //RootNode
+    400002: Cube
+    400004: Cube.001
+    400006: WorldMesh
+    400008: 2x4x12_01
+    400010: 2x4x12_02
+    400012: 2x4x12_03
+    400014: 2x4x12_04
+    400016: 2x4x12_05
+    400018: 2x4x12_06
+    400020: 2x4x4_01
+    400022: 2x4x4_02
+    400024: 2x4x4_03
+    400026: 2x4x4_04
+    400028: 2x4x4_05
+    400030: 2x4x4_06
+    400032: 2x4x8_01
+    400034: 2x4x8_02
+    400036: 2x4x8_03
+    400038: 2x4x8_04
+    400040: 2x4x8_05
+    400042: 2x4x8_06
+    400044: BallpitArea
+    400046: Ocean
+    400048: Beach
+    400050: TikiHutRoof
+    400052: TikiHutWalls
+    2100000: Material
+    2100002: Material.001
+    2100004: mat_Main
+    2100006: No Name
+    2300000: Cube
+    2300002: Cube.001
+    2300004: WorldMesh
+    2300006: 2x4x12_01
+    2300008: 2x4x12_02
+    2300010: 2x4x12_03
+    2300012: 2x4x12_04
+    2300014: 2x4x12_05
+    2300016: 2x4x12_06
+    2300018: 2x4x4_01
+    2300020: 2x4x4_02
+    2300022: 2x4x4_03
+    2300024: 2x4x4_04
+    2300026: 2x4x4_05
+    2300028: 2x4x4_06
+    2300030: 2x4x8_01
+    2300032: 2x4x8_02
+    2300034: 2x4x8_03
+    2300036: 2x4x8_04
+    2300038: 2x4x8_05
+    2300040: 2x4x8_06
+    2300042: BallpitArea
+    2300044: Ocean
+    2300046: Beach
+    2300048: TikiHutRoof
+    2300050: TikiHutWalls
+    3300000: Cube
+    3300002: Cube.001
+    3300004: WorldMesh
+    3300006: 2x4x12_01
+    3300008: 2x4x12_02
+    3300010: 2x4x12_03
+    3300012: 2x4x12_04
+    3300014: 2x4x12_05
+    3300016: 2x4x12_06
+    3300018: 2x4x4_01
+    3300020: 2x4x4_02
+    3300022: 2x4x4_03
+    3300024: 2x4x4_04
+    3300026: 2x4x4_05
+    3300028: 2x4x4_06
+    3300030: 2x4x8_01
+    3300032: 2x4x8_02
+    3300034: 2x4x8_03
+    3300036: 2x4x8_04
+    3300038: 2x4x8_05
+    3300040: 2x4x8_06
+    3300042: BallpitArea
+    3300044: Ocean
+    3300046: Beach
+    3300048: TikiHutRoof
+    3300050: TikiHutWalls
+    4300000: Cube
+    4300002: WorldMesh
+    4300004: Cube.001
+    4300006: 2x4x12_01
+    4300008: 2x4x12_02
+    4300010: 2x4x12_03
+    4300012: 2x4x12_04
+    4300014: 2x4x12_05
+    4300016: 2x4x12_06
+    4300018: 2x4x8_01
+    4300020: 2x4x8_02
+    4300022: 2x4x8_03
+    4300024: 2x4x8_04
+    4300026: 2x4x8_05
+    4300028: 2x4x8_06
+    4300030: 2x4x4_01
+    4300032: 2x4x4_02
+    4300034: 2x4x4_03
+    4300036: 2x4x4_04
+    4300038: 2x4x4_05
+    4300040: 2x4x4_06
+    4300042: BallpitArea
+    4300044: Ocean
+    4300046: Beach
+    4300048: TikiHutWalls
+    4300050: TikiHutRoof
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
