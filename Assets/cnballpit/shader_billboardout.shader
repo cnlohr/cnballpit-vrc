@@ -92,11 +92,24 @@ Shader "mass_system/billboardout"
 					
 					float3 rvpos = DataPos;
 
-					float3 up = float3(0, 1, 0);
-					float3 look = _WorldSpaceCameraPos - rvpos;
-					//look.y = 0; //uncomment to force horizontal billboard.
+					float3 up, look, right;
+
+					up = float3(0, 1, 0);
+ 
+					if ((UNITY_MATRIX_P[3].x == 0.0) && (UNITY_MATRIX_P[3].y == 0.0) && (UNITY_MATRIX_P[3].z == 0.0)){
+						//look = UNITY_MATRIX_V[2].xyz;
+						look = normalize(_WorldSpaceLightPos0.xyz - rvpos * _WorldSpaceLightPos0.w);
+					}
+					else
+					{
+						look = _WorldSpaceCameraPos - rvpos;
+						//look.y = 0; //uncomment to force horizontal billboard.
+					}
+ 
+
+
 					look = normalize(look);
-					float3 right = cross(up, look);
+					right = cross(up, look);
 					
 					//Make actually face directly.
 					up = normalize(cross( look, right ));
@@ -120,21 +133,31 @@ Shader "mass_system/billboardout"
 					float4 colorDiffuse = float4( hash33((DataVel.www*10.+10.1)), 1. ) - .1;
 					
 					float3 SmoothHue = AudioLinkHSVtoRGB( float3(  frac(ballid/1024. + AudioLinkDecodeDataAsSeconds(ALPASS_GENERALVU_NETWORK_TIME)*.05), 1, .8 ) );
-					
+					float4 colorAmbient = 0.;
+
+					if( _Mode == 0 )
+					{
+						colorAmbient   += colorDiffuse * .1;
+					}
 					if( _Mode == 1 )
 					{
 						colorDiffuse = abs(float4( 1.-abs(glsl_mod(PositionRelativeToCenterOfBallpit.xyz,2)), 1 )) * .8;
+						colorAmbient   += colorDiffuse * .1;
 					}
 					else if( _Mode == 2 )
 					{
 						colorDiffuse.xyz = SmoothHue;
+						colorAmbient   += colorDiffuse * .1;
+
 					}
 					else if( _Mode == 3 )
 					{
 						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
-						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .1 );
+						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
 						colorDiffuse.xyz = SmoothHue;
-						colorDiffuse *= intensity; 
+						//colorDiffuse *= intensity; 
+						colorAmbient += colorDiffuse * intensity * .3;
+						colorDiffuse = colorDiffuse * .5 + .04;
 					}
 					else if( _Mode == 4 )
 					{
@@ -153,8 +176,8 @@ Shader "mass_system/billboardout"
 						else
 							colorDiffuse.xyz = SmoothHue * 0.1;
 
+						colorAmbient   += colorDiffuse * .1;
 					}
-					float4 colorAmbient   = colorDiffuse * .05;
 					float4 colorSpecular = .2*_LightColor0;
 
 					g2f pIn;
@@ -200,7 +223,18 @@ Shader "mass_system/billboardout"
 				float3 hitworld = input.hitworld;
 				float3 ro = _WorldSpaceCameraPos;
 				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
-				
+
+				if ((UNITY_MATRIX_P[3].x == 0.0) && (UNITY_MATRIX_P[3].y == 0.0) && (UNITY_MATRIX_P[3].z == 0.0))
+				{
+					float3 dist = 100.;
+					float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
+					if( length( input.uv-0.5) < 0.26 )
+						outDepth = clipPos.z / clipPos.w;
+					else
+						outDepth = 0;
+					return 0.;
+				}
+ 
 			    float a = dot(rd, rd);
 				float3 s0_r0 = ro - s0;
 				float b = 2.0 * dot(rd, s0_r0);
