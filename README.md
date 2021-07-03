@@ -6,7 +6,13 @@
  * AudioLink v0.2.5
  * CyanEmu
  * World SDK
- * 
+
+## TODO
+ * Alpha to Coverage Balls Edge
+ * Figure out why shadow edge length too short.
+ * Make water use tanoise.
+ * Add toggles for quality, i.e. alpha to coverage balls.
+ * Make ball pit use SDF for boundary.
 
 ## Special Thanks
  * D4rkPl4y3r for the idea, and several pointers!  Also, the binning principle.
