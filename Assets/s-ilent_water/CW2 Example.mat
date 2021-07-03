@@ -56,7 +56,7 @@ Material:
     - _FoamDistortion: 0.29999998
     - _FoamMax: 0
     - _FoamMin: 1
-    - _FoamScrollSpeed: 1
+    - _FoamScrollSpeed: 0.85
     - _Glossiness: 1
     - _GlossyReflections: 1
     - _IgnoreDepthBuffer: 0
@@ -65,14 +65,14 @@ Material:
     - _Metallic: 0
     - _SpecularHighlights: 1
     - _TintMultiply: 1
-    - _Wave2ScrollSpeed: 0
-    - _Wave2ScrollX: 0
-    - _Wave2ScrollY: 0
-    - _Wave2Strength: 0.1
+    - _Wave2ScrollSpeed: 0.59
+    - _Wave2ScrollX: -0.107
+    - _Wave2ScrollY: -0.062
+    - _Wave2Strength: -0.025
     - _WaveReflectionDistortion: 1
-    - _WaveScrollSpeed: 0
-    - _WaveScrollX: 0
-    - _WaveScrollY: 0
+    - _WaveScrollSpeed: 0.5
+    - _WaveScrollX: 0.234
+    - _WaveScrollY: 0.26
     - _WaveStrength: 0.1
     m_Colors:
     - _DepthColour: {r: 0, g: 0, b: 0, a: 1}

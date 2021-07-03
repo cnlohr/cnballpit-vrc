@@ -111,11 +111,11 @@ Material:
     - _DetailNormalMapScale: 1
     - _DontPerformStep: 0
     - _DstBlend: 0
-    - _Friction: 0.0005
+    - _Friction: 0.005
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GravityValue: 0.01
+    - _GravityValue: 3
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
