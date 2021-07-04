@@ -33,6 +33,7 @@ float4 GetVelocity( uint ballid )
 //@ .8 -> Tested: 9 is almost perfect on cylinder... But needs to be 10.
 static const float3 HashCellRange = float3( 10, 10, 10);
 static const int SearchExtents = 2;
+#define MAX_BINS_TO_CHECK 2
 static const float SeachExtentsRange = 2.45; //2.4 NOT OK; 2.45 OK. (range of 6) ... Setting to range of sqrt(7) to be safe.
 
 uint2 Hash3ForAdjacency( float3 rlcoord )

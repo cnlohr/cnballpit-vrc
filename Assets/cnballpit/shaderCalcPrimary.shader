@@ -126,12 +126,12 @@ Shader "cnballpit/shaderCalcPrimary"
 						
 						uint2 hashed = Hash3ForAdjacency(ballneighbor/HashCellRange+Position.xyz);
 						
-						for( j = 0; j < 4; j++ )
+						for( j = 0; j < MAX_BINS_TO_CHECK; j++ )
 						{
 							uint obid;
 							if( j == 0 )      obid = _Adjacency0[hashed];
-							else if( j == 0 ) obid = _Adjacency1[hashed];
-							else if( j == 0 ) obid = _Adjacency2[hashed];
+							else if( j == 1 ) obid = _Adjacency1[hashed];
+							else if( j == 2 ) obid = _Adjacency2[hashed];
 							else              obid = _Adjacency3[hashed];
 
 							obid--;
@@ -146,15 +146,25 @@ Shader "cnballpit/shaderCalcPrimary"
 							float len = length( Position.xyz - otherball.xyz );
 							
 							//Do we collide AND are we NOT the other ball?
-							if( len < otherball.w + Position.w && len > 0.01 )
+							if( len > 0.01 )
 							{
-								// Collision! (Todo, smarter)
-								// We only edit us, not the other ball.
-								float penetration = ( otherball.w + Position.w ) - len;
-								float3 vectortome = normalize(Position.xyz - otherball.xyz);
-								Velocity.xyz += penetration * vectortome * cfmVelocity;
-								Position.xyz += penetration * vectortome * cfmPosition;
-								Velocity.xyz *= 1;
+								if( len < otherball.w + Position.w )
+								{
+									// Collision! (Todo, smarter)
+									// We only edit us, not the other ball.
+									float penetration = ( otherball.w + Position.w ) - len;
+									float3 vectortome = normalize(Position.xyz - otherball.xyz);
+									Velocity.xyz += penetration * vectortome * cfmVelocity;
+									Position.xyz += penetration * vectortome * cfmPosition;
+									Velocity.xyz *= 1;
+								}
+							}
+							else
+							{
+								if( obid > ballid )
+								{
+									Position.xyz += 0.1;
+								}
 							}
 						}
 					}

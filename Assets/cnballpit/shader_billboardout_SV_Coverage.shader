@@ -1,6 +1,6 @@
 // UNITY_SHADER_NO_UPGRADE
 
-Shader "cnballpit/billboardoutMSAA" 
+Shader "cnballpit/billboardoutSV_Coverage" 
 {
 	Properties 
 	{
@@ -28,6 +28,9 @@ Shader "cnballpit/billboardoutMSAA"
 			#pragma target 5.0
             #include "UnityCG.cginc"
 			#include "cnballpit.cginc"
+			
+			#define SHADOW_SIZE 0.45
+			#define OVERDRAW_FUDGE 0.6
 
 			struct v2g
 			{
@@ -116,7 +119,7 @@ Shader "cnballpit/billboardoutMSAA"
 					right = normalize(right);
 
 					float size = DataPos.w*2+.1; //DataPos.w is radius. (Add a little to not clip edges.)
-					float halfS = 0.5f * size;
+					float halfS = 0.5f * size * OVERDRAW_FUDGE;
 					
 					//Pushthe view plane away a tiny bit, to prevent nastiness when doing the SV_DepthLessEqual for perf.
 					rvpos += look*halfS;
@@ -213,7 +216,7 @@ Shader "cnballpit/billboardoutMSAA"
 
             CGPROGRAM
 
-            #pragma fragment frag alpha
+            #pragma fragment frag alpha earlydepthstencil
 
 			float4 frag(g2f input, out float outDepth : SV_DepthLessEqual) : COLOR
 			{
@@ -230,7 +233,7 @@ Shader "cnballpit/billboardoutMSAA"
 				{
 					float3 dist = 100.;
 					float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
-					if( length( input.uv-0.5) < 0.26 )
+					if( length( input.uv-0.5) < SHADOW_SIZE )
 						outDepth = clipPos.z / clipPos.w;
 					else
 						outDepth = 0;
@@ -273,13 +276,13 @@ Shader "cnballpit/billboardoutMSAA"
 			Tags { "RenderType"="Opaque" "LightModel"="ForwardBase"}
 			//LOD 200
 			//Tags {"Queue" = "Transparent" "RenderType"="Opaque" } 
-			AlphaToMask On
+			//AlphaToMask On
 
 		
 			CGPROGRAM
-			#pragma fragment FS_Main alpha earlydepthstencil
+			#pragma fragment FS_Main alpha
 
-			float4 FS_Main(g2f input, out float outDepth : SV_DepthLessEqual ) : COLOR
+			float4 FS_Main(g2f input, out float outDepth : SV_DepthLessEqual, out uint Coverage[1] : SV_Coverage ) : COLOR
 			{
 				float4 props = input.props;
 				float3 s0 = input.ballcenter;
@@ -297,6 +300,7 @@ Shader "cnballpit/billboardoutMSAA"
 
 				if (disc < 0.0)
 				{
+					//disc = 0;
 					//return 0.;
 				}
 				float2 answers = float2(-b - sqrt(disc), -b + sqrt(disc)) / (2.0 * a);
@@ -336,8 +340,10 @@ Shader "cnballpit/billboardoutMSAA"
 				
 				// Tricky - compute the edge-y-ness.  If we're on an edge
 				// then reduce the alpha.
-				float dx = length( float2( ddx(disc), ddy(disc) ) );
-				albcolor.a = disc/dx;
+				float dx = length( float2( ddx_fine(disc), ddy_fine(disc) ) );
+
+				//Thanks, D4rkPl4y3r.
+				Coverage[0] = ( 1u << ((uint)(saturate(disc/dx)*GetRenderTargetSampleCount() + 0.5)) ) - 1;
 				return albcolor;
 			}
 

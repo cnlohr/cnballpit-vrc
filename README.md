@@ -14,6 +14,20 @@
  * Add toggles for quality, i.e. alpha to coverage balls.
  * Make ball pit use SDF for boundary.
 
+## Interesting
+ * shader_billboardout modes.
+ * Ben Code Catch.
+```glsl
+ 
+						for( j = 0; j < 4; j++ )
+						{
+							uint obid;
+							if( j == 0 )      obid = _Adjacency0[hashed];
+							else if( j == 0 ) obid = _Adjacency1[hashed];
+							else if( j == 0 ) obid = _Adjacency2[hashed];
+							else              obid = _Adjacency3[hashed];
+```
+
 ## Special Thanks
  * D4rkPl4y3r for the idea, and several pointers!  Also, the binning principle.
  * ERROR.mdl for the `SV_DepthLessEqual` trick to make unsorted high performance balls.
