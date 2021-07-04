@@ -25,19 +25,16 @@ public class ballpit_update_property : UdonSharpBehaviour
 		Networking.SetOwner( Networking.LocalPlayer, MainControl );
 		if( UpdateGravityFriction )
 		{
-			Debug.Log( $"UpdateGravityFriction from: ${m.gravityF}\n" );
 			m.gravityF = SetValueGravity;
 			m.friction = SetValueFriction;
 		}
 		if( UpdateEnable )
 		{
-			Debug.Log( $"UpdateEnable from: ${m.balls_reset}\n" );
 			m.balls_reset = !m.balls_reset;
 		}
 		
 		if( UpdateDrawMode )
 		{
-			Debug.Log( $"UpdateDrawMode from: ${m.mode}\n" );
 			m.mode = ( m.mode + 1 ) % NumModes;
 		}
 	}

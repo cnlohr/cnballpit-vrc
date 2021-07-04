@@ -163,7 +163,7 @@ Shader "cnballpit/shaderCalcPrimary"
 							{
 								if( obid > ballid )
 								{
-									Position.xyz += 0.1;
+									Position.xyz += 0.04;
 								}
 							}
 						}

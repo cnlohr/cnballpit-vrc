@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Adjacency:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Adjacency0:
@@ -76,11 +76,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PositionsIn:
-        m_Texture: {fileID: 8400000, guid: 59407aa8138df2947bc5eb1fbab87e2d, type: 2}
+        m_Texture: {fileID: 8400000, guid: 872604ce9c183694ea93190da494840c, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _VelocitiesIn:
-        m_Texture: {fileID: 8400000, guid: 1a790733f3a8a544ca9f0773bd8cab8a, type: 2}
+        m_Texture: {fileID: 8400000, guid: 01782c54ca21894419e50e1d02878177, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -100,7 +100,7 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _wpass: 0
+    - _wpass: 2
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

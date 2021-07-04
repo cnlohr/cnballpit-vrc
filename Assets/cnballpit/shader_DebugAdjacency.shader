@@ -4,8 +4,8 @@
     {
         _Adjacency0 ("Adjacency0", 2D) = "white" {}
         _Adjacency1 ("Adjacency1", 2D) = "white" {}
-        _Adjacency2 ("Adjacency2", 2D) = "white" {}
-        _Adjacency3 ("Adjacency3", 2D) = "white" {}
+        _Adjacency2 ("Adjacency2", 2D) = "black" {}
+        _Adjacency3 ("Adjacency3", 2D) = "black" {}
     }
     SubShader
     {
@@ -58,9 +58,6 @@
 				
 				if( data.w != 0 )
 					col = float4( 0., 1., 1., 1. );
-					
-				if( data.b && !data.g )
-					col = float4( 1., 0., 1., 1. );
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
