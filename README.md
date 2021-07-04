@@ -14,6 +14,7 @@
  * Make ball pit use SDF for boundary.
  * Make balls look really beautiful, try to use D4rk's thing.
  * Add shadows to the balls.
+ * Make the text fake-AA'd
  
 ## Interesting
  * shader_billboardout modes.
