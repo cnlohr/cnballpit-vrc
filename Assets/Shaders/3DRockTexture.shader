@@ -81,17 +81,17 @@ Shader "Custom/3DRockTexture"
             // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
         
-        float4 densityat( float3 calcpos )
+        float densityat( float3 calcpos )
         {
             float tim = _Time.y*_TextureAnimation;
-            calcpos.y += tim * _TextureAnimation;
+           // calcpos.y += tim * _TextureAnimation;
             float4 col =
-                tanoise3( float3( calcpos*10. ) ) * 0.5 +
-                tanoise3( float3( calcpos.xyz*30.1 ) ) * 0.3 +
-                tanoise3( float3( calcpos.xyz*90.2 ) ) * 0.2 +
-                tanoise3( float3( calcpos.xyz*320.5 ) ) * 0.1 +
-                tanoise3( float3( calcpos.xyz*641. ) ) * .08 +
-                tanoise3( float3( calcpos.xyz*1282. ) ) * .05;
+                tanoise4_1d( float4( float3( calcpos*10. ), tim ) ) * 0.5 +
+                tanoise4_1d( float4( float3( calcpos.xyz*30.1 ), tim ) ) * 0.3 +
+                tanoise4_1d( float4( float3( calcpos.xyz*90.2 ), tim ) ) * 0.2 +
+                tanoise4_1d( float4( float3( calcpos.xyz*320.5 ), tim ) ) * 0.1 +
+                tanoise4_1d( float4( float3( calcpos.xyz*641. ), tim ) ) * .08 +
+                tanoise4_1d( float4( float3( calcpos.xyz*1282. ), tim ) ) * .05;
             return col;
         }
 
@@ -103,7 +103,11 @@ Shader "Custom/3DRockTexture"
             
             float4 col = densityat( calcpos );
             c *= pow( col.xxxx, _NoisePow) + _RockAmbient;
-            o.Normal = normalize( float3( col.x-2., col.y-2., 10.5 ) );
+			
+			float4 normpert = tanoise4( float4( calcpos.xyz*320.5, _Time.y*_TextureAnimation ) ) * .4 +
+				tanoise4( float4( calcpos.xyz*90.2, _Time.y*_TextureAnimation ) ) * .3;
+			
+            o.Normal = normalize( float3( normpert.xy-.35, 1.5 ) );
 
             o.Albedo = c.rgb * 1.2;
 			o.Emission = c * _EmissionMux;

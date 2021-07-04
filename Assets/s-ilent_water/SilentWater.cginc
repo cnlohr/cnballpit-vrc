@@ -1,6 +1,7 @@
 #ifndef SCWS_INCLUDED
 #define SCWS_INCLUDED
 
+
 		// Depth texture
 		uniform UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture); uniform float4 _CameraDepthTexture_TexelSize;
 
@@ -342,6 +343,30 @@
 			o.screenPos = ComputeScreenPos (UnityObjectToClipPos(v.vertex));
 		}
 
+		float4 noisecol( float2 uv )
+		{
+			uv /= 10.;
+			return
+				tanoise2_hq( float2( uv*10. ) ) * 0.1 +
+				tanoise2_hq( float2( uv*30.1 ) ) * 0.1 +
+				tanoise2_hq( float2( uv*90.2 ) ) * 0.1 +
+				tanoise2_hq( float2( uv*320.5 ) ) * 0.1 +
+				tanoise2_hq( float2( uv*641. ) ) * .08 +
+				tanoise2_hq( float2( uv*1282. ) ) * .05;
+		}
+		float3 TzWave1( float2 uv )
+		{
+			float A = noisecol(uv);
+			float B = noisecol(uv+float2(0.001,0));
+			float C = noisecol(uv+float2(0,0.001));
+			return normalize( float3(A - B, A - C, .1));
+		}
+		
+		float3 TzWave2( float2 uv )
+		{
+			return TzWave1( uv );
+		}
+
 		void SilentWaterFunction (Input IN, inout SurfaceOutputStandard o)
 		{
 			IN.color = _IgnoreVertexColour? 1.0 : IN.color;
@@ -359,8 +384,12 @@
 		        );
 
 			// == Wave normals ==
-			float3 wave1 = UnpackScaleNormal(tex2D(_Wave, IN.waveUVs.xy), _WaveStrength);
-			float3 wave2 = UnpackScaleNormal(tex2D(_Wave2, IN.waveUVs.zw), _Wave2Strength);
+			float3 wave1 = 
+				//TzWave1( IN.waveUVs.xy );
+				UnpackScaleNormal(tex2D(_Wave, IN.waveUVs.xy), _WaveStrength);
+			float3 wave2 = 
+				//TzWave2( IN.waveUVs.xy ); 
+				UnpackScaleNormal(tex2D(_Wave2, IN.waveUVs.zw), _Wave2Strength);
 
 			o.Normal = BlendNormalsPD(wave1, wave2);
 

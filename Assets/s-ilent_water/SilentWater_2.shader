@@ -43,6 +43,8 @@
 		[Enum(UnityEngine.Rendering.CullMode)]_CullMode("Cull Mode", Int) = 2
 		[ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1.0
 		[ToggleOff] _GlossyReflections("Reflections", Float) = 1.0
+
+        _TANoiseTex ("TANoise", 2D) = "white" {}
 	}
 	SubShader {
 		Tags { "RenderType" = "Transparent" "Queue" = "Transparent-10" "IgnoreProjector" = "True" "IsEmissive" = "true" }
@@ -53,6 +55,7 @@
 		#pragma surface surf Standard alpha vertex:vert addshadow fullforwardshadows 
 		#pragma target 3.5
 
+		#include "/Assets/Shaders/tanoise/tanoise.cginc"
 		#include "SilentWater.cginc"
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {

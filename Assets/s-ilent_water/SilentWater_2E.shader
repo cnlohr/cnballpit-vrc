@@ -47,6 +47,7 @@
 		[ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1.0
 		[ToggleOff] _GlossyReflections("Reflections", Float) = 1.0
 		[HideInInspector] __Texcoord("Texcoord", 2D) = "black"
+        _TANoiseTex ("TANoise", 2D) = "white" {}
 	}
 	SubShader {
 		Tags { "RenderType" = "Transparent" "Queue" = "Transparent-10" "IgnoreProjector" = "True" "IsEmissive" = "true" }
@@ -61,6 +62,7 @@
 
 		#define SCWS_GRABPASS
 
+		#include "/Assets/Shaders/tanoise/tanoise.cginc"
 		#include "SilentWater.cginc"
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {

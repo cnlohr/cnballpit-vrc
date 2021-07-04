@@ -81,17 +81,17 @@ Shader "Custom/SandTexture"
 			// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 		
-		float4 densityat( float3 calcpos )
+		float densityat( float3 calcpos )
 		{
 			float tim = _Time.y*_TextureAnimation;
 			calcpos.y += tim * _TextureAnimation;
 			float4 col =
-				tanoise3( float3( calcpos*10. ) ) * 0.1 +
-				tanoise3( float3( calcpos.xyz*30.1 ) ) * 0.1 +
-				tanoise3( float3( calcpos.xyz*90.2 ) ) * 0.1 +
-				tanoise3( float3( calcpos.xyz*320.5 ) ) * 0.1 +
-				tanoise3( float3( calcpos.xyz*641. ) ) * .08 +
-				tanoise3( float3( calcpos.xyz*1282. ) ) * .05;
+				tanoise3_1d( float3( calcpos*10. ) ) * 0.1 +
+				tanoise3_1d( float3( calcpos.xyz*30.1 ) ) * 0.1 +
+				tanoise3_1d( float3( calcpos.xyz*90.2 ) ) * 0.1 +
+				tanoise3_1d( float3( calcpos.xyz*320.5 ) ) * 0.1 +
+				tanoise3_1d( float3( calcpos.xyz*641. ) ) * .08 +
+				tanoise3_1d( float3( calcpos.xyz*1282. ) ) * .05;
 			return col;
 		}
 

@@ -31,13 +31,17 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _TANoiseTex:
+        m_Texture: {fileID: 2800000, guid: 3c924368d7dfc8f4aac5fc4ab857015e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Wave:
         m_Texture: {fileID: 2800000, guid: d73936c8c956d1f42a6d4ee47680d3f3, type: 3}
-        m_Scale: {x: 0.1, y: 0.1}
+        m_Scale: {x: 0.027, y: 0.027}
         m_Offset: {x: 0, y: 0}
     - _Wave2:
         m_Texture: {fileID: 2800000, guid: b27033af63cbd7c4f9586ae88ec0e764, type: 3}
-        m_Scale: {x: 0.1, y: 0.1}
+        m_Scale: {x: 0.01, y: 0.01}
         m_Offset: {x: 0, y: 0}
     - __Texcoord:
         m_Texture: {fileID: 0}
@@ -65,15 +69,15 @@ Material:
     - _Metallic: 0
     - _SpecularHighlights: 1
     - _TintMultiply: 1
-    - _Wave2ScrollSpeed: 0.59
-    - _Wave2ScrollX: -0.107
-    - _Wave2ScrollY: -0.062
-    - _Wave2Strength: -0.025
+    - _Wave2ScrollSpeed: 0.27
+    - _Wave2ScrollX: -0.063
+    - _Wave2ScrollY: -0.027
+    - _Wave2Strength: 0.089
     - _WaveReflectionDistortion: 1
-    - _WaveScrollSpeed: 0.5
-    - _WaveScrollX: 0.234
-    - _WaveScrollY: 0.26
-    - _WaveStrength: 0.1
+    - _WaveScrollSpeed: 0.24
+    - _WaveScrollX: 0.05
+    - _WaveScrollY: 0.03
+    - _WaveStrength: 0.259
     m_Colors:
     - _DepthColour: {r: 0, g: 0, b: 0, a: 1}
     - _FoamColour: {r: 1, g: 1, b: 1, a: 1}
