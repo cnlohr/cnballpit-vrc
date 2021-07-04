@@ -8,12 +8,13 @@
  * World SDK
 
 ## TODO
- * Alpha to Coverage Balls Edge
  * Figure out why shadow edge length too short.
  * Make water use tanoise.
  * Add toggles for quality, i.e. alpha to coverage balls.
  * Make ball pit use SDF for boundary.
-
+ * Make balls look really beautiful, try to use D4rk's thing.
+ * Add shadows to the balls.
+ 
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.

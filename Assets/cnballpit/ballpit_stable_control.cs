@@ -11,7 +11,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 
 	[UdonSynced] public float gravityF = 9.8f;
 	[UdonSynced] public float friction = .008f;
-	[UdonSynced] public int mode = 3;
+	[UdonSynced] public int mode = 5;
 	[UdonSynced] public bool balls_reset = false;
 	public Material ballpitA;
 	public Material ballpitB;
@@ -24,7 +24,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		{
 			gravityF = 9.8f;
 			friction = .008f;
-			mode = 3;
+			mode = 5;
 			balls_reset = false;
 		}
 		Debug.Log( "ballpit stable control " + gravityF + " / " + friction );

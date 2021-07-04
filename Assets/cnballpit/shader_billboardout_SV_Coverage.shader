@@ -12,24 +12,34 @@ Shader "cnballpit/billboardoutSV_Coverage"
 	SubShader 
 	{
 	
-        // shadow caster rendering pass, implemented manually
-        // using macros from UnityCG.cginc
-        Pass
-        {
-            Tags {"LightMode"="ShadowCaster"}
+		// shadow caster rendering pass, implemented manually
+		// using macros from UnityCG.cginc
+		Pass
+		{
+			Tags {"LightMode"="ShadowCaster"}
 
 			CGINCLUDE
 			
 			#include "/Assets/hashwithoutsine/hashwithoutsine.cginc"
 			#include "/Assets/AudioLink/Shaders/AudioLink.cginc"
-            #pragma vertex vert
-            #pragma geometry geo
-            #pragma multi_compile_shadowcaster
+			#pragma vertex vert
+			#pragma geometry geo
+			#pragma multi_compile_shadowcaster
 			#pragma target 5.0
-            #include "UnityCG.cginc"
-			#include "cnballpit.cginc"
+
+			#define SHADOWS_SCREEN
 			
-			#define SHADOW_SIZE 0.45
+			//#pragma multi_compile _ SHADOWS_SCREEN
+
+			#include "UnityCG.cginc"
+			#include "cnballpit.cginc"
+			#include "AutoLight.cginc"
+			#include "Lighting.cginc"
+			#include "UnityShadowLibrary.cginc"
+			#include "UnityPBSLighting.cginc"
+
+
+			#define SHADOW_SIZE 0.4
 			#define OVERDRAW_FUDGE 0.6
 
 			struct v2g
@@ -37,9 +47,8 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float4	pos		: POSITION;
 				float3	normal	: NORMAL;
 				float2  uv	: TEXCOORD0;
-				float4  opos    : TEXCOORD1;
+				float4  opos	: TEXCOORD1;
 			};
-
 			struct g2f
 			{
 				float4	pos		: POSITION;
@@ -49,7 +58,6 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float4  props : TEXCOORD3;
 				float4  colorDiffuse : TEXCOORD4;
 				float4  colorAmbient : TEXCOORD5;
-				float4  colorSpecular : TEXCOORD6;
 			};
 
 			float4x4 _VP;
@@ -57,7 +65,6 @@ Shader "cnballpit/billboardoutSV_Coverage"
 			float _Mode;
 			texture2D<float4> _RVData;
 			float4 _RVData_TexelSize;
-			fixed4 _LightColor0;
 			
 			v2g vert(appdata_base v)
 			{
@@ -181,22 +188,42 @@ Shader "cnballpit/billboardoutSV_Coverage"
 
 						colorAmbient   += colorDiffuse * .1;
 					}
-					float4 colorSpecular = .2*_LightColor0;
+					else if( _Mode == 5 )
+					{
+						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
+						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
+						if( ballid % 3 == 0 )
+						{
+							colorDiffuse.xyz = float3( 0, 0, 1 );
+						}
+						else if( ballid % 3 == 1 )
+						{
+							colorDiffuse.xyz = float3( 1, 1, 1 );
+						}
+						else
+						{
+							colorDiffuse.xyz = float3( 1, 0, 0 );
+						}
+						//colorDiffuse *= intensity; 
+						colorAmbient += colorDiffuse * intensity * .3;
+						colorDiffuse = colorDiffuse * .5 + .04;
+					}
 
 					g2f pIn;
+					
+					
 					pIn.pos = mul(vp, v[0]);
 					pIn.uv = float2(1.0f, 0.0f);
 					pIn.ballcenter = DataPos.xyzw;
 					pIn.hitworld = v[0];
 					pIn.props = float4( DataVel.w, 0, 0, 1 );
 					pIn.colorDiffuse = colorDiffuse;
-					pIn.colorSpecular = colorSpecular;
 					pIn.colorAmbient = colorAmbient;
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[1]);
 					pIn.uv = float2(1.0f, 1.0f);
-					pIn.hitworld = v[1];
+					pIn.hitworld = v[1];					
 					triStream.Append(pIn);
 
 					pIn.pos =  mul(vp, v[2]);
@@ -214,9 +241,9 @@ Shader "cnballpit/billboardoutSV_Coverage"
 
 			ENDCG
 
-            CGPROGRAM
+			CGPROGRAM
 
-            #pragma fragment frag alpha earlydepthstencil
+			#pragma fragment frag alpha earlydepthstencil
 
 			float4 frag(g2f input, out float outDepth : SV_DepthLessEqual) : COLOR
 			{
@@ -227,20 +254,8 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float3 ro = _WorldSpaceCameraPos;
 				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
 
-				// Tricky - if we're doing the shadow pass, we're orthographic.
-				// compute outDepth this other way.
-				if ((UNITY_MATRIX_P[3].x == 0.0) && (UNITY_MATRIX_P[3].y == 0.0) && (UNITY_MATRIX_P[3].z == 0.0))
-				{
-					float3 dist = 100.;
-					float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
-					if( length( input.uv-0.5) < SHADOW_SIZE )
-						outDepth = clipPos.z / clipPos.w;
-					else
-						outDepth = 0;
-					return 0.;
-				}
- 
-			    float a = dot(rd, rd);
+
+				float a = dot(rd, rd);
 				float3 s0_r0 = ro - s0;
 				float b = 2.0 * dot(rd, s0_r0);
 				float c = dot(s0_r0, s0_r0) - (sr * sr);
@@ -256,6 +271,18 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float3 worldhit = ro + rd * minr;
 				float3 dist = worldhit.xyz - _LightPositionRange.xyz;
 
+				// Tricky - if we're doing the shadow pass, we're orthographic.
+				// compute outDepth this other way.
+				if ((UNITY_MATRIX_P[3].x == 0.0) && (UNITY_MATRIX_P[3].y == 0.0) && (UNITY_MATRIX_P[3].z == 0.0))
+				{
+					float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
+					if( length( input.uv-0.5) < SHADOW_SIZE )
+						outDepth = clipPos.z / clipPos.w;
+					else
+						outDepth = 0;
+					return 0.;
+				}
+
 				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
 				outDepth = clipPos.z / clipPos.w;
 
@@ -264,12 +291,11 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				if( edge < 1.0 ) outDepth = 0;
 
 				return 1.;
-				//For debugging.
-				//return UnityEncodeCubeShadowDepth(length(dist) * _LightPositionRange.w);;
 			}
 
-            ENDCG
-        }
+			ENDCG
+		}
+		
 
 		Pass
 		{
@@ -280,6 +306,8 @@ Shader "cnballpit/billboardoutSV_Coverage"
 
 		
 			CGPROGRAM
+
+
 			#pragma fragment FS_Main alpha
 
 			float4 FS_Main(g2f input, out float outDepth : SV_DepthLessEqual, out uint Coverage[1] : SV_Coverage ) : COLOR
@@ -291,7 +319,7 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float3 ro = _WorldSpaceCameraPos;
 				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
 				
-			    float a = dot(rd, rd);
+				float a = dot(rd, rd);
 				float3 s0_r0 = ro - s0;
 				float b = 2.0 * dot(rd, s0_r0);
 				float c = dot(s0_r0, s0_r0) - (sr * sr);
@@ -312,6 +340,7 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				
 				float4 albcolor = dot( _WorldSpaceLightPos0.xyz, hitnorm );
 				
+				// Potentially subtract from shadowmap
 				
 				const float shininessVal = 8;
 				const float Kd = 1;
@@ -323,7 +352,7 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float lambertian = max(dot(N, L), 0.0);
 				float specular = 0.0;
 				if(lambertian > 0.0) {
-					float3 R = reflect(-L, N);      // Reflected light vector
+					float3 R = reflect(-L, N);	  // Reflected light vector
 					float3 V = normalize(-rd); // Vector to viewer
 					// Compute the specular term
 					float specAngle = max(dot(R, V), 0.0);
@@ -331,11 +360,31 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				}
 				albcolor = float4( input.colorAmbient.xyz +
 					   Kd * lambertian * input.colorDiffuse +
-					   Ks * specular * input.colorSpecular, 1.0);
+					   Ks * specular * float3(.3, .3, .3), 1.0);
 			   
+			   
+			   
+				float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
 
-                UNITY_APPLY_FOG(i.fogCoord, col);
-				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
+				//XXX TODO FIX SHADOWS
+				#if 0
+				struct shadowonly
+				{
+					float4 pos;
+					SHADOW_COORDS(6)
+				} so;
+				so.pos = clipPos;
+				UNITY_TRANSFER_SHADOW( so, 0. );
+				float attenuation = unitySampleShadow( so._ShadowCoord );  ;//UnitySampleShadowmap( input.shadowCoordinates );
+				#else
+				float attenuation = 1;
+				#endif
+				
+				
+				
+				albcolor *= attenuation;
+
+				UNITY_APPLY_FOG(i.fogCoord, col);
 				outDepth = clipPos.z / clipPos.w;
 				
 				// Tricky - compute the edge-y-ness.  If we're on an edge

@@ -205,10 +205,11 @@ Shader "cnballpit/shaderCalcPrimary"
 				// World Edges
 				if( 1 )
 				{
+					//XXX XXX BIG XXX  THIS SHOULD ALL BE REWRITTEN AS A SDF!!!
 					float protrudelen;
 
-					// Floot
-					protrudelen = -Position.y + Position.w;
+					// Floor
+					protrudelen = -Position.y + Position.w -.02;
 					if( protrudelen > 0 )
 					{
 						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
@@ -216,14 +217,24 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 					
 					//Outer floor
-					if( length( Position.xz ) + Position.w > 8. )
+					if( length( Position.xz ) + Position.w > 7.93 )
 					{
 						protrudelen = -Position.y + Position.w + .7;
 						if( protrudelen > 0 )
 						{
 							Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
 							Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
-						}						
+						}
+					} else if( length( Position.xz ) + Position.w > 5.0 ) //Between 6.5 and 8...
+					{
+						float3 delta = Position.xyz - float3( 0, 18, 0 );
+						protrudelen = length(delta)-18.93;
+						if( protrudelen > 0 )
+						{
+							float3 norm = normalize(delta);
+							Velocity.xyz -= norm * protrudelen * edgecfmv;
+							Position.xyz -= norm * protrudelen * edgecfm;
+						}
 					}
 
 
