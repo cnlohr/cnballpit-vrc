@@ -15,6 +15,9 @@
  * Make balls look really beautiful, try to use D4rk's thing.
  * Add shadows to the balls.
  * Make the text fake-AA'd
+ * Mention Merlin Patreon
+ * 
+ 
  
 ## Interesting
  * shader_billboardout modes.
