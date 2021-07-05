@@ -81,9 +81,20 @@ Shader "cnballpit/shaderCalcPrimary"
 				uint ballid = screenCoord.y * 1024 + screenCoord.x;
 
 				float dt;
-				
-				dt = 1./_TargetFPS;
-				//dt = clamp( unity_DeltaTime.x/2., 0, .006 );
+				float vcfmfpsP;
+				float vcfmfpsV;
+				if( 1 )
+				{
+					dt = 1./_TargetFPS;
+					vcfmfpsP = 1;
+					vcfmfpsV = 1;
+				}
+				else
+				{
+					dt = clamp( unity_DeltaTime.x/2., 0, .01 );
+					vcfmfpsV = dt*180;
+					vcfmfpsP = .5*sqrt(dt);
+				}
 				
 				float4 Position = GetPosition( ballid );
 				float4 Velocity = GetVelocity( ballid );
@@ -105,11 +116,12 @@ Shader "cnballpit/shaderCalcPrimary"
 				Position.w = _BallRadius;
 				int did_find_self = 0;
 				
+				
 				//Collide with other balls - this section of code is about 350us per pass.
 				if( 1 )
 				{
-					const float cfmVelocity = 15.0;
-					const float cfmPosition = .008;
+					const float cfmVelocity = 15.0 * vcfmfpsV;
+					const float cfmPosition = .008 * vcfmfpsP;
 					
 					// Step 1 find collisions.
 					
@@ -180,8 +192,8 @@ Shader "cnballpit/shaderCalcPrimary"
 
 				//Collide with edges.
 				
-				static const float edgecfm = 1.5;
-				static const float edgecfmv = 3.5;
+				float edgecfm = 1.5 * vcfmfpsP;
+				float edgecfmv = 3.5 * vcfmfpsV;
 				
 				// A bowl (not in use right now)
 				if( 0 )
@@ -264,8 +276,8 @@ Shader "cnballpit/shaderCalcPrimary"
 				if( 1 ) 
 				{
 					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
-					float heightcfm = 1.8;
-					float heightcfmv = 200. * 1; //Should have been *4 because we /4'd our texture?
+					float heightcfm = 1.8 * vcfmfpsP;
+					float heightcfmv = 200. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
