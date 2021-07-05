@@ -237,8 +237,9 @@ Shader "cnballpit/shaderCalcPrimary"
 							Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
 							Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
 						}
-					} else if( length( Position.xz ) + Position.w > 5.0 ) //Between 6.5 and 8...
+					} else if( length( Position.xz ) + Position.w > 5.0 && Position.y < 5 ) //Between 6.5 and 8...
 					{
+						//Lip edge of floor.
 						float3 delta = Position.xyz - float3( 0, 18, 0 );
 						protrudelen = length(delta)-18.93;
 						if( protrudelen > 0 )
@@ -247,18 +248,6 @@ Shader "cnballpit/shaderCalcPrimary"
 							Velocity.xyz -= norm * protrudelen * edgecfmv;
 							Position.xyz -= norm * protrudelen * edgecfm;
 						}
-					}
-
-
-					float adv = 0.001;
-
-					// Diameter of pit, cylindrically.
-					protrudelen = length( Position.xz ) + Position.w - 5.95;
-					if( protrudelen > 0 )
-					{
-						float3 norm = float3( normalize( Position.xz ).x, 0, normalize( Position.xz ).y );
-						Velocity.xyz -= norm * protrudelen * edgecfmv * adv;
-						Position.xyz -= norm * protrudelen * edgecfm * adv;
 					}
 
 					//Island
@@ -270,6 +259,19 @@ Shader "cnballpit/shaderCalcPrimary"
 						Velocity.xyz += diff * edgecfmv;
 						Position.xyz += diff * edgecfm;
 					}
+
+					//This is just a slight nudge to push the balls back in.
+					float adv = 0.001;
+
+					// Diameter of pit, cylindrically.
+					protrudelen = length( Position.xz ) + Position.w - 5.95;
+					if( protrudelen > 0 )
+					{
+						float3 norm = float3( normalize( Position.xz ).x, 0, normalize( Position.xz ).y );
+						Velocity.xyz -= norm * protrudelen * edgecfmv * adv;
+						Position.xyz -= norm * protrudelen * edgecfm * adv;
+					}
+
 				}
 
 				//Use depth cameras (Totals around 150us per camera on a 2070 laptop)

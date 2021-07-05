@@ -24,13 +24,11 @@ Shader "cnballpit/billboardoutSV_Coverage"
 			#include "/Assets/AudioLink/Shaders/AudioLink.cginc"
 			#pragma vertex vert
 			#pragma geometry geo
-			#pragma multi_compile_shadowcaster
+
 			#pragma target 5.0
 
-			#define SHADOWS_SCREEN
+			//#define SHADOWS_SCREEN
 			
-			//#pragma multi_compile _ SHADOWS_SCREEN
-
 			#include "UnityCG.cginc"
 			#include "cnballpit.cginc"
 			#include "AutoLight.cginc"
@@ -237,6 +235,21 @@ Shader "cnballpit/billboardoutSV_Coverage"
 			CGPROGRAM
 
 			#pragma fragment frag alpha earlydepthstencil
+			#pragma multi_compile_shadowcaster
+
+
+			struct shadowHelper
+			{
+				float4 vertex;
+				float3 normal;
+				V2F_SHADOW_CASTER;
+			};
+
+			float4 colOut(shadowHelper data)
+			{
+				SHADOW_CASTER_FRAGMENT(data);
+			}
+
 
 			float4 frag(g2f input, out float outDepth : SV_DepthLessEqual) : COLOR
 			{
@@ -255,6 +268,7 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				
 				float disc = b * b - 4.0 * a* c;
 
+				//clip( disc );
 				if (disc < 0.0)
 					discard;
 				float2 answers = float2(-b - sqrt(disc), -b + sqrt(disc)) / (2.0 * a);
@@ -264,26 +278,35 @@ Shader "cnballpit/billboardoutSV_Coverage"
 				float3 worldhit = ro + rd * minr;
 				float3 dist = worldhit.xyz - _LightPositionRange.xyz;
 
+#if 0
 				// Tricky - if we're doing the shadow pass, we're orthographic.
 				// compute outDepth this other way.
 				if ((UNITY_MATRIX_P[3].x == 0.0) && (UNITY_MATRIX_P[3].y == 0.0) && (UNITY_MATRIX_P[3].z == 0.0))
 				{
-					float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
+					float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
 					if( length( input.uv-0.5) < SHADOW_SIZE )
 						outDepth = clipPos.z / clipPos.w;
 					else
 						outDepth = 0;
 					return 0.;
 				}
-
+#endif
+				//Charles way.
 				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
+				
+				//D4rkPl4y3r's way.				
+				shadowHelper v;
+				v.vertex = mul(unity_WorldToObject, float4(worldhit, 1));
+				v.normal = normalize(mul((float3x3)unity_WorldToObject, worldhit - s0));
+				TRANSFER_SHADOW_CASTER_NOPOS(v, clipPos);
 				outDepth = clipPos.z / clipPos.w;
 
 				float dx = length( float2( ddx(disc), ddy(disc) ) );
 				float edge = disc/dx;
 				if( edge < 1.0 ) outDepth = 0;
 
-				return 1.;
+				//return colOut(v);
+				return 0;
 			}
 
 			ENDCG
@@ -302,6 +325,7 @@ Shader "cnballpit/billboardoutSV_Coverage"
 
 
 			#pragma fragment FS_Main alpha
+			#pragma multi_compile_fwdadd_fullshadows
 
 			float4 FS_Main(g2f input, out float outDepth : SV_DepthLessEqual, out uint Coverage[1] : SV_Coverage ) : COLOR
 			{
@@ -359,18 +383,21 @@ Shader "cnballpit/billboardoutSV_Coverage"
 			   
 				float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
 
+				float attenuation = 1;
+
 				//XXX TODO FIX SHADOWS
 				#if 0
 				struct shadowonly
 				{
 					float4 pos;
-					SHADOW_COORDS(6)
+					float4 _LightCoord;
+					SHADOW_COORDS(1)
 				} so;
+				so._LightCoord = 0.;
 				so.pos = clipPos;
 				UNITY_TRANSFER_SHADOW( so, 0. );
-				float attenuation = unitySampleShadow( so._ShadowCoord );  ;//UnitySampleShadowmap( input.shadowCoordinates );
+				attenuation = LIGHT_ATTENUATION( so );
 				#else
-				float attenuation = 1;
 				#endif
 				
 				
