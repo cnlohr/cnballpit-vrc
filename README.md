@@ -31,7 +31,7 @@ Haven't gotten NeoFlight working yet.
  * Try unique tag names.
  * Make both cameras for combine pass be at the same position, only one piece of geometry.
  * Test out explicit CRT Rendering Orders https://docs.unity3d.com/Manual/class-CustomRenderTexture.html#custom-render-texture
-
+ * Try disabling the light source for rendering cameras.
 
 
 ## 2.0 Release Notes (Morning of July 6)
