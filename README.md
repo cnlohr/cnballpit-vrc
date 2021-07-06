@@ -25,6 +25,15 @@ Haven't gotten NeoFlight working yet.
  * Add shadows to the balls.
  * Make ball pit use SDF for boundary.
 
+ * Change bounding box for points two different sizes.
+ * Use shader override on other two depth cameras.
+ * Use override on AudioLink.
+ * Try unique tag names.
+ * Make both cameras for combine pass be at the same position, only one piece of geometry.
+ * Test out explicit CRT Rendering Orders https://docs.unity3d.com/Manual/class-CustomRenderTexture.html#custom-render-texture
+
+
+
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
  * Added Yeeters
