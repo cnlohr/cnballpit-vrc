@@ -48,8 +48,8 @@ crashlytics-build.properties
 /Assets/SerializedUdonPrograms/
 /Assets/SerializedUdonPrograms.meta
 
-/Assets/Compiled.meta
-/Assets/Compiled/
+# /Assets/Compiled.meta
+# /Assets/Compiled/
 
 /Assets/CyanEmu/
 /Assets/CyanEmu.meta
