@@ -14,6 +14,9 @@ public class ballpit_update_property : UdonSharpBehaviour
 	public bool  UpdateGravityFriction;
 	public bool  UpdateEnable;
 	public bool  UpdateDrawMode;
+	public bool  MasterOnly;
+	public bool  AdjustQualityMode;
+	public int   NumQualityModes;
 	public GameObject MainControl;
 
 	void Start()
@@ -21,21 +24,29 @@ public class ballpit_update_property : UdonSharpBehaviour
 	}
 	void Interact()
 	{
-		ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
-		Networking.SetOwner( Networking.LocalPlayer, MainControl );
-		if( UpdateGravityFriction )
+		if( !MasterOnly || Networking.IsMaster || Networking.IsInstanceOwner )
 		{
-			m.gravityF = SetValueGravity;
-			m.friction = SetValueFriction;
-		}
-		if( UpdateEnable )
-		{
-			m.balls_reset = !m.balls_reset;
-		}
-		
-		if( UpdateDrawMode )
-		{
-			m.mode = ( m.mode + 1 ) % NumModes;
+			ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
+			Networking.SetOwner( Networking.LocalPlayer, MainControl );
+			if( UpdateGravityFriction )
+			{
+				m.gravityF = SetValueGravity;
+				m.friction = SetValueFriction;
+			}
+			if( UpdateEnable )
+			{
+				m.balls_reset = !m.balls_reset;
+			}
+			
+			if( UpdateDrawMode )
+			{
+				m.mode = ( m.mode + 1 ) % NumModes;
+			}
+			
+			if( AdjustQualityMode )
+			{
+				m.qualitymode = ( m.qualitymode + 1 ) % NumQualityModes;
+			}
 		}
 	}
 }

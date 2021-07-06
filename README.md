@@ -2,10 +2,21 @@
 
 ## Tools
 
- * NeoFlight
+Process:
+ * Open Project, BUT NOT SCENE.
+
+Impor the following, in order:
+ * World SDK
+ * Udon Sharp
  * AudioLink v0.2.5
  * CyanEmu
- * World SDK
+ 
+Close Project (and don't save).
+
+ * Open Project
+ * Open Scene
+
+Haven't gotten NeoFlight working yet.
 
 ## TODO
  * Figure out why shadow edge length too short.

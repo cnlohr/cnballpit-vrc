@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mat_Billboardify
-  m_Shader: {fileID: 4800000, guid: 7c54e179f1b3ca6488636eaf90cb524a, type: 3}
+  m_Shader: {fileID: 4800000, guid: 90fa9644052f9d74b91794b0dfc63ba3, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -78,6 +78,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Emission: 0
+    - _ExtraPretty: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -87,6 +88,7 @@ Material:
     - _Parallax: 0.02
     - _PlaidWatch: 0
     - _Size: 0.5
+    - _Smoothness: 0.77
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

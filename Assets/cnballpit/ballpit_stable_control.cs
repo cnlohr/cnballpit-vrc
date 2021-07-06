@@ -13,6 +13,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	[UdonSynced] public float friction = .008f;
 	[UdonSynced] public int mode = 5;
 	[UdonSynced] public bool balls_reset = false;
+	public int qualitymode;
 	public Material ballpitA;
 	public Material ballpitB;
 	public Material ballpitRender;
@@ -27,6 +28,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 			mode = 5;
 			balls_reset = false;
 		}
+		qualitymode = 1;
 		Debug.Log( "ballpit stable control " + gravityF + " / " + friction );
 	}
 	void Update()
@@ -40,6 +42,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		ballpitB.SetFloat( "_GravityValue", gravityF );
 		ballpitA.SetFloat( "_Friction", friction );
 		ballpitB.SetFloat( "_Friction", friction );
+		ballpitRender.SetFloat( "_ExtraPretty", qualitymode );
 		Physics.gravity = new Vector3( 0, -(gravityF*.85f+1.5f), 0 );
 	}
 }

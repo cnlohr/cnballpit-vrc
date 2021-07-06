@@ -221,7 +221,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					float protrudelen;
 
 					// Floor
-					protrudelen = -Position.y + Position.w -.02;
+					protrudelen = -Position.y + Position.w -.04;
 					if( protrudelen > 0 )
 					{
 						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
