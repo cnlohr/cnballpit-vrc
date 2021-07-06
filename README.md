@@ -24,10 +24,13 @@ Haven't gotten NeoFlight working yet.
  * Add toggles for quality, i.e. alpha to coverage balls.
  * Add shadows to the balls.
  * Make ball pit use SDF for boundary.
- * Mention Merlin Patreon
 
-## 2.0 Release Notes
+## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
+ * Added Yeeters
+ * Added pickuppable bricks
+ * Moved text monolith locations.
+ * Reduced impact of palm trees.
  
 ## 3.0 Release Notes
  * Reduced Yeeter Delay
@@ -38,6 +41,7 @@ Haven't gotten NeoFlight working yet.
  * Put everything in map in object to cull.
  * Switched back to an explicit render.
  * Switched away from an explicit render to SetReplacementShader.  I promise. It's better.
+ * Mention Patreon Notice
  
  
 ## Interesting
@@ -45,14 +49,15 @@ Haven't gotten NeoFlight working yet.
  * Ben Code Catch.
 ```glsl
  
-						for( j = 0; j < 4; j++ )
-						{
-							uint obid;
-							if( j == 0 )      obid = _Adjacency0[hashed];
-							else if( j == 0 ) obid = _Adjacency1[hashed];
-							else if( j == 0 ) obid = _Adjacency2[hashed];
-							else              obid = _Adjacency3[hashed];
+for( j = 0; j < 4; j++ )
+{
+	uint obid;
+	if( j == 0 )      obid = _Adjacency0[hashed];
+	else if( j == 0 ) obid = _Adjacency1[hashed];
+	else if( j == 0 ) obid = _Adjacency2[hashed];
+	else              obid = _Adjacency3[hashed];
 ```
+ * Back and forth about rendering technique.
 
 ## Special Thanks
  * D4rkPl4y3r for the idea, and several pointers!  Also, the binning principle.

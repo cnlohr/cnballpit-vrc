@@ -9325,9 +9325,9 @@ MonoBehaviour:
     color=rgb(255,0,255,255)>l</font><font color=rgb(255,0,0,255)>o</font><font color=rgb(255,255,0,255)>o</font>
     for the island. The\nAudioLink team. <font color=rgb(0,255,0,255)>Texelsaur</font>
     for the video player, <font color=rgb(255,0,200,255)>Merlin</font> for Udon Sharp,
-    <Font color=rgb(0,0,255,255)>TCL</font> for\nthe MRT technique, <font color=rgb(171,65,22,255)>Xiexe</font>
-    for the shovelsand help.  \n\nAnd everyone on the shader discord!\n\nPrefab on
-    github in about 3 weeks.\n                                    &lt;&gt;&lt;"
+    <Font color=rgb(0,0,255,255)>TCL</font> for\nMRT techniques, <font color=rgb(171,65,22,255)>Xiexe</font>
+    for the shovels - and everyone on the Shader Discord!\n\nSome of them have a patreon,
+    support em!\nPrefab on github in about 3 weeks.\n                                    &lt;&gt;&lt;"
   Columns: 40
   Rows: 13
   mat_ApplySmoothTex: {fileID: 2100000, guid: ffaedbdc0d5bd4a4abb099e2f0b74ef5, type: 2}
