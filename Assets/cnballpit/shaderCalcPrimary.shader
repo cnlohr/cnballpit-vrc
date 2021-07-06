@@ -100,7 +100,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				float4 Velocity = GetVelocity( ballid );
 				if( _Time.y < 3 || Position.w == 0 || _ResetBalls > 0 )
 				{
-					ret.Pos = float4( hash33( ballid.xxx ) * 10. + float3( -5, 0, -5 ), _BallRadius );
+					ret.Pos = float4( hash33( ballid.xxx ) * float3( 12, 2.5, 12 ) + float3( -6, 0, -6 ), _BallRadius );
 					ret.Vel = float4( 0., 0., 0., ballid );
 					return ret;
 				}
