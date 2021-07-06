@@ -27,7 +27,7 @@ Haven't gotten NeoFlight working yet.
  * Add shadows to the balls.
  * Make the text fake-AA'd
  * Mention Merlin Patreon
- * 
+ * Reduce Yeeter Delay
  
  
 ## Interesting
