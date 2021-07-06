@@ -21,14 +21,11 @@ Shader "FAE/Tree Trunk"
 		Cull Back
 		CGPROGRAM
 		#include "UnityShaderVariables.cginc"
-		#pragma target 3.0
-		//#pragma multi_compile_instancing
+		#pragma target 5.0
+
 		#include "VS_InstancedIndirect.cginc"
-		//#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup
-		//#pragma multi_compile GPU_FRUSTUM_ON __
-		//#pragma exclude_renderers xbox360 psp2 n3ds wiiu 
 		#pragma surface surf Standard keepalpha addshadow fullforwardshadows  vertex:vertexDataFunc 
-		//dithercrossfade
+
 		struct Input
 		{
 			float2 uv_texcoord;

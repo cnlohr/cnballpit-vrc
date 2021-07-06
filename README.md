@@ -22,12 +22,22 @@ Haven't gotten NeoFlight working yet.
  * Figure out why shadow edge length too short.
  * Make water use tanoise.
  * Add toggles for quality, i.e. alpha to coverage balls.
- * Make ball pit use SDF for boundary.
- * Make balls look really beautiful, try to use D4rk's thing.
  * Add shadows to the balls.
- * Make the text fake-AA'd
+ * Make ball pit use SDF for boundary.
  * Mention Merlin Patreon
- * Reduce Yeeter Delay
+
+## 2.0 Release Notes
+ * Make balls look really beautiful, try to use D4rk's thing.
+ 
+## 3.0 Release Notes
+ * Reduced Yeeter Delay
+ * Removed a few blocks
+ * Added a few yeeters.
+ * Make the text fake-AA'd
+ * Tried switching to Walkthrough layer
+ * Put everything in map in object to cull.
+ * Switched back to an explicit render.
+ * Switched away from an explicit render to SetReplacementShader.  I promise. It's better.
  
  
 ## Interesting

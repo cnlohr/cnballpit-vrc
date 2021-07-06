@@ -1,10 +1,11 @@
-﻿Shader "AudioLinkSandbox/ApplySmoothText"
+﻿Shader "Custom/AAApplySmoothText"
 {
     Properties
     {
 		_TextData ("TextData", 2D) = "white" {}
 		_BackgroundColor( "Background Color", Color ) = ( 0, 0, 0, 0 )
 		_ForegroundColor( "Foreground Color", Color ) = ( 1, 1, 1, 1 )
+		_AAAmt( "AA Amount", float ) = 0.4
     }
     SubShader
     {
@@ -32,6 +33,7 @@
 			float4 _TextData_TexelSize;
 			float4 _BackgroundColor;
 			float4 _ForegroundColor;
+			float _AAAmt;
 
             struct appdata
             {
@@ -67,19 +69,30 @@
                 uint2 character = (uint2)pos;
 
 				float4 dataatchar = _TextData[character];
-				
-                // This line of code is tricky;  We determine how much we should soften the edge of the text
-                // based on how quickly the text is moving across our field of view.  This gives us realy nice
-                // anti-aliased edges.
-                float2 softness_uv = pos * float2( 4, 6 );
-                float softness = 4./(pow( length( float2( ddx( softness_uv.x ), ddy( softness_uv.y ) ) ), 0.5 ))-1.;
 
-                float2 charUV = float2(4, 6) - glsl_mod(pos, 1.0) * float2(4.0, 6.0);
-                
-				float weight = (floor(dataatchar.w)/2.-1.)*.3;
-				int charVal = frac(dataatchar.w)*256;
-				float4 col = lerp( _BackgroundColor, _ForegroundColor, saturate( PrintChar( charVal, charUV, softness, weight )*float4(dataatchar.rgb,1.) ) );
-				return col;
+				float4 col = 0;
+				float dx, dy;
+				[unroll]
+				for( dy = 0; dy < 2; dy++ )
+				[unroll]
+				for( dx = 0; dx < 2; dx++ )
+				{
+					float mx = (dx - 0.5) * _AAAmt;
+					float my = (dy - 0.5) * _AAAmt;
+					float2 tpos = pos + float2( ddx( pos.x ), ddy( pos.x ) ) * mx + float2( ddx( pos.y ), ddy( pos.y ) ) * my;
+					// This line of code is tricky;  We determine how much we should soften the edge of the text
+					// based on how quickly the text is moving across our field of view.  This gives us realy nice
+					// anti-aliased edges.
+					float2 softness_uv = tpos * float2( 4, 6 );
+					float softness = 4./(pow( length( float2( ddx( softness_uv.x ), ddy( softness_uv.y ) ) ), 0.5 ))-1.;
+
+					float2 charUV = float2(4, 6) - glsl_mod(tpos, 1.0) * float2(4.0, 6.0);
+					
+					float weight = (floor(dataatchar.w)/2.-1.)*.3;
+					int charVal = frac(dataatchar.w)*256;
+					col += lerp( _BackgroundColor, _ForegroundColor, saturate( PrintChar( charVal, charUV, softness, weight )*float4(dataatchar.rgb,1.) ) );
+				}
+				return col/4;
             }
             ENDCG
         }

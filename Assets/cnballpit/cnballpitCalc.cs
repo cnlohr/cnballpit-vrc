@@ -22,6 +22,7 @@ public class cnballpitCalc : UdonSharpBehaviour
 	public RenderTexture rtVelocityB;
 	public RenderTexture CAR0;
 	public RenderTexture CAR1;
+	public Shader TestShaderAdjacency, TestShaderCalc, TestShaderCompositeDepth;
 	
 	public Material      MatComputeB;
 	public Material      MatComputeA;
@@ -33,6 +34,14 @@ public class cnballpitCalc : UdonSharpBehaviour
 
     void Start()
     {
+		CamCompositeDepth.SetReplacementShader (TestShaderCompositeDepth, "");
+		CamAdj0.SetReplacementShader (TestShaderAdjacency,                "");
+		CamAdj1.SetReplacementShader (TestShaderAdjacency,                "");
+		CamCalcB.SetReplacementShader(TestShaderCalc,                     "");
+		CamAdj4.SetReplacementShader (TestShaderAdjacency,                "");
+		CamAdj5.SetReplacementShader (TestShaderAdjacency,                "");
+		CamCalcA.SetReplacementShader(TestShaderCalc,                     "");
+			
 		//Tricky:  Call SetTargetBuffers in the order you want the cameras to execute.
 		RenderBuffer[] CAR0A = new RenderBuffer[] { CAR0.colorBuffer };
 		CamAdj0.SetTargetBuffers( CAR0A, CAR0.depthBuffer );
@@ -48,15 +57,46 @@ public class cnballpitCalc : UdonSharpBehaviour
 		RenderBuffer[] renderBuffersA = new RenderBuffer[] { rtPositionA.colorBuffer, rtVelocityA.colorBuffer };
 		CamCalcA.SetTargetBuffers(renderBuffersA, rtPositionA.depthBuffer);
 
+/*		CamCompositeDepth.enabled = false;
+		CamCalcA.enabled = false;
+		CamCalcB.enabled = false;
+		CamAdj0.enabled = false;
+		CamAdj1.enabled = false;
+		CamAdj4.enabled = false;
+		CamAdj5.enabled = false;
+		*/
+		
 		AccumulatedFrameBoundary = 0;
     }
 	
 	void Update()
 	{
-		//Target 100 Updates per second.
 		AccumulatedFrameBoundary += _TargetFramerate*Time.deltaTime;
 		MatComputeB.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>2)?0:1 );
 		MatComputeA.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>1)?0:1 );
 		AccumulatedFrameBoundary = AccumulatedFrameBoundary % 1;
+	/*
+
+		if( false )
+		{
+			CamCompositeDepth.Render();
+			CamAdj0.Render();
+			CamAdj1.Render();
+			CamCalcB.Render();
+			CamAdj4.Render();
+			CamAdj5.Render();
+			CamCalcA.Render();
+		}
+		else
+		{
+			CamCompositeDepth.RenderWithShader (TestShaderCompositeDepth, "");
+			CamAdj0.RenderWithShader (TestShaderAdjacency,                "");
+			CamAdj1.RenderWithShader (TestShaderAdjacency,                "");
+			CamCalcB.RenderWithShader(TestShaderCalc,                     "");
+			CamAdj4.RenderWithShader (TestShaderAdjacency,                "");
+			CamAdj5.RenderWithShader (TestShaderAdjacency,                "");
+			CamCalcA.RenderWithShader(TestShaderCalc,                     "");
+		}
+		*/
 	}
 }

@@ -226,7 +226,7 @@ namespace AudioLink
 			if( UseMaterial == null )
 			{
 				UseMaterial = 
-					new Material(Shader.Find("AudioLinkSandbox/ApplySmoothText"));
+					new Material(Shader.Find("Custom/AAApplySmoothText"));
 				UseMaterial.name = "cmat_"+uuidStr;
 				GenerateMaterial = true;
 			}

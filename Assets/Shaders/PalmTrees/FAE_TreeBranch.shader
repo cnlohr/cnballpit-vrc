@@ -30,14 +30,11 @@ Shader "FAE/Tree Branch"
 		CGPROGRAM
 		#include "UnityShaderVariables.cginc"
 		#include "UnityCG.cginc"
-		#pragma target 3.0
+		#pragma target 5.0
 		//#pragma multi_compile_instancing
 		#include "VS_InstancedIndirect.cginc"
-		//#pragma instancing_options assumeuniformscaling lodfade maxcount:50 procedural:setup forwardadd
-		//#pragma multi_compile GPU_FRUSTUM_ON __
-		//#pragma exclude_renderers xbox360 psp2 n3ds wiiu alpha
 		#pragma surface surf Standard keepalpha addshadow fullforwardshadows vertex:vertexDataFunc 
-		//nodirlightmap dithercrossfade 
+
 		struct Input
 		{
 			float3 worldPos;
