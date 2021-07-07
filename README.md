@@ -32,6 +32,18 @@ Haven't gotten NeoFlight working yet.
  * Double up physics steps, and make them sensitive to time.
  * Cleanup shaders, leaving standard ones.
 
+ * Add Kit's effects.
+ * Experiment with D4rk's 
+```
+ok yes it works
+init the tex with float4(1,1,1,0)
+then Blend One DstAlpha, One Zero
+and return float4(1..xxx, id);
+this should leave 2 in col if only 1 id got written
+and should leave id + 2 in col if 2 ids got written
+and utter garbage in col when 3+ ids get written
+```
+ * Put AudioLink on its own layer.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
