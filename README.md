@@ -25,13 +25,12 @@ Haven't gotten NeoFlight working yet.
  * Add shadows to the balls.
  * Make ball pit use SDF for boundary.
 
- * Change bounding box for points two different sizes.
- * Use shader override on other two depth cameras.
- * Use override on AudioLink.
  * Try unique tag names.
- * Make both cameras for combine pass be at the same position, only one piece of geometry.
+ * Make both cameras for combine pass be at the same position, only one piece of geometry, maybe?
  * Test out explicit CRT Rendering Orders https://docs.unity3d.com/Manual/class-CustomRenderTexture.html#custom-render-texture
- * Try disabling the light source for rendering cameras.
+ * INVESTIGATE why lack of light makes map render in 8.1ms instead of 10.5ms.
+ * Double up physics steps, and make them sensitive to time.
+ * Cleanup shaders, leaving standard ones.
 
 
 ## 2.0 Release Notes (Morning of July 6)
@@ -51,7 +50,10 @@ Haven't gotten NeoFlight working yet.
  * Switched back to an explicit render.
  * Switched away from an explicit render to SetReplacementShader.  I promise. It's better.
  * Mention Patreon Notice
- 
+ * Put light culling mask to be mutually exclusive to compute cameras.
+ * Added some props.
+ * Change bounding box for points two different sizes, so balls can be seen from farther, but computing balls does not slow down adjacent cameras.
+
  
 ## Interesting
  * shader_billboardout modes.

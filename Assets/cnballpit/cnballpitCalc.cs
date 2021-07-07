@@ -7,6 +7,9 @@ using VRC.Udon;
 public class cnballpitCalc : UdonSharpBehaviour
 {
 	public Camera CamCompositeDepth;
+
+	public Camera CamDepthTop;
+	public Camera CamDepthBottom;
 	
 	public Camera CamCalcA;
 	public Camera CamCalcB;
@@ -26,6 +29,7 @@ public class cnballpitCalc : UdonSharpBehaviour
 	
 	public Material      MatComputeB;
 	public Material      MatComputeA;
+	public Light         SceneLight;
 
 	public float _TargetFramerate = 120.0f;
 
@@ -57,25 +61,31 @@ public class cnballpitCalc : UdonSharpBehaviour
 		RenderBuffer[] renderBuffersA = new RenderBuffer[] { rtPositionA.colorBuffer, rtVelocityA.colorBuffer };
 		CamCalcA.SetTargetBuffers(renderBuffersA, rtPositionA.depthBuffer);
 
-/*		CamCompositeDepth.enabled = false;
+/*
+		CamCompositeDepth.enabled = false;
 		CamCalcA.enabled = false;
 		CamCalcB.enabled = false;
 		CamAdj0.enabled = false;
 		CamAdj1.enabled = false;
 		CamAdj4.enabled = false;
 		CamAdj5.enabled = false;
-		*/
-		
+		CamDepthBottom.enabled = false;
+		CamDepthTop.enabled = false;
+*/
 		AccumulatedFrameBoundary = 0;
     }
 	
-	void Update()
+	void LateUpdate()
 	{
 		AccumulatedFrameBoundary += _TargetFramerate*Time.deltaTime;
 		MatComputeB.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>2)?0:1 );
 		MatComputeA.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>1)?0:1 );
 		AccumulatedFrameBoundary = AccumulatedFrameBoundary % 1;
-	/*
+		/*
+		SceneLight.enabled = false;
+
+		CamDepthTop.Render();
+		CamDepthBottom.Render();
 
 		if( false )
 		{
@@ -97,6 +107,8 @@ public class cnballpitCalc : UdonSharpBehaviour
 			CamAdj5.RenderWithShader (TestShaderAdjacency,                "");
 			CamCalcA.RenderWithShader(TestShaderCalc,                     "");
 		}
+		
+		SceneLight.enabled = true;
 		*/
 	}
 }

@@ -56,7 +56,7 @@ Material:
     - _DispScrollX: 0
     - _DispScrollY: 0
     - _DispStrength: 0.1
-    - _FoamDensity: 1
+    - _FoamDensity: 0.73
     - _FoamDistortion: 0.29999998
     - _FoamMax: 0
     - _FoamMin: 1.67
