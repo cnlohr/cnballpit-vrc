@@ -32,7 +32,6 @@ Haven't gotten NeoFlight working yet.
  * Double up physics steps, and make them sensitive to time.
  * Cleanup shaders, leaving standard ones.
 
- * Add Kit's effects.
  * Experiment with D4rk's 
 ```
 ok yes it works
@@ -66,6 +65,11 @@ and utter garbage in col when 3+ ids get written
  * Added some props.
  * Change bounding box for points two different sizes, so balls can be seen from farther, but computing balls does not slow down adjacent cameras.
 
+## 4.0 Release Notes
+ * Shroom!
+ * Fix wood texture.
+ * Add day/night cycle.
+ * Thick pens.
  
 ## Interesting
  * shader_billboardout modes.

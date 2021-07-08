@@ -24,7 +24,7 @@ public class ballpit_update_property : UdonSharpBehaviour
 	}
 	void Interact()
 	{
-		if( !MasterOnly || Networking.IsMaster || Networking.IsInstanceOwner )
+		if( !MasterOnly || Networking.IsMaster ) //|| Networking.IsInstanceOwner )
 		{
 			ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
 			Networking.SetOwner( Networking.LocalPlayer, MainControl );

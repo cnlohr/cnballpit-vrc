@@ -9,6 +9,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 		_Mode ("Mode", float) = 0
 		_Smoothness( "Smoothness", float ) = 0
 		_Metallic("Metallic", float ) = 0
+		_ScreenshotMode("Screenshot Mode", float) = 0
 		[ToggleUI] _ExtraPretty( "Extra Pretty", float ) = 0
 	}
 
@@ -67,6 +68,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			texture2D<float4> _RVData;
 			float4 _RVData_TexelSize;
 			float _ExtraPretty;
+			float _ScreenshotMode;
 			
 			v2g vert(appdata_base v)
 			{
@@ -147,11 +149,23 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					float3 SmoothHue = AudioLinkHSVtoRGB( float3(  frac(ballid/1024. + AudioLinkDecodeDataAsSeconds(ALPASS_GENERALVU_NETWORK_TIME)*.05), 1, .8 ) );
 					float4 colorAmbient = 0.;
 
-					if( _Mode == 0 )
+					if( _ScreenshotMode > 0.5 )
+					{
+						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
+						float intensity = saturate(sin(dfc*15.+2.5)+0.3);//(glsl_mod( dfc * 5, 1.0 )>0.5)?1:0;
+						static const float3 ballcolors[7] = { float3( .984, .784, 0 ), float3( 0.0, .635, .820 ), float3( .918, .271, .263 ),
+							float3( .729, .739, .059 ), float3( .941, .490, .024 ), float3( .682, .859, .941 ), float3( .537, .451, .776 ) };
+
+						colorDiffuse.xyz = ballcolors[ballid%7];
+
+						//colorDiffuse *= intensity; 
+						colorAmbient += colorDiffuse * intensity * .3;
+						colorDiffuse = colorDiffuse * .5 + .04;
+					} else if( _Mode == 0 )
 					{
 						colorAmbient   += colorDiffuse * .1;
 					}
-					if( _Mode == 1 )
+					else if( _Mode == 1 )
 					{
 						colorDiffuse = abs(float4( 1.-abs(glsl_mod(PositionRelativeToCenterOfBallpit.xyz,2)), 1 )) * .8;
 						colorAmbient   += colorDiffuse * .1;
@@ -203,7 +217,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorAmbient += colorDiffuse * intensity * .3;
 						colorDiffuse = colorDiffuse * .5 + .04;
 					}
-
+					
 					g2f pIn;
 					
 					
@@ -492,7 +506,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 				float3 hitnorm = normalize(worldhit-s0);
 				float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
 				
-				float4 albcolor;
+				float4 albcolor = 1.;
 				
 				// Potentially subtract from shadowmap
 				

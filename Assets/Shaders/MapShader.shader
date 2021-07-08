@@ -1,4 +1,7 @@
-﻿Shader "Custom/MapShader"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+
+Shader "Custom/MapShader"
 {
     Properties
     {
@@ -16,7 +19,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque"  "DisableBatching"="True" }
         LOD 200
 		
         // shadow caster rendering pass, implemented manually
@@ -52,10 +55,9 @@
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows vertex:vert
 
-        // Use shader model 3.0 target, to get nicer looking lighting
-        #pragma target 3.0
+        #pragma target 5.0
 
 		#include "tanoise/tanoise.cginc"
 
@@ -65,7 +67,10 @@
         {
             float2 uv_MainTex;
 			float3 worldPos;
-			//float3 worldNormal;
+			float3 worldNormal;
+			float3 tangent_input;
+			float3 binormal_input;
+			float3 normal_input;
         };
 
         half _Glossiness;
@@ -93,23 +98,41 @@
 			return col;
 		}
 
+		void vert(inout appdata_full i, out Input o)
+		{      
+			UNITY_INITIALIZE_OUTPUT(Input, o);
+		 
+			half3 p_normal = i.normal;
+			half3 p_tangent = i.tangent.xyz;
+												   
+			half3 normal_input = (p_normal.xyz);
+			half3 tangent_input = (p_tangent.xyz);
+			half3 binormal_input = cross(p_normal.xyz,tangent_input.xyz);
+					   
+			o.tangent_input = tangent_input;
+			o.binormal_input = binormal_input ;
+			o.normal_input = p_normal;
+		}
+
+
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{
 			// Albedo comes from a texture tinted by color
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex);
 			float3 calcpos = IN.worldPos.xyz * _TextureDetail;
 
-
-			//float3 axis = cross( IN.worldNormal, float3( 0., 1., 0. ) ) ;
-			
-			
+			float3x3 tbn = { IN.tangent_input, IN.binormal_input, IN.normal_input };
+//			o.Emission = IN.tangent_input;
+//			return;
 			
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;// * clamp( col.z*10.-7., 0, 1 );
 			o.Alpha = c.a;
+
+			float2 woodgrain = mul( tbn, calcpos ).xy;
 			
-			float2 aloc = floor( calcpos.xz * 2. );
-			float2 delta = (calcpos.xz*2. - aloc) - 0.5;
+			float2 aloc = floor( woodgrain * 2. );
+			float2 delta = (woodgrain*2. - aloc) - 0.5;
 			
 			//calcpos *= abs( axis )*.8+ .2;
 			//calcpos *= float3( 1., .1, 1. );
