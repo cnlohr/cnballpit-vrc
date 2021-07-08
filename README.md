@@ -31,7 +31,7 @@ Haven't gotten NeoFlight working yet.
  * INVESTIGATE why lack of light makes map render in 8.1ms instead of 10.5ms.
  * Double up physics steps, and make them sensitive to time.
  * Cleanup shaders, leaving standard ones.
-
+ 
  * Experiment with D4rk's 
 ```
 ok yes it works
@@ -43,6 +43,10 @@ and should leave id + 2 in col if 2 ids got written
 and utter garbage in col when 3+ ids get written
 ```
  * Put AudioLink on its own layer.
+ 
+ * Palm tree make look better depth.
+ * Fix AudioLink failing?
+ 
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
