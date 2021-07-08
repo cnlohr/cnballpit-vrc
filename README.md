@@ -24,14 +24,11 @@ Haven't gotten NeoFlight working yet.
  * Add toggles for quality, i.e. alpha to coverage balls.
  * Add shadows to the balls.
  * Make ball pit use SDF for boundary.
-
- * Try unique tag names.
  * Make both cameras for combine pass be at the same position, only one piece of geometry, maybe?
  * Test out explicit CRT Rendering Orders https://docs.unity3d.com/Manual/class-CustomRenderTexture.html#custom-render-texture
  * INVESTIGATE why lack of light makes map render in 8.1ms instead of 10.5ms.
  * Double up physics steps, and make them sensitive to time.
  * Cleanup shaders, leaving standard ones.
- 
  * Experiment with D4rk's 
 ```
 ok yes it works
@@ -42,8 +39,8 @@ this should leave 2 in col if only 1 id got written
 and should leave id + 2 in col if 2 ids got written
 and utter garbage in col when 3+ ids get written
 ```
- * Put AudioLink on its own layer.
- 
+
+ * Put AudioLink on its own layer. 
  * Palm tree make look better depth.
  * Fix AudioLink failing?
  * Add note thanking Lyuma
