@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: PenOrEraserModeButton
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 2cee17b16f659f94ebad03ce4fd1d68e,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: a479e2c25d709e944b97f7780d264b13,
     type: 2}
   udonAssembly: 
   assemblyError: 

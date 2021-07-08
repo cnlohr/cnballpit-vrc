@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: InteractButton
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: b25d33ec7340ed84c8ad465e4665f988,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 6b0e60978ffcf0b49aa188ca6677af91,
     type: 2}
   udonAssembly: 
   assemblyError: 
