@@ -9,10 +9,10 @@ public class ballpit_yeet : UdonSharpBehaviour
 	float LastYeet;
 	
 	public GameObject Spawn;
-    void Start()
-    {
-        LastYeet = 0;
-    }
+	void Start()
+	{
+		LastYeet = 0;
+	}
 
 	public override void OnPlayerTriggerEnter(VRCPlayerApi player)
 	{

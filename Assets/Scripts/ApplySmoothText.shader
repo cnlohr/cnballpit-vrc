@@ -1,33 +1,33 @@
 ﻿Shader "Custom/AAApplySmoothText"
 {
-    Properties
-    {
+	Properties
+	{
 		_TextData ("TextData", 2D) = "white" {}
 		_BackgroundColor( "Background Color", Color ) = ( 0, 0, 0, 0 )
 		_ForegroundColor( "Foreground Color", Color ) = ( 1, 1, 1, 1 )
 		_AAAmt( "AA Amount", float ) = 0.4
-    }
-    SubShader
-    {
-        Tags { "RenderType"="Transparent" "Queue" = "Transparent"  }
-        LOD 100
+	}
+	SubShader
+	{
+		Tags { "RenderType"="Transparent" "Queue" = "Transparent"  }
+		LOD 100
 
-            Blend SrcAlpha OneMinusSrcAlpha
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
-            #pragma target 5.0
-            #include "UnityCG.cginc"
-            #include "/Assets/AudioLink/Shaders/SmoothPixelFont.cginc"
+			Blend SrcAlpha OneMinusSrcAlpha
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			// make fog work
+			#pragma multi_compile_fog
+			#pragma target 5.0
+			#include "UnityCG.cginc"
+			#include "/Assets/AudioLink/Shaders/SmoothPixelFont.cginc"
 
 
-            #ifndef glsl_mod
-            #define glsl_mod(x, y) (x - y * floor(x / y))
-            #endif
+			#ifndef glsl_mod
+			#define glsl_mod(x, y) (x - y * floor(x / y))
+			#endif
 
 			Texture2D<float4> _TextData;
 			float4 _TextData_TexelSize;
@@ -35,38 +35,38 @@
 			float4 _ForegroundColor;
 			float _AAAmt;
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+			};
 
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
-            };
+			struct v2f
+			{
+				float2 uv : TEXCOORD0;
+				UNITY_FOG_COORDS(1)
+				float4 vertex : SV_POSITION;
+			};
 
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                UNITY_TRANSFER_FOG(o,o.vertex);
-                return o;
-            }
+			v2f vert (appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = v.uv;
+				UNITY_TRANSFER_FOG(o,o.vertex);
+				return o;
+			}
 
-            fixed4 frag (v2f i) : SV_Target
-            {
-                float2 iuv = i.uv;
-                iuv.y = 1.0 - iuv.y;
+			fixed4 frag (v2f i) : SV_Target
+			{
+				float2 iuv = i.uv;
+				iuv.y = 1.0 - iuv.y;
 
-                // Pixel location on font pixel grid
-                float2 pos = iuv * float2(_TextData_TexelSize.zw);
+				// Pixel location on font pixel grid
+				float2 pos = iuv * float2(_TextData_TexelSize.zw);
 
-                // Character location as uint (floor)
-                uint2 character = (uint2)pos;
+				// Character location as uint (floor)
+				uint2 character = (uint2)pos;
 
 				float4 dataatchar = _TextData[character];
 
@@ -93,8 +93,8 @@
 					col += lerp( _BackgroundColor, _ForegroundColor, saturate( PrintChar( charVal, charUV, softness, weight )*float4(dataatchar.rgb,1.) ) );
 				}
 				return col/4;
-            }
-            ENDCG
-        }
-    }
+			}
+			ENDCG
+		}
+	}
 }

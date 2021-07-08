@@ -27,24 +27,24 @@ public class cnballpitCalc : UdonSharpBehaviour
 	public RenderTexture CAR1;
 	public Shader TestShaderAdjacency, TestShaderCalc, TestShaderCompositeDepth;
 	
-	public Material      MatComputeB;
-	public Material      MatComputeA;
-	public Light         SceneLight;
+	public Material	  MatComputeB;
+	public Material	  MatComputeA;
+	public Light		 SceneLight;
 
 	public float _TargetFramerate = 120.0f;
 
 
-	private float        AccumulatedFrameBoundary;
+	private float		AccumulatedFrameBoundary;
 
-    void Start()
-    {
+	void Start()
+	{
 		CamCompositeDepth.SetReplacementShader (TestShaderCompositeDepth, "");
-		CamAdj0.SetReplacementShader (TestShaderAdjacency,                "");
-		CamAdj1.SetReplacementShader (TestShaderAdjacency,                "");
-		CamCalcB.SetReplacementShader(TestShaderCalc,                     "");
-		CamAdj4.SetReplacementShader (TestShaderAdjacency,                "");
-		CamAdj5.SetReplacementShader (TestShaderAdjacency,                "");
-		CamCalcA.SetReplacementShader(TestShaderCalc,                     "");
+		CamAdj0.SetReplacementShader (TestShaderAdjacency,				"");
+		CamAdj1.SetReplacementShader (TestShaderAdjacency,				"");
+		CamCalcB.SetReplacementShader(TestShaderCalc,					 "");
+		CamAdj4.SetReplacementShader (TestShaderAdjacency,				"");
+		CamAdj5.SetReplacementShader (TestShaderAdjacency,				"");
+		CamCalcA.SetReplacementShader(TestShaderCalc,					 "");
 			
 		//Tricky:  Call SetTargetBuffers in the order you want the cameras to execute.
 		RenderBuffer[] CAR0A = new RenderBuffer[] { CAR0.colorBuffer };
@@ -73,7 +73,7 @@ public class cnballpitCalc : UdonSharpBehaviour
 		CamDepthTop.enabled = false;
 */
 		AccumulatedFrameBoundary = 0;
-    }
+	}
 	
 	void LateUpdate()
 	{
@@ -100,12 +100,12 @@ public class cnballpitCalc : UdonSharpBehaviour
 		else
 		{
 			CamCompositeDepth.RenderWithShader (TestShaderCompositeDepth, "");
-			CamAdj0.RenderWithShader (TestShaderAdjacency,                "");
-			CamAdj1.RenderWithShader (TestShaderAdjacency,                "");
-			CamCalcB.RenderWithShader(TestShaderCalc,                     "");
-			CamAdj4.RenderWithShader (TestShaderAdjacency,                "");
-			CamAdj5.RenderWithShader (TestShaderAdjacency,                "");
-			CamCalcA.RenderWithShader(TestShaderCalc,                     "");
+			CamAdj0.RenderWithShader (TestShaderAdjacency,				"");
+			CamAdj1.RenderWithShader (TestShaderAdjacency,				"");
+			CamCalcB.RenderWithShader(TestShaderCalc,					 "");
+			CamAdj4.RenderWithShader (TestShaderAdjacency,				"");
+			CamAdj5.RenderWithShader (TestShaderAdjacency,				"");
+			CamCalcA.RenderWithShader(TestShaderCalc,					 "");
 		}
 		
 		SceneLight.enabled = true;
