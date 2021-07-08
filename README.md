@@ -49,6 +49,7 @@ and utter garbage in col when 3+ ids get written
  * Add note thanking Lyuma
  * Add note for Kit
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
+ * Make depth shroom.
  
 
 ## 2.0 Release Notes (Morning of July 6)
