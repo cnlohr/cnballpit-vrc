@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: VolumeSlider
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: c69f5cdf503f877438d2ca7e8243c2c8,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: becc90bb7e5513143b3b7412d2490a63,
     type: 2}
   udonAssembly: 
   assemblyError: 
