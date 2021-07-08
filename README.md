@@ -46,6 +46,9 @@ and utter garbage in col when 3+ ids get written
  
  * Palm tree make look better depth.
  * Fix AudioLink failing?
+ * Add note thanking Lyuma
+ * Add note for Kit
+ * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  
 
 ## 2.0 Release Notes (Morning of July 6)
