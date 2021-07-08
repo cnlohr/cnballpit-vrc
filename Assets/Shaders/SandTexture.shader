@@ -1,52 +1,52 @@
 Shader "Custom/SandTexture"
 {
-    Properties
-    {
-        _Color ("Color", Color) = (1,1,1,1)
-        _MainTex ("Albedo (RGB)", 2D) = "white" {}
-        _Glossiness ("Smoothness", Range(0,1)) = 0.5
-        _Metallic ("Metallic", Range(0,1)) = 0.0
-        _TextureDetail ("Detail", float)=1.0
-        _TextureAnimation ("Animation Speed", float)=1.0
-        _TANoiseTex ("TANoise", 2D) = "white" {}
-        _NoisePow ("Noise Power", float ) = 1.8
-        _RockAmbient ("Rock Ambient Boost", float ) = 0.1
+	Properties
+	{
+		_Color ("Color", Color) = (1,1,1,1)
+		_MainTex ("Albedo (RGB)", 2D) = "white" {}
+		_Glossiness ("Smoothness", Range(0,1)) = 0.5
+		_Metallic ("Metallic", Range(0,1)) = 0.0
+		_TextureDetail ("Detail", float)=1.0
+		_TextureAnimation ("Animation Speed", float)=1.0
+		_TANoiseTex ("TANoise", 2D) = "white" {}
+		_NoisePow ("Noise Power", float ) = 1.8
+		_RockAmbient ("Rock Ambient Boost", float ) = 0.1
 		_EmissionMux( "Emission Mux", Color) = (.3, .3, .3, 1. )
 
-    }
-    SubShader
-    {
-        LOD 200
+	}
+	SubShader
+	{
+		LOD 200
 
-        // shadow caster rendering pass, implemented manually
-        // using macros from UnityCG.cginc
-        Pass
-        {
-            Tags {"LightMode"="ShadowCaster"}
+		// shadow caster rendering pass, implemented manually
+		// using macros from UnityCG.cginc
+		Pass
+		{
+			Tags {"LightMode"="ShadowCaster"}
 
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile_shadowcaster
-            #include "UnityCG.cginc"
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			#pragma multi_compile_shadowcaster
+			#include "UnityCG.cginc"
 
-            struct v2f { 
-                V2F_SHADOW_CASTER;
-            };
+			struct v2f { 
+				V2F_SHADOW_CASTER;
+			};
 
-            v2f vert(appdata_base v)
-            {
-                v2f o;
-                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-                return o;
-            }
+			v2f vert(appdata_base v)
+			{
+				v2f o;
+				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+				return o;
+			}
 
-            float4 frag(v2f i) : SV_Target
-            {
-                SHADOW_CASTER_FRAGMENT(i)
-            }
-            ENDCG
-        }
+			float4 frag(v2f i) : SV_Target
+			{
+				SHADOW_CASTER_FRAGMENT(i)
+			}
+			ENDCG
+		}
 
 
 		Tags { "RenderType"="Opaque" }
@@ -113,6 +113,6 @@ Shader "Custom/SandTexture"
 			o.Alpha = c.a;
 		}
 		ENDCG
-    }
-    FallBack "Diffuse"
+	}
+	FallBack "Diffuse"
 }
