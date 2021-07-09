@@ -48,7 +48,7 @@ and utter garbage in col when 3+ ids get written
  
  * Make fountain pick uppable.
  * Make center thing removable?
- 
+ * Copy pixels from rendertexture into 
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
