@@ -18,50 +18,64 @@ public class DayNightControl : UdonSharpBehaviour
 	public Material WaterMaterial;
 	public Material BallMaterial;
 	public ReflectionProbe rprobe;
+	//public RenderTexture rtprobe;
+	
+	private int LastLightMode = -1;
 
 	// Start is called before the first frame update
 	void UpdateLightMode()
 	{
-		switch( LightMode )
+		if( LastLightMode != LightMode )
 		{
-			case 0:
-				RenderSettings.skybox = SkyboxMaterial;
-				DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -286.73f, -20.39f );
-				DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
-				RenderSettings.ambientIntensity = 1.0f;
-				SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
-				WaterMaterial.SetFloat( "_Glossiness", 1.0f );
-				BallMaterial.SetFloat( "_NightMode", 0 );
-				BallMaterial.SetFloat( "_Smoothness", .77f );
-				BallMaterial.SetFloat( "_Metallic", 0.0f );
-				break;
-			case 1:
-				DirectionalLight.color = new Color( 0.1654503f, 0.1958628f, 0.245283f, 1.0f );
-				//DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -120.73f, -20.39f);
-				DirectionalLight.transform.rotation = Quaternion.Euler( 70.0f, 0.0f, 0.0f );
-				//SkyboxMaterial.SetFloat( "_AtmosphereThickness", 0.5f );
-				RenderSettings.skybox = SkyboxMaterialNight;
-				RenderSettings.ambientIntensity = 1.0f;
-				WaterMaterial.SetFloat( "_Glossiness", 0.8f );
-				BallMaterial.SetFloat( "_NightMode", 1 );
-				BallMaterial.SetFloat( "_Smoothness", 1.0f );
-				BallMaterial.SetFloat( "_Metallic", 0.0f );
-				break;
-			case 2:
-				RenderSettings.skybox = SkyboxMaterial;
-				DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
-				DirectionalLight.transform.rotation = Quaternion.Euler( 0, 128, 0 );
-				SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
-				RenderSettings.ambientIntensity = 1.0f;
-				WaterMaterial.SetFloat( "_Glossiness", 1.0f );
-				BallMaterial.SetFloat( "_NightMode", 0 );
-				BallMaterial.SetFloat( "_Smoothness", .77f );
-				BallMaterial.SetFloat( "_Metallic", 0.0f );
-				break;
-			default:
-				break;
+			switch( LightMode )
+			{
+				case 0:
+					RenderSettings.skybox = SkyboxMaterial;
+					DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -286.73f, -20.39f );
+					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
+					RenderSettings.ambientIntensity = 1.0f;
+					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
+					WaterMaterial.SetFloat( "_Glossiness", 1.0f );
+					BallMaterial.SetFloat( "_NightMode", 0 );
+					BallMaterial.SetFloat( "_Smoothness", .77f );
+					BallMaterial.SetFloat( "_Metallic", 0.0f );
+					break;
+				case 1:
+					DirectionalLight.color = new Color( 0.1654503f, 0.1958628f, 0.245283f, 1.0f );
+					//DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -120.73f, -20.39f);
+					DirectionalLight.transform.rotation = Quaternion.Euler( 70.0f, 0.0f, 0.0f );
+					//SkyboxMaterial.SetFloat( "_AtmosphereThickness", 0.5f );
+					RenderSettings.skybox = SkyboxMaterialNight;
+					RenderSettings.ambientIntensity = 1.0f;
+					WaterMaterial.SetFloat( "_Glossiness", 0.8f );
+					BallMaterial.SetFloat( "_NightMode", 1 );
+					BallMaterial.SetFloat( "_Smoothness", 1.0f );
+					BallMaterial.SetFloat( "_Metallic", 0.0f );
+					break;
+				case 2:
+					RenderSettings.skybox = SkyboxMaterial;
+					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
+					DirectionalLight.transform.rotation = Quaternion.Euler( 0, 128, 0 );
+					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
+					RenderSettings.ambientIntensity = 1.0f;
+					WaterMaterial.SetFloat( "_Glossiness", 1.0f );
+					BallMaterial.SetFloat( "_NightMode", 0 );
+					BallMaterial.SetFloat( "_Smoothness", .77f );
+					BallMaterial.SetFloat( "_Metallic", 0.0f );
+					break;
+				default:
+					break;
+			}
+			//rprobe.enabled = true;
+			rprobe.RenderProbe();
+			//rprobe.RenderProbe();
+			//RenderSettings.customReflection = rtprobe;
+			LastLightMode = LightMode;
 		}
-		rprobe.RenderProbe();
+		else
+		{
+			//rprobe.enabled = false;
+		}
 	}
 	
 	public void OnDeserialization()
@@ -71,6 +85,7 @@ public class DayNightControl : UdonSharpBehaviour
 	
 	void Start()
 	{
+		LastLightMode = -1;
 		if( Networking.IsMaster )
 		{
 			LightMode = 1;

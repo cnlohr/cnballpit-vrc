@@ -46,6 +46,9 @@ and utter garbage in col when 3+ ids get written
  * Cleanup Text (Write to shadow cast)
  * Increase Audio Reactivity on rainbow effect.
  
+ * Make fountain pick uppable.
+ * Make center thing removable?
+ 
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
