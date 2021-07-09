@@ -30,27 +30,83 @@ Shader "FAE/Tree Branch"
         {
             Tags {"LightMode"="ShadowCaster"}
 			Cull Off
+			CGINCLUDE
+				
+			#include "UnityShaderVariables.cginc"
+			#include "UnityCG.cginc"
+			#pragma target 5.0
+			//#pragma multi_compile_instancing
+			//#include "VS_InstancedIndirect.cginc"
 
+
+			uniform sampler2D _WindVectors;
+			uniform float _WindAmplitudeMultiplier;
+			uniform float _WindAmplitude;
+			uniform float _WindSpeed;
+			uniform float4 _WindDirection;
+			uniform float _UseSpeedTreeWind;
+			uniform float _MaxWindStrength;
+			uniform float _WindStrength;
+			uniform float _TrunkWindSpeed;
+			uniform float _TrunkWindSwinging;
+			uniform float _TrunkWindWeight;
+			uniform float _FlatLighting;
+			uniform sampler2D _BumpMap;
+			uniform float _GradientBrightness;
+			uniform float4 _Color;
+			uniform sampler2D _MainTex;
+			uniform float4 _HueVariation;
+			uniform float _WindDebug;
+			uniform float4 _TransmissionColor;
+			uniform float _Smoothness;
+			uniform float _AmbientOcclusion;
+			uniform float _Cutoff = 0.5;
+
+			ENDCG
+			
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_shadowcaster
             #include "UnityCG.cginc"
 
-            struct v2f { 
-                V2F_SHADOW_CASTER;
-            };
+			struct v2f
+			{
+				UNITY_FOG_COORDS(3)
+				float4 pos : SV_POSITION;
+				//float3 worldPos : TEXCOORD5;
+				float2 uv_texcoord : TEXCOORD0;
+				float2 uv2_texcoord2 : TEXCOORD1;
+			};
+			
+			v2f vert( in appdata_full v )
+			{
+				v2f o;
+				UNITY_TRANSFER_FOG(o,o.vertex);
 
-            v2f vert(appdata_base v)
-            {
-                v2f o;
-                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-                return o;
-            }
+				float3 ase_worldPos = mul( unity_ObjectToWorld, v.vertex );
+				float temp_output_60_0 = ( ( _WindSpeed * 0.05 ) * _Time.w );
+				float2 appendResult249 = (float2(_WindDirection.x , _WindDirection.z));
+				float3 WindVectors99 = UnpackNormal( tex2Dlod( _WindVectors, float4( ( ( _WindAmplitudeMultiplier * _WindAmplitude * ( (ase_worldPos).xz * 0.01 ) ) + ( temp_output_60_0 * appendResult249 ) ), 0, 0.0) ) );
+				float3 ase_objectScale = float3( length( unity_ObjectToWorld[ 0 ].xyz ), length( unity_ObjectToWorld[ 1 ].xyz ), length( unity_ObjectToWorld[ 2 ].xyz ) );
+				float3 appendResult250 = (float3(_WindDirection.x , 0.0 , _WindDirection.z));
+				float3 _Vector2 = float3(1,1,1);
+				float3 break282 = ( ( (float3( 0,0,0 ) + (sin( ( ( temp_output_60_0 * ( _TrunkWindSpeed / ase_objectScale ) ) * appendResult250 ) ) - ( float3(-1,-1,-1) + _TrunkWindSwinging )) * (_Vector2 - float3( 0,0,0 )) / (_Vector2 - ( float3(-1,-1,-1) + _TrunkWindSwinging ))) * _TrunkWindWeight ) * (( _UseSpeedTreeWind )?( ( v.texcoord1.xy.y * 0.01 ) ):( v.color.a )) );
+				float3 appendResult283 = (float3(break282.x , 0.0 , break282.z));
+				float3 Wind17 = ( ( ( WindVectors99 * (( _UseSpeedTreeWind )?( v.texcoord2.xy.x ):( v.color.g )) ) * _MaxWindStrength * _WindStrength ) + appendResult283 );
+				v.vertex.xyz += Wind17;
+				o.pos = UnityObjectToClipPos(v.vertex);
+                o.uv_texcoord = v.texcoord;
+                o.uv2_texcoord2 = v.texcoord1;
+				return o;
+			}
 
             float4 frag(v2f i) : SV_Target
             {
-                SHADOW_CASTER_FRAGMENT(i)
+				float2 uv_MainTex19 = i.uv_texcoord;
+				float4 tex2DNode19 = tex2D( _MainTex, uv_MainTex19 );
+				clip( (tex2DNode19.a < 0.5)?-1:1 );
+				return 1.;
             }
             ENDCG
         }
@@ -61,12 +117,9 @@ Shader "FAE/Tree Branch"
 		Cull Off
 		ZWrite On
 		CGPROGRAM
-		#include "UnityShaderVariables.cginc"
-		#include "UnityCG.cginc"
-		#pragma target 5.0
-		//#pragma multi_compile_instancing
-		#include "VS_InstancedIndirect.cginc"
+		
 		#pragma surface surf Standard keepalpha addshadow fullforwardshadows vertex:vertexDataFunc 
+
 
 		struct Input
 		{
@@ -76,29 +129,6 @@ Shader "FAE/Tree Branch"
 			float2 uv2_texcoord2;
 			float4 vertexToFrag332;
 		};
-
-		uniform sampler2D _WindVectors;
-		uniform float _WindAmplitudeMultiplier;
-		uniform float _WindAmplitude;
-		uniform float _WindSpeed;
-		uniform float4 _WindDirection;
-		uniform float _UseSpeedTreeWind;
-		uniform float _MaxWindStrength;
-		uniform float _WindStrength;
-		uniform float _TrunkWindSpeed;
-		uniform float _TrunkWindSwinging;
-		uniform float _TrunkWindWeight;
-		uniform float _FlatLighting;
-		uniform sampler2D _BumpMap;
-		uniform float _GradientBrightness;
-		uniform float4 _Color;
-		uniform sampler2D _MainTex;
-		uniform float4 _HueVariation;
-		uniform float _WindDebug;
-		uniform float4 _TransmissionColor;
-		uniform float _Smoothness;
-		uniform float _AmbientOcclusion;
-		uniform float _Cutoff = 0.5;
 
 		void vertexDataFunc( inout appdata_full v, out Input o )
 		{

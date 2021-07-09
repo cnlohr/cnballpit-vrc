@@ -84,6 +84,7 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 5
+    - _NightMode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PlaidWatch: 0

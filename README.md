@@ -39,14 +39,12 @@ this should leave 2 in col if only 1 id got written
 and should leave id + 2 in col if 2 ids got written
 and utter garbage in col when 3+ ids get written
 ```
-
- * Put AudioLink on its own layer. 
- * Palm tree make look better depth.
  * Fix AudioLink failing?
- * Add note thanking Lyuma
- * Add note for Kit
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  * Make depth shroom.
+ * Cleanup YEET (Write to shadow cast)
+ * Cleanup Text (Write to shadow cast)
+ * Increase Audio Reactivity on rainbow effect.
  
 
 ## 2.0 Release Notes (Morning of July 6)
@@ -56,7 +54,7 @@ and utter garbage in col when 3+ ids get written
  * Moved text monolith locations.
  * Reduced impact of palm trees.
  
-## 3.0 Release Notes
+## 3.0 Release Notes (Evening of July 7)
  * Reduced Yeeter Delay
  * Removed a few blocks
  * Added a few yeeters.
@@ -70,12 +68,19 @@ and utter garbage in col when 3+ ids get written
  * Added some props.
  * Change bounding box for points two different sizes, so balls can be seen from farther, but computing balls does not slow down adjacent cameras.
 
-## 4.0 Release Notes
+## 4.0 Release Notes (1:30 AM July 8)
  * Shroom!
  * Fix wood texture.
  * Add day/night cycle.
  * Thick pens.
  
+## 5.0 Release Notes (3:00 AM July 9)
+ * Fixed Night Sky + Ball effects at night.
+ * Palm tree make look better depth.
+ * Moved everything to a "compute" layer.
+ * Upgraded TXL's player.
+ 
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.

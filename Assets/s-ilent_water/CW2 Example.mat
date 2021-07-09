@@ -61,7 +61,7 @@ Material:
     - _FoamMax: 0
     - _FoamMin: 1.67
     - _FoamScrollSpeed: 0.85
-    - _Glossiness: 0.8
+    - _Glossiness: 1
     - _GlossyReflections: 1
     - _IgnoreDepthBuffer: 0
     - _IgnoreUVs: 1

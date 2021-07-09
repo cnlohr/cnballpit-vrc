@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: FAE_PalmBark
   m_Shader: {fileID: 4800000, guid: 83300dd6251b49e4aae02a0b6e8a1ad5, type: 3}
   m_ShaderKeywords: _EMISSION
@@ -93,7 +94,7 @@ Material:
     - _TopDarkness: 1
     - _UVSec: 0
     - _UseLegacyVertexColors: 0
-    - _UseSpeedTreeWind: 0
+    - _UseSpeedTreeWind: 1
     - _WindAmplitudeMultiplier: 1
     - _WindWeight: 0.1164738
     - _ZWrite: 1

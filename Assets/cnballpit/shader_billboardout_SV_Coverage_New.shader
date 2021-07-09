@@ -11,6 +11,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 		_Metallic("Metallic", float ) = 0
 		_ScreenshotMode("Screenshot Mode", float) = 0
 		[ToggleUI] _ExtraPretty( "Extra Pretty", float ) = 0
+		_NightMode("Night Mode", float) = 0
 	}
 
 	SubShader 
@@ -69,6 +70,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			float4 _RVData_TexelSize;
 			float _ExtraPretty;
 			float _ScreenshotMode;
+			float _NightMode;
 			
 			v2g vert(appdata_base v)
 			{
@@ -163,26 +165,31 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorDiffuse = colorDiffuse * .5 + .04;
 					} else if( _Mode == 0 )
 					{
-						colorAmbient   += colorDiffuse * .1;
+						float intensitymux = lerp( 1., sin(_Time.y+ballid)*1.1+1.1, _NightMode );
+						colorDiffuse *= intensitymux;
+						colorAmbient   += colorDiffuse * .06;
 					}
 					else if( _Mode == 1 )
 					{
 						colorDiffuse = abs(float4( 1.-abs(glsl_mod(PositionRelativeToCenterOfBallpit.xyz,2)), 1 )) * .8;
-						colorAmbient   += colorDiffuse * .1;
+						float intensitymux = lerp( 1., 2.0, _NightMode );
+						colorDiffuse *= intensitymux;
+						colorAmbient   += colorDiffuse * .06;
 					}
 					else if( _Mode == 2 )
 					{
 						colorDiffuse.xyz = SmoothHue;
-						colorAmbient   += colorDiffuse * .1;
+						float intensitymux = lerp( 1., sin(_Time.y+ballid)*1.1+1.3, _NightMode );
+						colorDiffuse *= intensitymux;				
+						colorAmbient   += colorDiffuse * lerp( .01, .04, _NightMode );
 
 					}
 					else if( _Mode == 3 )
 					{
-						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
-						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
+						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( ballid % 16, (ballid / 128)%4 ) ) * 6 + .05 );
 						colorDiffuse.xyz = SmoothHue;
 						//colorDiffuse *= intensity; 
-						colorAmbient += colorDiffuse * intensity * .3;
+						colorAmbient += colorDiffuse * intensity * .35;
 						colorDiffuse = colorDiffuse * .5 + .04;
 					}
 					else if( _Mode == 4 )
@@ -202,7 +209,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						else
 							colorDiffuse.xyz = SmoothHue * 0.1;
 
-						colorAmbient   += colorDiffuse * .1;
+						colorAmbient   += colorDiffuse * lerp( .1, .5, _NightMode );
 					}
 					else if( _Mode == 5 )
 					{
@@ -214,7 +221,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorDiffuse.xyz = ballcolors[ballid%7];
 
 						//colorDiffuse *= intensity; 
-						colorAmbient += colorDiffuse * intensity * .3;
+						colorAmbient += colorDiffuse * intensity * .35;
 						colorDiffuse = colorDiffuse * .5 + .04;
 					}
 					
@@ -544,7 +551,8 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						indirectLight.diffuse += light.color * .25;
 						light.color *= .75 * attenuation;
 					}
-
+					
+					
 					albcolor.rgb = UNITY_BRDF_PBS(
 						albedo, specularTint,
 						oneMinusReflectivity, _Smoothness,
