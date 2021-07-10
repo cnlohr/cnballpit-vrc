@@ -17,8 +17,8 @@ public class DayNightControl : UdonSharpBehaviour
 	public Material SkyboxMaterialNight;
 	public Material WaterMaterial;
 	public Material BallMaterial;
-	public ReflectionProbe rprobe;
-	//public RenderTexture rtprobe;
+	public Camera rprobeRender;
+	public Cubemap       ctcopy;
 	
 	private int LastLightMode = -1;
 
@@ -66,15 +66,13 @@ public class DayNightControl : UdonSharpBehaviour
 				default:
 					break;
 			}
-			//rprobe.enabled = true;
-			rprobe.RenderProbe();
-			//rprobe.RenderProbe();
-			//RenderSettings.customReflection = rtprobe;
-			LastLightMode = LightMode;
+
+			rprobeRender.enabled = true;
+			rprobeRender.RenderToCubemap( ctcopy, 63 );
+			rprobeRender.enabled = false;
 		}
 		else
 		{
-			//rprobe.enabled = false;
 		}
 	}
 	
