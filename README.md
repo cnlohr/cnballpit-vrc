@@ -41,17 +41,10 @@ and utter garbage in col when 3+ ids get written
 ```
  * Fix AudioLink failing?
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
- * Make depth shroom.
- * Make worldspace shroom.
  * Figure out why some users get inundated by warnings about adding a depth buffer.
- * Cleanup YEET (Write to shadow cast)
- * Cleanup Text (Write to shadow cast)
  * Increase Audio Reactivity on rainbow effect.
  * Make fountain pick uppable.
  * Make center thing removable?
- * Copy pixels from rendertexture into 
- * Update Udon
- * Use manual sync on button.
 
 
 ## 2.0 Release Notes (Morning of July 6)
@@ -87,6 +80,13 @@ and utter garbage in col when 3+ ids get written
  * Moved everything to a "compute" layer.
  * Upgraded TXL's player.
  
+## 6.0 Release Notes
+ * Made render-probe-less reflection maps work.  This is a perf boost from 5.0
+ * Switched to manual sync for day/night control.
+ * Added more effect bubbles (worldspace, normal, depth)
+ * Fixed a few shader's shadow casts
+ * Cleanup YEET (Write to shadow cast)
+ * Cleanup Text (Write to shadow cast)
 
 ## Interesting
  * shader_billboardout modes.
@@ -102,6 +102,7 @@ for( j = 0; j < 4; j++ )
 	else              obid = _Adjacency3[hashed];
 ```
  * Back and forth about rendering technique.
+ * Render Probes vs Cameras
 
 ## Special Thanks
  * D4rkPl4y3r for the idea, and several pointers!  Also, the binning principle.

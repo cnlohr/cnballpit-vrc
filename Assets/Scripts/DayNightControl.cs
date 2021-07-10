@@ -87,6 +87,7 @@ public class DayNightControl : UdonSharpBehaviour
 		if( Networking.IsMaster )
 		{
 			LightMode = 1;
+			RequestSerialization();
 		}
 		UpdateLightMode();
 	}
@@ -97,6 +98,7 @@ public class DayNightControl : UdonSharpBehaviour
 		if( Networking.IsMaster ) // ??? Why is this second one always 1? || Networking.IsInstanceOwner )
 		{
 			LightMode = ( LightMode + 1 ) % NumLightModes;
+			RequestSerialization();
 		}
 		UpdateLightMode();
 	}
