@@ -42,15 +42,17 @@ and utter garbage in col when 3+ ids get written
  * Fix AudioLink failing?
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  * Make depth shroom.
+ * Make worldspace shroom.
+ * Figure out why some users get inundated by warnings about adding a depth buffer.
  * Cleanup YEET (Write to shadow cast)
  * Cleanup Text (Write to shadow cast)
  * Increase Audio Reactivity on rainbow effect.
- 
  * Make fountain pick uppable.
  * Make center thing removable?
  * Copy pixels from rendertexture into 
  * Update Udon
  * Use manual sync on button.
+
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
