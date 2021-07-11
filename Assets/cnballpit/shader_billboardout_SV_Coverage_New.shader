@@ -12,6 +12,9 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 		_ScreenshotMode("Screenshot Mode", float) = 0
 		[ToggleUI] _ExtraPretty( "Extra Pretty", float ) = 0
 		_NightMode("Night Mode", float) = 0
+		
+		_VideoTexture ("Video Texture", 2D) = "black" {}
+		_IsAVProInput ("IsAVProInput", float) = 0
 	}
 
 	SubShader 
@@ -67,6 +70,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			
 			float _Mode, _Smoothness, _Metallic;
 			texture2D<float4> _RVData;
+			sampler2D _VideoTexture;
 			float4 _RVData_TexelSize;
 			float _ExtraPretty;
 			float _ScreenshotMode;
@@ -224,7 +228,13 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorAmbient += colorDiffuse * intensity * .35;
 						colorDiffuse = colorDiffuse * .5 + .04;
 					}
-					
+					else if( _Mode == 6 )
+					{
+						float2 uvpit = saturate( PositionRelativeToCenterOfBallpit.xz * float2( 0.05, 0.08 )*.95 + 0.5 );
+						colorDiffuse = tex2Dlod( _VideoTexture, float4( uvpit ,0, 0 ) );
+						colorAmbient += colorDiffuse * .6;
+						colorDiffuse = colorDiffuse * .6 + 0.01;
+					}
 					g2f pIn;
 					
 					
