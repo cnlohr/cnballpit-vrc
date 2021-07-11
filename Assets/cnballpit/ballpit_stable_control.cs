@@ -18,6 +18,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public Material ballpitB;
 	public Material ballpitRender;
 	public GameObject ballpitRenderObject;
+	public Material VideoToStealMaterial;
 
 	void Start()
 	{
@@ -31,12 +32,12 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		qualitymode = 1;
 		Debug.Log( "ballpit stable control " + gravityF + " / " + friction );
 	}
+	
 	void Update()
 	{
 	
 		ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
 		ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
-		//ballpitRenderObject.SetActive( !balls_reset );
 		ballpitRender.SetFloat( "_Mode", mode );
 		ballpitA.SetFloat( "_GravityValue", gravityF );
 		ballpitB.SetFloat( "_GravityValue", gravityF );

@@ -5,11 +5,15 @@
 Process:
  * Open Project, BUT NOT SCENE.
 
-Impor the following, in order:
+Import the following, in order:
  * World SDK
  * Udon Sharp
  * AudioLink v0.2.5
  * CyanEmu
+ 
+Extra:
+ * Kaj Unity Shaders (I'm trying to learn to use this)
+ * VRWorldToolkit (V1.11.2 current) (This seemed to fix me once when I could no longer export)
  
 Close Project (and don't save).
 
@@ -45,6 +49,7 @@ and utter garbage in col when 3+ ids get written
  * Increase Audio Reactivity on rainbow effect.
  * Make fountain pick uppable.
  * Make center thing removable?
+ * Try Kaj's stuff.
 
 
 ## 2.0 Release Notes (Morning of July 6)
@@ -87,6 +92,10 @@ and utter garbage in col when 3+ ids get written
  * Fixed a few shader's shadow casts
  * Cleanup YEET (Write to shadow cast)
  * Cleanup Text (Write to shadow cast)
+
+## 7.0 Release Notes
+ * Made video player moveable.
+ * Added video player ball mode.
 
 ## Interesting
  * shader_billboardout modes.

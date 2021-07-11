@@ -71,6 +71,18 @@ Material:
         m_Texture: {fileID: 8400000, guid: 01782c54ca21894419e50e1d02878177, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _VideoTexture:
+        m_Texture: {fileID: 8400000, guid: f7dc74b731208124ebdb39d441d8cbd0, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VideoTextureA:
+        m_Texture: {fileID: 8400000, guid: e66de5930ba0a5e499bddf45c154ca37, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VideoTextureB:
+        m_Texture: {fileID: 8400000, guid: f7dc74b731208124ebdb39d441d8cbd0, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Albedo: 1
     - _BumpScale: 1
@@ -82,6 +94,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _IsAVProInput: 0
     - _Metallic: 0
     - _Mode: 5
     - _NightMode: 1
