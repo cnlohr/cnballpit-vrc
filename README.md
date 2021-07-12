@@ -47,8 +47,12 @@ and utter garbage in col when 3+ ids get written
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  * Figure out why some users get inundated by warnings about adding a depth buffer.
  * Increase Audio Reactivity on rainbow effect.
- * Make center thing removable?
-
+ * Make textured ball effect.
+ * Figure out ball nonshadows occasionally.
+ * Option to draw video on side of balls.
+ * Why is AudioLink weird when doing colors.
+ * Synchronize Sky
+ * Little RGB Balls on video screen.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -101,6 +105,14 @@ and utter garbage in col when 3+ ids get written
 
 ## 7.0a Release Notes
  * Fix mirrors not reflecting the world.
+
+## 8.0 11:30 PM PT / July 11, 2021
+ * Made rock texture local space.
+ * Disabled change of ownership on collision on all objects.
+ * Made sure the ownership settings were uniform across all objects.
+ * Fixed layers some things were on, i.e. remove sphere-player collision.
+ * Make the balls emit preferentialy from the middle.
+ 
 
 ## Interesting
  * shader_billboardout modes.
