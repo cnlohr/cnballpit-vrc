@@ -17,8 +17,6 @@ Shader "cnballpit/shaderCalcPrimary"
 		_VelocitiesIn ("Velocities", 2D) = "white" {}
 		_Adjacency0 ("Adjacencies0", 2D) = "white" {}
 		_Adjacency1 ("Adjacencies1", 2D) = "white" {}
-		_Adjacency2 ("Adjacencies2", 2D) = "white" {}
-		_Adjacency3 ("Adjacencies3", 2D) = "white" {}
         _DepthMapComposite ("Composite Depth", 2D) = "white" {}
 		_Friction( "Friction", float ) = .008
 		_DebugFloat("Debug", float) = 0
@@ -26,6 +24,8 @@ Shader "cnballpit/shaderCalcPrimary"
 		_GravityValue( "Gravity", float ) = 9.8
 		_TargetFPS ("Target FPS", float ) = 120
 		[ToggleUI] _DontPerformStep( "Don't Perform Step", float ) = 0
+		_FanPosition( "Fan Position", Vector ) = ( 0, 0, 0 )
+		_FanRotation( "Fan Rotation", Vector ) = ( 0, 0, 0, 1 )
 	}
 	SubShader
 	{
@@ -59,12 +59,34 @@ Shader "cnballpit/shaderCalcPrimary"
 				float4 Vel : COLOR1;
 			};
 
+			//https://community.khronos.org/t/quaternion-functions-for-glsl/50140/2
+			float3 qtransform( in float4 q, in float3 v )
+			{
+				return v + 2.0*cross(cross(v, q.xyz ) + q.w*v, q.xyz);
+			}
+			
+			// Next two https://gist.github.com/mattatz/40a91588d5fb38240403f198a938a593
+			float4 q_conj(float4 q)
+			{
+				return float4(-q.x, -q.y, -q.z, q.w);
+			}
+
+			// https://jp.mathworks.com/help/aeroblks/quaternioninverse.html
+			float4 q_inverse(float4 q)
+			{
+				float4 conj = q_conj(q);
+				return conj / (q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+			}
+
+
+			
 			#include "cnballpit.cginc"
 			float _BallRadius, _DebugFloat, _ResetBalls, _GravityValue, _Friction, _DontPerformStep;
 			texture2D<float2> _DepthMapComposite;
 			float4 _DepthMapComposite_TexelSize;
 			float _TargetFPS;
-
+			float3 _FanPosition;
+			float4 _FanRotation;
 
 			v2f vert (appdata v)
 			{
@@ -74,6 +96,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				return o;
 			}
 			
+
 			f2a frag ( v2f i )
 			{
 				f2a ret;
@@ -142,9 +165,7 @@ Shader "cnballpit/shaderCalcPrimary"
 						{
 							uint obid;
 							if( j == 0 )      obid = _Adjacency0[hashed];
-							else if( j == 1 ) obid = _Adjacency1[hashed];
-							else if( j == 2 ) obid = _Adjacency2[hashed];
-							else              obid = _Adjacency3[hashed];
+							else              obid = _Adjacency1[hashed];
 
 							obid--;
 							//See if we hit ourselves.
@@ -250,14 +271,17 @@ Shader "cnballpit/shaderCalcPrimary"
 						}
 					}
 
-					//Island
-					float3 diff = Position.xyz - float3( 0, -1.25, 0 );
-					protrudelen = -length( diff ) + 2 + Position.w;
-					if( protrudelen > 0 )
+					//Island (a sphere below the ground)
+					if( 0 )
 					{
-						diff = normalize( diff  ) * protrudelen;
-						Velocity.xyz += diff * edgecfmv;
-						Position.xyz += diff * edgecfm;
+						float3 diff = Position.xyz - float3( 0, -1.25, 0 );
+						protrudelen = -length( diff ) + 2 + Position.w;
+						if( protrudelen > 0 )
+						{
+							diff = normalize( diff  ) * protrudelen;
+							Velocity.xyz += diff * edgecfmv;
+							Position.xyz += diff * edgecfm;
+						}
 					}
 
 					//This is just a slight nudge to push the balls back in.
@@ -334,23 +358,27 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 				}
 				
-				//Fountain
+				//Fountain / Fan
 				if( 1 )
 				{
-					if( Position.x < -5.4 && Position.x > -6.4 && Position.z < .5 && Position.z > 0 && Position.y < 3 )
+					float3 FanStart = _FanPosition;
+					float3 FanVector = normalize( qtransform( q_inverse( _FanRotation ), float3( 0, 1, 0 ) ) );
+					//FanVector = float3( -FanVector.x, FanVector.y, -FanVector.z );
+					
+					float3 RelPos = Position - FanStart;
+					float t = dot( RelPos, FanVector ); //Distance along fan vector
+					float3 lpos = FanVector * t;
+					float d = length( RelPos - lpos ); //Distance from fan vector
+					
+					float dforce = 1 - d;
+					dforce = min( dforce, (5-t)*.5 ); //Force contribution at extent
+					dforce = min( t + 1, dforce ); //Force contribution behind.
+					
+					if( dforce > 0 )
 					{
-						Velocity.xyz += float3( -.01, .13, 0 );
+						Velocity.xyz += FanVector.xyz * dforce * .15;
 					}
 				}
-				
-				//Velocity.w = 0.5;
-
-	//			texture2D<float> _DepthMapAbove;
-	//			float4 _DepthMapAbove_TexelSize;
-	//			texture2D<float> _DepthMapBelow;
-	//			float4 _DepthMapBelow_TexelSize;
-
-
 
 				// Step 2: Actually perform physics.
 				Velocity.y -= _GravityValue*dt;

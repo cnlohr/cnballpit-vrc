@@ -14,7 +14,7 @@ Shader "FAE/Tree Trunk"
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 		[HideInInspector] __dirty( "", Int ) = 1
 	}
-
+	CustomEditor "Kaj.ShaderEditor"    
 	SubShader
 	{
 		Tags{ "RenderType" = "Opaque"  "Queue" = "Geometry+0" }

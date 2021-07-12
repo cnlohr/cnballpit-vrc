@@ -9,7 +9,7 @@ Shader "cnballpit/shaderAdjacency"
 		_VelocitiesIn ("Velocities", 2D) = "black" {}
 		_Adjacency0 ("Adjacencies0", 2D) = "black" {}
 		_Adjacency1 ("Adjacencies1", 2D) = "black" {}
-		_Adjacency2 ("Adjacencies2", 2D) = "black" {}
+		//_Adjacency2 ("Adjacencies2", 2D) = "black" {}
 		_wpass ("WPass", int) = 0
 	}
 	SubShader
@@ -97,7 +97,7 @@ Shader "cnballpit/shaderAdjacency"
 				
 				if( (uint)(_Adjacency0[coordout].x) == idplus1norm ) discard;
 				if( (uint)(_Adjacency1[coordout].x) == idplus1norm ) discard;
-				if( (uint)(_Adjacency2[coordout].x) == idplus1norm ) discard;
+			//	if( (uint)(_Adjacency2[coordout].x) == idplus1norm ) discard;
 				
 				return idplus1norm;
 			}

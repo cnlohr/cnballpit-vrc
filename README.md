@@ -47,9 +47,7 @@ and utter garbage in col when 3+ ids get written
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  * Figure out why some users get inundated by warnings about adding a depth buffer.
  * Increase Audio Reactivity on rainbow effect.
- * Make fountain pick uppable.
  * Make center thing removable?
- * Try Kaj's stuff.
 
 
 ## 2.0 Release Notes (Morning of July 6)
@@ -93,9 +91,16 @@ and utter garbage in col when 3+ ids get written
  * Cleanup YEET (Write to shadow cast)
  * Cleanup Text (Write to shadow cast)
 
-## 7.0 Release Notes
+## 7.0 Release Notes (6:30 PM PT July 11)
  * Made video player moveable.
  * Added video player ball mode.
+ * Moved things to an environment layer to speed up perf of culled objects marginally.
+ * Make fountain pick uppable.
+ * Made palm tree in back pick uppable.
+ * Added "freeze" mode to the video on balls effect.
+
+## 7.0a Release Notes
+ * Fix mirrors not reflecting the world.
 
 ## Interesting
  * shader_billboardout modes.

@@ -21,7 +21,7 @@ Shader "FAE/Tree Branch"
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 		[HideInInspector] __dirty( "", Int ) = 1
 	}
-
+	CustomEditor "Kaj.ShaderEditor"    
 	SubShader
 	{
 	    // shadow caster rendering pass, implemented manually

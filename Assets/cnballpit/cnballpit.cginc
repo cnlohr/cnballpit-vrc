@@ -1,17 +1,15 @@
 
 texture2D< float4 > _PositionsIn;
 texture2D< float4 > _VelocitiesIn;
+texture2D< float4 > _ColorsIn;
 texture2D< float4 > _Adjacency0;
 texture2D< float4 > _Adjacency1;
-texture2D< float4 > _Adjacency2;
-texture2D< float4 > _Adjacency3;
 
 float4 _PositionsIn_TexelSize;
 float4 _VelocitiesIn_TexelSize;
+float4 _ColorsIn_TexelSize;
 float4 _Adjacency0_TexelSize;
 float4 _Adjacency1_TexelSize;
-float4 _Adjacency2_TexelSize;
-float4 _Adjacency3_TexelSize;
 
 float4 GetPosition( uint ballid )
 {
@@ -22,6 +20,12 @@ float4 GetVelocity( uint ballid )
 {
 	return _VelocitiesIn[uint2(ballid%1024,ballid/1024)];
 }
+
+float4 GetColorTex( uint ballid )
+{
+	return _ColorsIn[uint2(ballid%1024,ballid/1024)];
+}
+
 
 //NOTE BY CNL: Doing a hash appears to peform much worse than
 // a procedural path, not in speed (though that's true) but it gets worse collisions.

@@ -13,13 +13,15 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	[UdonSynced] public float friction = .008f;
 	[UdonSynced] public int mode = 5;
 	[UdonSynced] public bool balls_reset = false;
+	[UdonSynced] public Vector3 fan_position;
+	[UdonSynced] public Vector4 fan_rotation;
 	public int qualitymode;
 	public Material ballpitA;
 	public Material ballpitB;
 	public Material ballpitRender;
 	public GameObject ballpitRenderObject;
 	public Material VideoToStealMaterial;
-
+	public CustomRenderTexture CRTColors;
 	void Start()
 	{
 		if (Networking.IsMaster)
@@ -35,10 +37,17 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	
 	void Update()
 	{
-	
+		ballpitA.SetVector( "_FanPosition", fan_position );
+		ballpitA.SetVector( "_FanRotation", fan_rotation );
+		ballpitB.SetVector( "_FanPosition", fan_position );
+		ballpitB.SetVector( "_FanRotation", fan_rotation );
+
 		ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
 		ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
 		ballpitRender.SetFloat( "_Mode", mode );
+
+		CRTColors.updateMode = (mode == 6)?CustomRenderTextureUpdateMode.Realtime:CustomRenderTextureUpdateMode.OnLoad;
+
 		ballpitA.SetFloat( "_GravityValue", gravityF );
 		ballpitB.SetFloat( "_GravityValue", gravityF );
 		ballpitA.SetFloat( "_Friction", friction );

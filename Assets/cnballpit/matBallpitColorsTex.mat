@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: matCalcPrimaryB
-  m_Shader: {fileID: 4800000, guid: fd43a14aed9dcdf4db6f2409a8ee45cf, type: 3}
+  m_Name: matBallpitColorsTex
+  m_Shader: {fileID: 4800000, guid: a8c4dbd1cf7603d478dbe009261e9de4, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,48 +19,8 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Adjacency:
-        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Adjacency0:
-        m_Texture: {fileID: 8400000, guid: 09cac7b7a64ce0443bfd7b7028941b95, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Adjacency1:
-        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Adjacency2:
-        m_Texture: {fileID: 8400000, guid: e550220f35a74914685a45b8ae9962bd, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Adjacency3:
-        m_Texture: {fileID: 8400000, guid: 6fb2633108f66d94d925821e0f31a748, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _AdjacencyMapIn:
-        m_Texture: {fileID: 8400000, guid: 09cac7b7a64ce0443bfd7b7028941b95, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _AdjacencyMapInSecond:
-        m_Texture: {fileID: 8400000, guid: 987b7f17d43fec947b885e6fe80cc3b3, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DepthMapAbove:
-        m_Texture: {fileID: 8400000, guid: 9e0861c848a697d488a039eea7a66f38, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DepthMapBelow:
-        m_Texture: {fileID: 8400000, guid: ca45e4deaf1d9bb449c496b9f6bfd356, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DepthMapComposite:
-        m_Texture: {fileID: 8400000, guid: 71a39c9f2aad4cc4a94f45b86ba13023, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -99,36 +59,29 @@ Material:
         m_Texture: {fileID: 8400000, guid: 872604ce9c183694ea93190da494840c, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _VelocitiesIn:
-        m_Texture: {fileID: 8400000, guid: 01782c54ca21894419e50e1d02878177, type: 2}
+    - _VideoTexture:
+        m_Texture: {fileID: 2800000, guid: 6f83de0656dded943a5f7f3b396fbb8c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BallRadius: 0.08
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _DebugFloat: -5.62
     - _DetailNormalMapScale: 1
-    - _DontPerformStep: 0
     - _DstBlend: 0
-    - _Friction: 0.008
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GravityValue: 9.8
+    - _IsAVProInput: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ResetBalls: 0
+    - _ShouldUpdate: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TargetFPS: 155
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FanPosition: {r: -4.13, g: -0.002, b: 1.46, a: 0}
-    - _FanRotation: {r: 0, g: 0, b: 0, a: 1}
