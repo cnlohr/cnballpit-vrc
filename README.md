@@ -91,14 +91,14 @@ and utter garbage in col when 3+ ids get written
  * Cleanup YEET (Write to shadow cast)
  * Cleanup Text (Write to shadow cast)
 
-## 7.0 Release Notes
+## 7.0 Release Notes (6:30 PM PT July 11)
  * Made video player moveable.
  * Added video player ball mode.
  * Moved things to an environment layer to speed up perf of culled objects marginally.
  * Make fountain pick uppable.
  * Made palm tree in back pick uppable.
  * Added "freeze" mode to the video on balls effect.
-
+ 
 
 ## Interesting
  * shader_billboardout modes.
