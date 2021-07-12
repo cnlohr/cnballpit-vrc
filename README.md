@@ -98,7 +98,9 @@ and utter garbage in col when 3+ ids get written
  * Make fountain pick uppable.
  * Made palm tree in back pick uppable.
  * Added "freeze" mode to the video on balls effect.
- 
+
+## 7.0a Release Notes
+ * Fix mirrors not reflecting the world.
 
 ## Interesting
  * shader_billboardout modes.
