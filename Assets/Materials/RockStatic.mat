@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Rock1
-  m_Shader: {fileID: 4800000, guid: 08e583e86ce739a4392b27d9311ba085, type: 3}
+  m_Name: RockStatic
+  m_Shader: {fileID: 4800000, guid: 4f96f5d088e92314ca8c4ca9d1f146a2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

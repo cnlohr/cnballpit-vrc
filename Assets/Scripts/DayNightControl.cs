@@ -31,7 +31,7 @@ public class DayNightControl : UdonSharpBehaviour
 			{
 				case 0:
 					RenderSettings.skybox = SkyboxMaterial;
-					DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -286.73f, -20.39f );
+					DirectionalLight.transform.rotation = Quaternion.Euler( 140.686f, -268.419f, -19.71997f );
 					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
 					RenderSettings.ambientIntensity = 1.0f;
 					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );

@@ -1,4 +1,4 @@
-Shader "Custom/3DRockTexture"
+Shader "Custom/3DRockTextureStatic"
 {
 	Properties
 	{
@@ -47,12 +47,12 @@ Shader "Custom/3DRockTexture"
 		}
 
 
-		Tags { "RenderType"="Opaque"  "DisableBatching"="True" }
+		Tags { "RenderType"="Opaque" }
 		LOD 200
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows vertex:vert
+		#pragma surface surf Standard fullforwardshadows
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -64,7 +64,6 @@ Shader "Custom/3DRockTexture"
 		{
 			float2 uv_MainTex;
 			float3 worldPos;
-			float3 objPos;
 		};
 
 		half _Glossiness;
@@ -96,22 +95,11 @@ Shader "Custom/3DRockTexture"
 			return col;
 		}
 
-
-        void vert (inout appdata_full v, out Input o) {
-            UNITY_INITIALIZE_OUTPUT(Input,o);
-		    float3 worldScale = float3(
-				length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x)), // scale x axis
-				length(float3(unity_ObjectToWorld[0].y, unity_ObjectToWorld[1].y, unity_ObjectToWorld[2].y)), // scale y axis
-				length(float3(unity_ObjectToWorld[0].z, unity_ObjectToWorld[1].z, unity_ObjectToWorld[2].z))  // scale z axis
-				);
-            o.objPos = v.vertex*worldScale;
-        }
- 
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{
 			// Albedo comes from a texture tinted by color
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			float3 calcpos = IN.objPos.xyz * _TextureDetail;
+			float3 calcpos = IN.worldPos.xyz * _TextureDetail;
 			
 			float4 col = densityat( calcpos );
 			c *= pow( col.xxxx, _NoisePow) + _RockAmbient;

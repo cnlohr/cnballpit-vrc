@@ -234,8 +234,8 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorDiffuse = GetColorTex(ballid);
 						//colorDiffuse = GetPosition(ballid);
 						//colorDiffuse = (ballid/1024)%2;
-						colorAmbient += colorDiffuse * .63;
-						colorDiffuse = colorDiffuse * .7 + 0.01;
+						colorAmbient += colorDiffuse * .7;
+						colorDiffuse = colorDiffuse * .75 + 0.01;
 					}
 					g2f pIn;
 					
@@ -564,13 +564,14 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						light.color *= .75 * attenuation;
 					}
 					
+					float EmissiveShift = 1. - length( input.uv - 0.5 )*.4; //setting this to .8 makes the balls look kinda glassy.
 					
 					albcolor.rgb = UNITY_BRDF_PBS(
 						albedo, specularTint,
 						oneMinusReflectivity, _Smoothness,
 						normal, -dir,
 						light, indirectLight
-					).rgb + input.colorAmbient.xyz;
+					).rgb + input.colorAmbient.xyz * EmissiveShift;
 				}
 				else
 				{
