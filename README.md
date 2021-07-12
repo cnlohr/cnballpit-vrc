@@ -50,6 +50,7 @@ and utter garbage in col when 3+ ids get written
  * Make textured ball effect.
  * Figure out ball nonshadows occasionally.
  * Option to draw video on side of balls.
+ * Why is AudioLink weird when doing colors.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -108,6 +109,8 @@ and utter garbage in col when 3+ ids get written
  * Disabled change of ownership on collision on all objects.
  * Made sure the ownership settings were uniform across all objects.
  * Fixed layers some things were on, i.e. remove sphere-player collision.
+ * Make the balls emit preferentialy from the middle.
+ 
 
 ## Interesting
  * shader_billboardout modes.
