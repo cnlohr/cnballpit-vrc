@@ -52,6 +52,7 @@ and utter garbage in col when 3+ ids get written
  * Option to draw video on side of balls.
  * Why is AudioLink weird when doing colors.
  * Synchronize Sky
+ * Little RGB Balls on video screen.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
