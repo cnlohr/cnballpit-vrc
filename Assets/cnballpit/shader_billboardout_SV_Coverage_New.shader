@@ -6,6 +6,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 	{
 		_PositionsIn ("Positions", 2D) = "" {}
 		_VelocitiesIn ("Velocities", 2D) = "" {}
+		_ColorsIn ("Colors In", 2D) = "" {}
 		_Mode ("Mode", float) = 0
 		_Smoothness( "Smoothness", float ) = 0
 		_Metallic("Metallic", float ) = 0
@@ -228,12 +229,13 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorAmbient += colorDiffuse * intensity * .35;
 						colorDiffuse = colorDiffuse * .5 + .04;
 					}
-					else if( _Mode == 6 )
+					else if( _Mode == 6 || _Mode == 7 )
 					{
-						float2 uvpit = saturate( PositionRelativeToCenterOfBallpit.xz * float2( 0.05, 0.08 )*.95 + 0.5 );
-						colorDiffuse = tex2Dlod( _VideoTexture, float4( uvpit ,0, 0 ) );
-						colorAmbient += colorDiffuse * .6;
-						colorDiffuse = colorDiffuse * .6 + 0.01;
+						colorDiffuse = GetColorTex(ballid);
+						//colorDiffuse = GetPosition(ballid);
+						//colorDiffuse = (ballid/1024)%2;
+						colorAmbient += colorDiffuse * .63;
+						colorDiffuse = colorDiffuse * .7 + 0.01;
 					}
 					g2f pIn;
 					

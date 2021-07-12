@@ -51,9 +51,7 @@
                 // sample the texture
                 uint4 data = uint4(
 					_Adjacency0[uint2(_Adjacency0_TexelSize.zw*i.uv)].x,
-					_Adjacency1[uint2(_Adjacency1_TexelSize.zw*i.uv)].x,
-					_Adjacency2[uint2(_Adjacency2_TexelSize.zw*i.uv)].x,
-					_Adjacency3[uint2(_Adjacency3_TexelSize.zw*i.uv)].x );
+					_Adjacency1[uint2(_Adjacency1_TexelSize.zw*i.uv)].x, 0, 0 );
 				float4 col = float4( data.xyz/32768., 1. )/2;
 				
 				if( data.w != 0 )
