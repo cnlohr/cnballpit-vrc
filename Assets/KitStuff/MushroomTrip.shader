@@ -865,7 +865,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 // col.r += _Time.y;-
 				float3 worldViewDir = normalize(UnityWorldSpaceViewDir(wpos));
 
-				col = clamp(col, 0.0, 1.0)*750.0; 
+				col = clamp(col, 0.0, 1.0)*_LumWeight.y; 
                 col = col*col*col;
                 col = lerp(col, blendColor, dx);			
                 col = lerp(col, blendColor, dy);                
