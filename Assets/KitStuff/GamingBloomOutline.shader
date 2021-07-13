@@ -122,8 +122,10 @@
                 // Pull in the direction of the camera by a fixed amount
 				float dotdepth = camdist;
 				float moveamount = 5;
+                float near = _ProjectionParams.y*1.8; //Center of vision hits near, but extremes may exceed.
 				if( moveamount > dotdepth-1 ) moveamount = dotdepth-1;
-                pullPos+=camDirection*moveamount;
+                float3 camoff = camDirection*moveamount;
+                pullPos+=camoff;
 
                 // Convert to clip space              
                 o.vertex=mul(UNITY_MATRIX_VP,float4(pullPos,1));
@@ -131,7 +133,7 @@
                 o.uv = v.uv;
                 o.wpos = mul(unity_ObjectToWorld, v.vertex);
                 o.dgpos = ComputeGrabScreenPos(o.vertex);
-                o.rd.xyz = o.wpos.xyz - _WorldSpaceCameraPos.xyz;
+                o.rd.xyz = o.wpos.xyz - _WorldSpaceCameraPos.xyz + camoff;
                 o.rd.w = dot(o.vertex, ObliqueFrustumCorrection);
 
 //				//Push out Z so that this appears on top even though it's only drawing backfaces.
