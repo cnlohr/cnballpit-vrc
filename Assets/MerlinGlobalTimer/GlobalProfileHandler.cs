@@ -59,6 +59,9 @@ public class GlobalProfileHandler : UdonSharpBehaviour
 		}
 		
 		VRCPlayerApi owner = Networking.GetOwner(gameObject);
-        timeText.text = $"Frame: {elapsedTime:F3}ms\nTotal:{lastframe400:F3}\n{owner.displayName}";
+		string OwnerName = "{unknown}";
+		if( Utilities.IsValid(owner) && owner.IsValid() )
+			OwnerName = owner.displayName;
+        timeText.text = $"Frame: {elapsedTime:F3}ms\nTotal:{lastframe400:F3}\n{OwnerName}";
     }
 }

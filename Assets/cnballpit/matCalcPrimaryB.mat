@@ -131,4 +131,10 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FanPosition: {r: -4.13, g: -0.002, b: 1.46, a: 0}
+    - _FanPosition0: {r: -4.13, g: -0.002, b: 1.46, a: 0}
+    - _FanPosition1: {r: -9.16, g: 1.59, b: 6.22, a: 0}
+    - _FanPosition2: {r: -9.16, g: 1.59, b: 8.42, a: 0}
     - _FanRotation: {r: 0, g: 0, b: 0, a: 1}
+    - _FanRotation0: {r: 0, g: 0, b: 0, a: 1}
+    - _FanRotation1: {r: 0, g: 0, b: 0, a: 1}
+    - _FanRotation2: {r: 0, g: 0, b: 0, a: 1}

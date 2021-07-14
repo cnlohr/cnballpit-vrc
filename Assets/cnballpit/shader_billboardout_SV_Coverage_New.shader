@@ -626,8 +626,12 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 				// then reduce the alpha.
 				float dx = length( float2( ddx_fine(disc), ddy_fine(disc) ) );
 
+				float fakealpha = saturate(disc/dx);
+				float dist_to_surface = length( worldhit - ro );
+				float distalpha = dist_to_surface*10. - _ProjectionParams.y - hash22(input.uv*1000.).y*.5;
+				fakealpha = min( distalpha, fakealpha );
 				//Thanks, D4rkPl4y3r.
-				Coverage[0] = ( 1u << ((uint)(saturate(disc/dx)*GetRenderTargetSampleCount() + 0.5)) ) - 1;
+				Coverage[0] = ( 1u << ((uint)(fakealpha*GetRenderTargetSampleCount() + 0.5)) ) - 1;
 				return albcolor;
 			}
 

@@ -54,8 +54,8 @@
 					_Adjacency1[uint2(_Adjacency1_TexelSize.zw*i.uv)].x, 0, 0 );
 				float4 col = float4( data.xyz/32768., 1. )/2;
 				
-				if( data.w != 0 )
-					col = float4( 0., 1., 1., 1. );
+				if( _Adjacency1[uint2(_Adjacency1_TexelSize.zw*i.uv)].w > 2 )
+					col = float4( 2., 2., 2., 1. );
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);

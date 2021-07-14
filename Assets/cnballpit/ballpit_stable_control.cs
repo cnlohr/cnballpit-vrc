@@ -13,8 +13,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	[UdonSynced] public float friction = .008f;
 	[UdonSynced] public int mode = 5;
 	[UdonSynced] public bool balls_reset = false;
-	[UdonSynced] public Vector3 fan_position;
-	[UdonSynced] public Vector4 fan_rotation;
+	
 	public int qualitymode;
 	public Material ballpitA;
 	public Material ballpitB;
@@ -22,6 +21,11 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject ballpitRenderObject;
 	public Material VideoToStealMaterial;
 	public CustomRenderTexture CRTColors;
+	
+	public GameObject Fan0;
+	public GameObject Fan1;
+	public GameObject Fan2;
+
 	void Start()
 	{
 		if (Networking.IsMaster)
@@ -36,11 +40,32 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	}
 	
 	void Update()
-	{
-		ballpitA.SetVector( "_FanPosition", fan_position );
-		ballpitA.SetVector( "_FanRotation", fan_rotation );
-		ballpitB.SetVector( "_FanPosition", fan_position );
-		ballpitB.SetVector( "_FanRotation", fan_rotation );
+	{		
+		Transform t;
+
+		t = Fan0.transform;
+		Vector3 fan_position = t.localPosition;
+		Vector4 fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
+		ballpitA.SetVector( "_FanPosition0", fan_position );
+		ballpitA.SetVector( "_FanRotation0", fan_rotation );
+		ballpitB.SetVector( "_FanPosition0", fan_position );
+		ballpitB.SetVector( "_FanRotation0", fan_rotation );
+
+		t = Fan1.transform;
+		fan_position = t.localPosition;
+		fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
+		ballpitA.SetVector( "_FanPosition1", fan_position );
+		ballpitA.SetVector( "_FanRotation1", fan_rotation );
+		ballpitB.SetVector( "_FanPosition1", fan_position );
+		ballpitB.SetVector( "_FanRotation1", fan_rotation );
+
+		t = Fan2.transform;
+		fan_position = t.localPosition;
+		fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
+		ballpitA.SetVector( "_FanPosition2", fan_position );
+		ballpitA.SetVector( "_FanRotation2", fan_rotation );
+		ballpitB.SetVector( "_FanPosition2", fan_position );
+		ballpitB.SetVector( "_FanRotation2", fan_rotation );
 
 		ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
 		ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );

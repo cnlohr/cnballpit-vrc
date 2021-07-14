@@ -280,7 +280,7 @@
 
                 //If we have audiolink, use autocorrelator for a simple hueshifting more effect.
                 if(AudioLinkIsAvailable()) {
-                    float cwal = AudioLinkLerp( ALPASS_AUTOCORRELATOR + float2( cw.r * AUDIOLINK_WIDTH, 0. ) )*.03;
+                    float cwal = AudioLinkLerp( ALPASS_AUTOCORRELATOR + float2( cw.r * AUDIOLINK_WIDTH, 0. ) )*.04;
                     cw.r += cwal;
                     cwa.r += cwal;
                 }
