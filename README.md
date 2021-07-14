@@ -48,7 +48,7 @@ and utter garbage in col when 3+ ids get written
  * Option to draw video on side of balls.
  * Why is AudioLink weird when doing colors.
  * Fix fadeout not writing fadeout tile to depth in depth pass.
-
+ * TODO: Is the adjacency thing only running once per frame? Or double on demand?
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -118,6 +118,9 @@ and utter garbage in col when 3+ ids get written
  * Make balls fade out when too close.
  * Increase Audio Reactivity on Kit's rainbow effect.
  * Detect too many balls to represent in one cell by lighting up white.
+
+## 10.0
+ * Tweaked ball adjacency settings to reduce popping.
 
 ## Interesting
  * shader_billboardout modes.
