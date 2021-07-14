@@ -14,7 +14,7 @@
         [Enum(Off, 0, On, 1)] _ZWrite ("ZWrite", Int) = 1       
         _Metallic ("Metallic", Float) = 47.4
 		_Glossiness("Smoothness", Float) = 0.55
-        _LumWeight ("Lum Weight", Vector) = (5.0,0.69,0.44)
+        _LumWeight ("Lum Weight", Vector) = (5.0,0.69,0.44,1.0)
 
     }
     SubShader
@@ -58,8 +58,11 @@
                 float4 wpos : TEXCOORD1;
                 float4 dgpos : TEXCOORD2;
                 float4 rd : TEXCOORD3;
+				float3 worldDirection : TEXCOORD4;
+				float4 screenPosition : TEXCOORD5;				
             };
-            UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
+			sampler2D _CameraDepthTexture;
+
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
@@ -68,7 +71,7 @@
             float4 _CameraDepthTexture_TexelSize;
             float _Metallic;
 
-            float3 _LumWeight;
+            float4 _LumWeight;
 
 /*
 
@@ -675,11 +678,66 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 			}
 			static bool IsInMirror = CalculateIsInMirror();
 			#undef UMP
-      
+
+
+			// from http://answers.unity.com/answers/641391/view.html
+			// creates inverse matrix of input
+			float4x4 inverse(float4x4 input)
+			{
+				#define minor(a,b,c) determinant(float3x3(input.a, input.b, input.c))
+				float4x4 cofactors = float4x4(
+					minor(_22_23_24, _32_33_34, _42_43_44), 
+					-minor(_21_23_24, _31_33_34, _41_43_44),
+					minor(_21_22_24, _31_32_34, _41_42_44),
+					-minor(_21_22_23, _31_32_33, _41_42_43),
+
+					-minor(_12_13_14, _32_33_34, _42_43_44),
+					minor(_11_13_14, _31_33_34, _41_43_44),
+					-minor(_11_12_14, _31_32_34, _41_42_44),
+					minor(_11_12_13, _31_32_33, _41_42_43),
+
+					minor(_12_13_14, _22_23_24, _42_43_44),
+					-minor(_11_13_14, _21_23_24, _41_43_44),
+					minor(_11_12_14, _21_22_24, _41_42_44),
+					-minor(_11_12_13, _21_22_23, _41_42_43),
+
+					-minor(_12_13_14, _22_23_24, _32_33_34),
+					minor(_11_13_14, _21_23_24, _31_33_34),
+					-minor(_11_12_14, _21_22_24, _31_32_34),
+					minor(_11_12_13, _21_22_23, _31_32_33)
+				);
+				#undef minor
+				return transpose(cofactors) / determinant(input);
+			}
+
+			float4x4 INVERSE_UNITY_MATRIX_VP;
+			float3 calculateWorldSpace(float4 screenPos)
+			{	
+				// Transform from adjusted screen pos back to world pos
+				float4 worldPos = mul(INVERSE_UNITY_MATRIX_VP, screenPos);
+				// Subtract camera position from vertex position in world
+				// to get a ray pointing from the camera to this vertex.
+				float3 worldDir = worldPos.xyz / worldPos.w - _WorldSpaceCameraPos;
+				// Calculate screen UV
+				float2 screenUV = screenPos.xy / screenPos.w;
+				screenUV.y *= _ProjectionParams.x;
+				screenUV = screenUV * 0.5f + 0.5f;
+				// Adjust screen UV for VR single pass stereo support
+				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
+				// Read depth, linearizing into worldspace units.    
+				float depth = LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, screenUV))) / screenPos.w;
+				// Advance by depth along our view ray from the camera position.
+				// This is the worldspace coordinate of the corresponding fragment
+				// we retrieved from the depth buffer.
+				return worldDir * depth;
+			}      
             vo vert (vi v)
             {
                 vo o;
 
+				//Normally, we would do this:
+				//o.vertex = UnityObjectToClipPos(v.vertex);
+				//But...
 				//Cursed mechansm to draw effect on top. https://forum.unity.com/threads/pull-to-camera-shader.459767/
                 float3 pullPos = mul(unity_ObjectToWorld,v.vertex);
                 // Determine cam direction (needs Normalize)
@@ -689,20 +747,27 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 // Pull in the direction of the camera by a fixed amount
 				float dotdepth = camdist;
 				float moveamount = 5;
-                float near = _ProjectionParams.y*1.8; //Center of vision hits near, but extremes may exceed.
-				if( moveamount > dotdepth-1 ) moveamount = dotdepth-1;
-                float3 camoff = camDirection*moveamount;
+				float near = _ProjectionParams.y*1.8;  //Center of vision hits near, but extremes may exceed.
+				if( moveamount > dotdepth-near ) moveamount = dotdepth-near;
+				float3 camoff = camDirection*moveamount;
                 pullPos+=camoff;
-
-                // Convert to clip space              
                 o.vertex=mul(UNITY_MATRIX_VP,float4(pullPos,1));
 
                 o.uv = v.uv;
                 o.wpos = mul(unity_ObjectToWorld, v.vertex);
                 o.dgpos = ComputeGrabScreenPos(o.vertex);
-                o.rd.xyz = o.wpos.xyz - _WorldSpaceCameraPos.xyz + camoff;
+                o.rd.xyz =  mul(unity_ObjectToWorld, v.vertex).xyz - _WorldSpaceCameraPos + camoff;
                 o.rd.w = dot(o.vertex, ObliqueFrustumCorrection);
 
+				// Subtract camera position from vertex position in world
+				// to get a ray pointing from the camera to this vertex.
+				o.worldDirection = mul(unity_ObjectToWorld, v.vertex).xyz - _WorldSpaceCameraPos + camoff;
+
+				// Save the clip space position so we can use it later.
+				// (There are more efficient ways to do this in SM 3.0+, 
+				// but here I'm aiming for the simplest version I can.
+				// Optimized versions welcome in additional answers!)
+				o.screenPosition = o.vertex;//UnityObjectToClipPos(v.vertex);
 //				//Push out Z so that this appears on top even though it's only drawing backfaces.
 //				float z = o.vertex.z * o.vertex.w;
 //				//z += 1.8;
@@ -758,7 +823,22 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
             float4 frag (vo __vo) : SV_Target
             {
                 vop = __vo;
+				// Compute projective scaling factor...
+				float perspectiveDivide = 1.0f / vop.screenPosition.w;
 
+				// Scale our view ray to unit depth.
+				float3 direction = vop.worldDirection * perspectiveDivide;
+
+				// Calculate our UV within the screen (for reading depth buffer)
+				float2 screenUV = (vop.screenPosition.xy * perspectiveDivide) * 0.5f + 0.5f;
+
+				// No idea
+                #ifdef UNITY_UV_STARTS_AT_TOP				
+					screenUV.y = 1 - screenUV.y; 
+                #endif
+				// VR stereo support
+				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
+				
                 float w = 1.f / vop.vertex.w;
                 float4 rd = vop.rd * w;
                 float2 dgpos = vop.dgpos.xy * w;
@@ -786,7 +866,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 {
                     for (int j = -kSize;j<=kSize; ++j)
                     {
-                        fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, dgpos.xy + float2(float(i),float(j)) * fwidth(dgpos));
+                        fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV.xy + float2(float(i),float(j)) * fwidth(screenUV));
                     }
                 }
 
@@ -802,32 +882,64 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				// 	return float4(0.f, 0.f, 0.f, 1.f);
 				// }
                 //Get more precise screenspace uv derivatives. 
-                float dx = ddx_fine(dgpos.x);
-                float dy = ddy_fine(dgpos.y);
+                float dx = ddx_fine(screenUV.x);
+                float dy = ddy_fine(screenUV.y);
 
                 float angle = atan2(fz * _LumWeight, rz * _LumWeight)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
 
-                float depth = CorrectedLinearEyeDepth(z, rd.w);
-
+                float depth = LinearEyeDepth(z);
 				#if UNITY_REVERSED_Z
 				//if (z == 0.f) {
-                    float fd = CorrectedLinearEyeDepth(0.0, rd.w);
+                    float fd = LinearEyeDepth(0.0);
                 #else
 				//if (z == 1.f) {
-                    float fd = CorrectedLinearEyeDepth(1.0, rd.w);
+                    float fd = LinearEyeDepth(1.0);
                 #endif                
-                float3 wpos = rd.xyz * depth + _WorldSpaceCameraPos.xyz;
+                float3 wpos = direction * depth + _WorldSpaceCameraPos.xyz;
                 float4 opos = mul(unity_WorldToObject, float4(wpos, 1.0));
-                float dist = distance(wpos, vop.vertex);
-                opos.xyz /= opos.w;
                 float3 wnorm = normalize(wpos);
 
 
-				float WPthis  = rd * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, dgpos + float2( 1./_ScreenParams.x, 0 ) )));
-				float WPleft  = (rd - ddx_fine( rd ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, dgpos + float2(-1./_ScreenParams.x, 0 ) )));
-				float WPright = (rd + ddx_fine( rd ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, dgpos + float2( 0, 0 ) )));
-				float WPup    = (rd - ddy_fine( rd ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, dgpos + float2( 0, 1./_ScreenParams.y ) )));
-				float WPdown  = (rd + ddy_fine( rd ) )* LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, dgpos + float2( 0,-1./_ScreenParams.y ) )));
+
+				float4 screenPos2 = UnityObjectToClipPos(opos); 
+				// float2 offset = 1.2 / _ScreenParams.xy * screenPos2.w ; 
+				// float3 worldPos1 = calculateWorldSpace(screenPos2);
+				// float3 worldPos2 = calculateWorldSpace(screenPos2 + float4(0, offset.y, 0, 0));
+				// float3 worldPos3 = calculateWorldSpace(screenPos2 + float4(-offset.x, 0, 0, 0));
+				// float3 worldNormal = normalize(cross(worldPos2 - worldPos1, worldPos3 - worldPos1));
+
+                float nx = _LumWeight.z;
+                float ny = _LumWeight.z;
+							
+                float2 Offset[5];
+				float4 dgpos2 = ComputeGrabScreenPos(screenPos2);
+
+                #ifndef UNITY_UV_STARTS_AT_TOP
+                    dgpos2.y = 1.0-dgpos2.y;
+                #endif	
+                float3 rd2 = wpos - _WorldSpaceCameraPos;
+
+                Offset[0] = dgpos2.xy + (float2( 0, 0) / _ScreenParams.xy) ;
+                Offset[1] = dgpos2.xy + (float2(nx, 0) / _ScreenParams.xy) ;
+                Offset[2] = dgpos2.xy + (float2(-nx, 0) / _ScreenParams.xy);
+                Offset[3] = dgpos2.xy + (float2( 0, ny) / _ScreenParams.xy);
+                Offset[4] = dgpos2.xy + (float2( 0,-ny) / _ScreenParams.xy);
+                float M = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[0], dgpos2.zw)).r )));
+                float L = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[1], dgpos2.zw)).r )));
+                float R = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[2], dgpos2.zw)).r )));
+                float U = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[3], dgpos2.zw)).r )));
+                float D = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[4], dgpos2.zw)).r )));
+                float X = ((R-M)+(M-L))*.5;
+                float Y = ((D-M)+(M-U))*.5;
+
+                float4 N = float4(normalize(float3(X, Y, .01))-.5, 1.0);
+
+
+				float WPthis  = rd2 * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 1./_ScreenParams.x, 0 ), dgpos2.zw ))));
+				float WPleft  = (rd2 - ddx_fine( rd2 ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2(-1./_ScreenParams.x, 0 ), dgpos2.zw ))));
+				float WPright = (rd2 + ddx_fine( rd2 ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0, 0 ), dgpos2.zw ))));
+				float WPup    = (rd2 - ddy_fine( rd2 ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0, 1./_ScreenParams.y ), dgpos2.zw ))));
+				float WPdown  = (rd2 + ddy_fine( rd2 ) )* LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0,-1./_ScreenParams.y ), dgpos2.zw ))));
 				
 				float3 deltas = 0.;
 				if( abs( WPthis - WPleft ) < abs( WPright - WPthis ) )
@@ -840,7 +952,10 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				else
 					deltas.y = WPdown - WPthis;
 				deltas.z = .01;
-				deltas = normalize( deltas );				
+				deltas = normalize( deltas );	
+
+
+				N.xyz = N.xyz * .5 + .5* deltas + .5;
 
 
                 float3 cwa = float3(angle, 1.,1.);
@@ -849,6 +964,8 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 blendColor = rgb2hsv(blendColor);
                 blendColor.r += _Time.y;
                 blendColor = hsv2rgb_smooth(blendColor);
+
+
 
                 float3 col = float3(angle,1.0,z);
                 col = hsv2rgb_smooth(col);
@@ -868,7 +985,8 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				col = clamp(col, 0.0, 1.0)*_LumWeight.y; 
                 col = col*col*col;
                 col = lerp(col, blendColor, dx);			
-                col = lerp(col, blendColor, dy);                
+                col = lerp(col, blendColor, dy);      
+				col = clamp(col,0.0,_LumWeight.w);          
 
 				SurfaceOutputStandard o;
 				UNITY_INITIALIZE_OUTPUT(SurfaceOutputStandard, o);
@@ -878,7 +996,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
 				o.Occlusion = 1.0;
-				o.Normal = deltas;
+				o.Normal = N;
 
 				UnityGI gi;
 				UNITY_INITIALIZE_OUTPUT(UnityGI, gi);
@@ -917,7 +1035,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				float4 screenPos = UnityWorldToClipPos(wpos);
 				// fo.depth = z;
 
-				UNITY_CALC_FOG_FACTOR(vop.dgpos.z);
+				UNITY_CALC_FOG_FACTOR(vop.dgPos.z);
 				UNITY_APPLY_FOG(unityFogFactor, color);
 				color.a = 1;
 
