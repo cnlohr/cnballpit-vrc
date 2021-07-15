@@ -24,8 +24,12 @@ Shader "cnballpit/shaderCalcPrimary"
 		_GravityValue( "Gravity", float ) = 9.8
 		_TargetFPS ("Target FPS", float ) = 120
 		[ToggleUI] _DontPerformStep( "Don't Perform Step", float ) = 0
-		_FanPosition( "Fan Position", Vector ) = ( 0, 0, 0 )
-		_FanRotation( "Fan Rotation", Vector ) = ( 0, 0, 0, 1 )
+		_FanPosition0( "Fan Position 0", Vector ) = ( 0, 0, 0 )
+		_FanRotation0( "Fan Rotation 0", Vector ) = ( 0, 0, 0, 1 )
+		_FanPosition1( "Fan Position 1", Vector ) = ( 0, 0, 0 )
+		_FanRotation1( "Fan Rotation 1", Vector ) = ( 0, 0, 0, 1 )
+		_FanPosition2( "Fan Position 2", Vector ) = ( 0, 0, 0 )
+		_FanRotation2( "Fan Rotation 2", Vector ) = ( 0, 0, 0, 1 )
 	}
 	SubShader
 	{
@@ -85,8 +89,12 @@ Shader "cnballpit/shaderCalcPrimary"
 			texture2D<float2> _DepthMapComposite;
 			float4 _DepthMapComposite_TexelSize;
 			float _TargetFPS;
-			float3 _FanPosition;
-			float4 _FanRotation;
+			float3 _FanPosition0;
+			float4 _FanRotation0;
+			float3 _FanPosition1;
+			float4 _FanRotation1;
+			float3 _FanPosition2;
+			float4 _FanRotation2;
 
 			v2f vert (appdata v)
 			{
@@ -95,7 +103,6 @@ Shader "cnballpit/shaderCalcPrimary"
 				o.uv = v.uv;
 				return o;
 			}
-			
 
 			f2a frag ( v2f i )
 			{
@@ -179,7 +186,7 @@ Shader "cnballpit/shaderCalcPrimary"
 							float len = length( Position.xyz - otherball.xyz );
 							
 							//Do we collide AND are we NOT the other ball?
-							if( len > 0.01 )
+							if( len > 0.02 )
 							{
 								if( len < otherball.w + Position.w )
 								{
@@ -361,22 +368,35 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Fountain / Fan
 				if( 1 )
 				{
-					float3 FanStart = _FanPosition;
-					float3 FanVector = normalize( qtransform( q_inverse( _FanRotation ), float3( 0, 1, 0 ) ) );
-					//FanVector = float3( -FanVector.x, FanVector.y, -FanVector.z );
-					
-					float3 RelPos = Position - FanStart;
-					float t = dot( RelPos, FanVector ); //Distance along fan vector
-					float3 lpos = FanVector * t;
-					float d = length( RelPos - lpos ); //Distance from fan vector
-					
-					float dforce = 1 - d;
-					dforce = min( dforce, (5-t)*.5 ); //Force contribution at extent
-					dforce = min( t + 1, dforce ); //Force contribution behind.
-					
-					if( dforce > 0 )
+					float3 FanPos[3];
+					float4 FanQuat[3];
+					FanPos[0] = _FanPosition0;
+					FanPos[1] = _FanPosition1;
+					FanPos[2] = _FanPosition2;
+					FanQuat[0] = _FanRotation0;
+					FanQuat[1] = _FanRotation1;
+					FanQuat[2] = _FanRotation2;
+
+					int i;
+					for( i = 0; i < 3; i++ )
 					{
-						Velocity.xyz += FanVector.xyz * dforce * .15;
+						float3 FanStart = FanPos[i];
+						float3 FanVector = normalize( qtransform( q_inverse( FanQuat[i] ), float3( 0, 1, 0 ) ) );
+						
+						float3 RelPos = Position - FanStart;
+						float t = dot( RelPos, FanVector ); //Distance along fan vector
+						float3 lpos = FanVector * t;
+						float d = length( RelPos - lpos ); //Distance from fan vector
+						
+						float dforce = 1 - d;
+						dforce = min( dforce, (5-t)*.5 ); //Force contribution at extent
+						dforce = min( t + 1, dforce ); //Force contribution behind.
+						
+						
+						if( dforce > 0 )
+						{
+							Velocity.xyz += FanVector.xyz * dforce * .15;
+						}
 					}
 				}
 
