@@ -913,10 +913,12 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 							
                 float2 Offset[5];
 				float4 dgpos2 = ComputeGrabScreenPos(screenPos2);
-
+				float pd2 = 1.0f / dgpos2.w;
+				dgpos2 *= pd2;
                 #ifndef UNITY_UV_STARTS_AT_TOP
                     dgpos2.y = 1.0-dgpos2.y;
                 #endif	
+
                 float3 rd2 = wpos - _WorldSpaceCameraPos;
 
                 Offset[0] = dgpos2.xy + (float2( 0, 0) / _ScreenParams.xy) ;
