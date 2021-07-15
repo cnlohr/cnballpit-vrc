@@ -17,25 +17,9 @@
         _LumWeight ("Lum Weight", Vector) = (5.0,0.69,0.44,1.0)
 
     }
-    SubShader
-    {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent+100" "LightMode"="ForwardBase"}
-  //      Pass
-  //      {
-   //         ZWrite On
-    //        ColorMask 0
-     //   }        
-        Pass
-        {
-            AlphaToMask On
-            ZWrite [_ZWrite]
-            Cull [_Cull]
-            Blend [_SourceBlend] [_DestinationBlend]
-            ZTest [_ZTest]
-            CGPROGRAM
+	CGINCLUDE
             #pragma target 5.0
-            #pragma vertex vert
-            #pragma fragment frag
+
             
             #include "UnityCG.cginc"
 			#include "Lighting.cginc"
@@ -59,7 +43,9 @@
                 float4 dgpos : TEXCOORD2;
                 float4 rd : TEXCOORD3;
 				float3 worldDirection : TEXCOORD4;
-				float4 screenPosition : TEXCOORD5;				
+				float4 screenPosition : TEXCOORD5;	
+	            float3 ray : TEXCOORD6;
+
             };
 			sampler2D _CameraDepthTexture;
 
@@ -768,6 +754,8 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				// but here I'm aiming for the simplest version I can.
 				// Optimized versions welcome in additional answers!)
 				o.screenPosition = o.vertex;//UnityObjectToClipPos(v.vertex);
+            	o.ray = mul(UNITY_MATRIX_MV, v.vertex).xyz * float3(-1,-1,1);
+
 //				//Push out Z so that this appears on top even though it's only drawing backfaces.
 //				float z = o.vertex.z * o.vertex.w;
 //				//z += 1.8;
@@ -778,21 +766,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 return o;
             }
             
-            //shadertoy XdfGDH
-            float normpdf(in float x, in float sigma)
-            {
-                return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
-            }      
 
-            //bgolus
-            float calcmiplevel(float2 texture_coord)
-            {
-                float2 dx = ddx(texture_coord);
-                float2 dy = ddy(texture_coord);
-                float delta_max_sqr = max(dot(dx, dx), dot(dy, dy));
-                
-                return 0.5 * log2(delta_max_sqr);
-            }            
 
             //hsv and rgb functions
             
@@ -817,7 +791,62 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 float3 rgb = clamp(abs(glsl_mod(c.x*6.+float3(0., 4., 2.), 6.)-3.)-1., 0., 1.);
                 return c.z*lerp(((float3)1.), rgb, c.y);
             }
+            //shadertoy XdfGDH
+            float normpdf(in float x, in float sigma)
+            {
+                return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;
+            }      
 
+            //bgolus
+            float calcmiplevel(float2 texture_coord)
+            {
+                float2 dx = ddx(texture_coord);
+                float2 dy = ddy(texture_coord);
+                float delta_max_sqr = max(dot(dx, dx), dot(dy, dy));
+                
+                return 0.5 * log2(delta_max_sqr);
+            }            
+
+
+	ENDCG
+	
+    SubShader
+    {
+        Tags { "RenderType"="Transparent" "Queue"="Transparent+100" "LightMode"="ForwardBase"}
+  //      Pass
+  //      {
+   //         ZWrite On
+    //        ColorMask 0
+     //   }    
+		// Pass {
+		//     Cull Front
+        //     Blend One Zero
+        //     ZWrite Off
+        //     ZTest [_ZTest]
+        //     CGPROGRAM
+        //     #pragma vertex vert
+        //     #pragma fragment frag
+
+
+		// 	ENDCG			
+		// }    
+
+		// GrabPass{"_BackDepthTexture"}		
+        
+		Pass
+        {
+            AlphaToMask On
+            ZWrite [_ZWrite]
+            Cull [_Cull]
+            Blend [_SourceBlend] [_DestinationBlend]
+            ZTest [_ZTest]
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+			sampler2D _BackDepthTexture;
+            
+      
+            
 
 
             float4 frag (vo __vo) : SV_Target
@@ -853,6 +882,8 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 float sigma = 7.;
                 float rz = 0.;
                 float fz = 0.;
+
+				
                 for (int j = 0;j<=kSize; ++j)
                 {
                     kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
@@ -866,13 +897,29 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 {
                     for (int j = -kSize;j<=kSize; ++j)
                     {
-                        fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV.xy + float2(float(i),float(j)) * fwidth(screenUV));
+						fz += kernel[kSize+j] * kernel[kSize+i] * DecodeFloatRG(tex2D(_CameraDepthTexture, float2(screenUV.xy + float2(float(i),float(j)) * fwidth(screenUV))));
+                        //fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV.xy + float2(float(i),float(j)) * fwidth(screenUV));
                     }
                 }
-
+				
+				
                 float z = (fz/(rz*rz));
                 float z2 = pow(0.9,z);
+				
+				float rawDepth = DecodeFloatRG(tex2D(_CameraDepthTexture, float2(screenUV.xy)));
+				float linearDepth = Linear01Depth(rawDepth);
+				float3 ray = vop.ray * (_ProjectionParams.z / vop.ray.z);
+				float4 vpos = float4(ray * linearDepth, 1);
+				float3 wpos2 = mul(unity_CameraToWorld, vpos).xyz;
+				float3 wposx = ddx_fine(wpos2);
+				float3 wposy = ddy_fine(wpos2);
+				float3 wnormal = normalize(cross(wposy, wposx));
 
+				// Convert to object space
+				float3 opos2 = mul(unity_WorldToObject, float4(wpos2, 1));
+				float3 onormal = mul(unity_WorldToObject, wnormal);		
+				float3 oposx = ddx_fine(opos2);
+				float3 oposy = ddy_fine(opos2);						
 				// #if UNITY_REVERSED_Z
 				// if (z == 0.f) {
 				// #else
@@ -885,23 +932,26 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 float dx = ddx_fine(screenUV.x);
                 float dy = ddy_fine(screenUV.y);
 
-                float angle = atan2(fz * _LumWeight, rz * _LumWeight)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
+                float angle = atan2(wnormal.x * _LumWeight.x, wnormal.y * _LumWeight.x)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
+                float angle2 = atan2(rz* _LumWeight.x, fz * _LumWeight.x)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
 
-                float depth = LinearEyeDepth(z);
+                float depth = Linear01Depth(z);
 				#if UNITY_REVERSED_Z
 				//if (z == 0.f) {
-                    float fd = LinearEyeDepth(0.0);
+                    float fd = Linear01Depth(0.0);
                 #else
 				//if (z == 1.f) {
-                    float fd = LinearEyeDepth(1.0);
+                    float fd = Linear01Depth(1.0);
                 #endif                
-                float3 wpos = direction * depth + _WorldSpaceCameraPos.xyz;
+
+				float4 vpos2 = float4(ray * depth, 1);
+                float3 wpos = mul(unity_CameraToWorld, vpos2).xyz;
                 float4 opos = mul(unity_WorldToObject, float4(wpos, 1.0));
                 float3 wnorm = normalize(wpos);
 
 
 
-				float4 screenPos2 = UnityObjectToClipPos(opos); 
+				float4 screenPos2 = UnityObjectToClipPos(opos2); 
 				// float2 offset = 1.2 / _ScreenParams.xy * screenPos2.w ; 
 				// float3 worldPos1 = calculateWorldSpace(screenPos2);
 				// float3 worldPos2 = calculateWorldSpace(screenPos2 + float4(0, offset.y, 0, 0));
@@ -919,7 +969,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                     dgpos2.y = 1.0-dgpos2.y;
                 #endif	
 
-                float3 rd2 = wpos - _WorldSpaceCameraPos;
+                float3 rd2 = wpos2 - _WorldSpaceCameraPos;
 
                 Offset[0] = dgpos2.xy + (float2( 0, 0) / _ScreenParams.xy) ;
                 Offset[1] = dgpos2.xy + (float2(nx, 0) / _ScreenParams.xy) ;
@@ -957,15 +1007,18 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				deltas = normalize( deltas );	
 
 
-				N.xyz = N.xyz * .5 + .5* deltas + .5;
-
-
+				N.xyz = N.xyz * .5 +  .5;
+				float3 wnorm2 = mul((float3x3)UNITY_MATRIX_I_V, N);
+				angle = lerp(angle,angle2,smoothstep(0.005,0.007,linearDepth));
                 float3 cwa = float3(angle, 1.,1.);
                 float3 cwac = hsv2rgb_smooth(cwa);
-                float3 blendColor = snoise_grad(abs(lerp(wpos*0.3,wnorm,depth/fd)));   
-                blendColor = rgb2hsv(blendColor);
-                blendColor.r += _Time.y;
-                blendColor = hsv2rgb_smooth(blendColor);
+                float4 sColor = snoise_grad(wpos*0.3);
+           		sColor.xyz = rgb2hsv(sColor.xyz);
+                sColor.r += _Time.y;
+				float3 blendColor = lerp(hsv2rgb_smooth(sColor.xyz),1.0-hsv2rgb_smooth(sColor.xyz),smoothstep(0.0,1.5,sColor.w));
+                // blendColor = rgb2hsv(blendColor);
+                // blendColor.r += _Time.y;
+                // blendColor = hsv2rgb_smooth(blendColor);
 
 
 
@@ -998,7 +1051,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
 				o.Occlusion = 1.0;
-				o.Normal = N;
+				o.Normal = wnorm2;
 
 				UnityGI gi;
 				UNITY_INITIALIZE_OUTPUT(UnityGI, gi);
@@ -1036,7 +1089,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 
 				float4 screenPos = UnityWorldToClipPos(wpos);
 				// fo.depth = z;
-
+				
 				UNITY_CALC_FOG_FACTOR(vop.dgPos.z);
 				UNITY_APPLY_FOG(unityFogFactor, color);
 				color.a = 1;
