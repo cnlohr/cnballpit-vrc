@@ -74,7 +74,7 @@ Material:
     - _FadeOutCameraDistance: 7988.24
     - _Gamma: 1
     - _GlossMapScale: 1
-    - _Glossiness: 0.67
+    - _Glossiness: 0.9
     - _GlossyReflections: 1
     - _GradualAlpha: 0
     - _Metallic: 1
@@ -100,5 +100,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LumWeight: {r: 1, g: 2422.49, b: 10.14, a: 1}
+    - _LumWeight: {r: 1, g: 427.76, b: 5, a: 24.95}
     - _Tint: {r: 1, g: 1, b: 1, a: 1}
