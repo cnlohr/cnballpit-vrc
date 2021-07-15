@@ -35,6 +35,7 @@ Shader "SCRN_Aurora MatCap"
             float4 _NoiseTex_ST;
 
 			#include "/Assets/Shaders/tanoise/tanoise.cginc"
+			#include "/Assets/AudioLink/Shaders/AudioLink.cginc"
 
 			#define TexInRes fixed2(2,2)
 			fixed4 loadValue(fixed2 re)
@@ -159,7 +160,7 @@ Shader "SCRN_Aurora MatCap"
 
 			fixed3 stars(in fixed3 p)
 			{
-				p.xy = mul(mm2(_Time.x*.1),p.xy);
+				p.xy = mul(mm2(time*.003),p.xy);
 				fixed3 c = fixed3(0,0,0);
 				fixed res = ResX;
 //#ifdef CNLOHR_AURORA_MOD
@@ -296,7 +297,7 @@ Shader "SCRN_Aurora MatCap"
 			{
 				//return float4( ps.sNormal, 1. );
 				varInput = ps.pixel_input;
-				time = _Time.g;
+				time = AudioLinkDecodeDataAsSeconds( ALPASS_GENERALVU_LOCAL_TIME );//_Time.g;
 				fixed3 worldPosition = _WorldSpaceCameraPos / 10. + _Position;
 				fixed3 viewDirection = normalize(ps.world_vertex - _WorldSpaceCameraPos);
 				worldPosition.y = max(worldPosition.y, 0);

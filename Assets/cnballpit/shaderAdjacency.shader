@@ -16,6 +16,8 @@ Shader "cnballpit/shaderAdjacency"
 	{
 		Tags { "RenderType"="Opaque"  "Compute" = "Compute" }
 		LOD 100
+		
+		Blend One Zero, One One
 
 		Pass
 		{
@@ -77,7 +79,7 @@ Shader "cnballpit/shaderAdjacency"
 			}
 
 
-			float frag (g2f i ) : SV_Target
+			float4 frag (g2f i ) : SV_Target
 			{
 				//Clever @d4rkpl4y3r trick: Handle collisions correctly!
 				uint idplus1norm = i.idplus1;
@@ -97,9 +99,8 @@ Shader "cnballpit/shaderAdjacency"
 				
 				if( (uint)(_Adjacency0[coordout].x) == idplus1norm ) discard;
 				if( (uint)(_Adjacency1[coordout].x) == idplus1norm ) discard;
-			//	if( (uint)(_Adjacency2[coordout].x) == idplus1norm ) discard;
 				
-				return idplus1norm;
+				return float4( idplus1norm, 0, 0, 1);
 			}
 			ENDCG
 		}

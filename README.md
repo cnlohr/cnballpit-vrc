@@ -24,13 +24,10 @@ Haven't gotten NeoFlight working yet.
 
 ## TODO
  * Figure out why shadow edge length too short.
- * Make water use tanoise.
- * Add toggles for quality, i.e. alpha to coverage balls.
  * Add shadows to the balls.
  * Make ball pit use SDF for boundary.
  * Make both cameras for combine pass be at the same position, only one piece of geometry, maybe?
  * Test out explicit CRT Rendering Orders https://docs.unity3d.com/Manual/class-CustomRenderTexture.html#custom-render-texture
- * INVESTIGATE why lack of light makes map render in 8.1ms instead of 10.5ms.
  * Double up physics steps, and make them sensitive to time.
  * Cleanup shaders, leaving standard ones.
  * Experiment with D4rk's 
@@ -46,13 +43,12 @@ and utter garbage in col when 3+ ids get written
  * Fix AudioLink failing?
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  * Figure out why some users get inundated by warnings about adding a depth buffer.
- * Increase Audio Reactivity on rainbow effect.
  * Make textured ball effect.
  * Figure out ball nonshadows occasionally.
  * Option to draw video on side of balls.
  * Why is AudioLink weird when doing colors.
- * Synchronize Sky
- * Little RGB Balls on video screen.
+ * Fix fadeout not writing fadeout tile to depth in depth pass.
+ * TODO: Is the adjacency thing only running once per frame? Or double on demand?
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -113,6 +109,18 @@ and utter garbage in col when 3+ ids get written
  * Fixed layers some things were on, i.e. remove sphere-player collision.
  * Make the balls emit preferentialy from the middle.
  
+## 9.0 11:45 PM PT / July 13, 2021
+ * Add 2 additional fans.
+ * Reduce ball popping when in compression.
+ * Removed some pens.
+ * Little RGB Balls on video screen.
+ * Synchronize aurora in night sky.
+ * Make balls fade out when too close.
+ * Increase Audio Reactivity on Kit's rainbow effect.
+ * Detect too many balls to represent in one cell by lighting up white.
+
+## 10.0
+ * Tweaked ball adjacency settings to reduce popping.
 
 ## Interesting
  * shader_billboardout modes.

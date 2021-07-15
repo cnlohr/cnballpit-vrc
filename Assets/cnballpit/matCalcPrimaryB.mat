@@ -111,11 +111,11 @@ Material:
     - _DetailNormalMapScale: 1
     - _DontPerformStep: 0
     - _DstBlend: 0
-    - _Friction: 0.008
+    - _Friction: 0.005
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GravityValue: 9.8
+    - _GravityValue: 3
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -131,4 +131,10 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FanPosition: {r: -4.13, g: -0.002, b: 1.46, a: 0}
+    - _FanPosition0: {r: -1.9493254, g: 0.14227307, b: 0.56075287, a: 0}
+    - _FanPosition1: {r: -9.16, g: 1.59, b: 6.22, a: 0}
+    - _FanPosition2: {r: -9.16, g: 1.59, b: 8.42, a: 0}
     - _FanRotation: {r: 0, g: 0, b: 0, a: 1}
+    - _FanRotation0: {r: 0.7064946, g: 0.24793863, b: -0.33519477, a: 0.57187086}
+    - _FanRotation1: {r: 0, g: 0, b: 0, a: 1}
+    - _FanRotation2: {r: 0, g: 0, b: 0, a: 1}
