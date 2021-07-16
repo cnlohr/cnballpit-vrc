@@ -932,26 +932,30 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 float dx = ddx_fine(screenUV.x);
                 float dy = ddy_fine(screenUV.y);
 
-                float angle = atan2(wnormal.x * _LumWeight.x, wnormal.y * _LumWeight.x)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
+                float angle = atan2(rz * _LumWeight.x, fz * _LumWeight.x)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
                 float angle2 = atan2(rz* _LumWeight.x, fz * _LumWeight.x)/(2.*UNITY_PI)+_Time.y*(1.-dx)/2.;                
 
-                float depth = Linear01Depth(z);
+                float depth = LinearEyeDepth(z);
 				#if UNITY_REVERSED_Z
 				//if (z == 0.f) {
-                    float fd = Linear01Depth(0.0);
+                    float fd = LinearEyeDepth(0.0);
                 #else
 				//if (z == 1.f) {
-                    float fd = Linear01Depth(1.0);
+                    float fd = LinearEyeDepth(1.0);
                 #endif                
 
 				float4 vpos2 = float4(ray * depth, 1);
-                float3 wpos = mul(unity_CameraToWorld, vpos2).xyz;
+				float3 wpos = direction * depth + _WorldSpaceCameraPos.xyz;
+				float depth2 = LinearEyeDepth(rawDepth);
+				float3 wpos3 = direction * depth2 + _WorldSpaceCameraPos.xyz;
+
+                //float3 wpos = mul(unity_CameraToWorld, vpos2).xyz;
                 float4 opos = mul(unity_WorldToObject, float4(wpos, 1.0));
                 float3 wnorm = normalize(wpos);
 
 
 
-				float4 screenPos2 = UnityObjectToClipPos(opos2); 
+				float4 screenPos2 = UnityObjectToClipPos(opos); 
 				// float2 offset = 1.2 / _ScreenParams.xy * screenPos2.w ; 
 				// float3 worldPos1 = calculateWorldSpace(screenPos2);
 				// float3 worldPos2 = calculateWorldSpace(screenPos2 + float4(0, offset.y, 0, 0));
@@ -969,7 +973,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                     dgpos2.y = 1.0-dgpos2.y;
                 #endif	
 
-                float3 rd2 = wpos2 - _WorldSpaceCameraPos;
+                float3 rd2 = wpos - _WorldSpaceCameraPos;
 
                 Offset[0] = dgpos2.xy + (float2( 0, 0) / _ScreenParams.xy) ;
                 Offset[1] = dgpos2.xy + (float2(nx, 0) / _ScreenParams.xy) ;
@@ -1007,7 +1011,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				deltas = normalize( deltas );	
 
 
-				N.xyz = N.xyz * .5 +  .5;
+				N.xyz = N.xyz * .5 +  .5 * deltas + .5;
 				float3 wnorm2 = mul((float3x3)UNITY_MATRIX_I_V, N);
 				angle = lerp(angle,angle2,smoothstep(0.005,0.007,linearDepth));
                 float3 cwa = float3(angle, 1.,1.);
