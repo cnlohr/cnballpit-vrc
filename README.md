@@ -49,6 +49,8 @@ and utter garbage in col when 3+ ids get written
  * Why is AudioLink weird when doing colors.
  * Fix fadeout not writing fadeout tile to depth in depth pass.
  * TODO: Is the adjacency thing only running once per frame? Or double on demand?
+ * TODO: Add another 2 stages, and flag on/off
+ * Make video player collide with player.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -122,7 +124,6 @@ and utter garbage in col when 3+ ids get written
 ## 10.0 10:30 PM PT / July 16, 2021
  * Tweaked ball adjacency settings to reduce popping.
  * Updated kit's shaders.
-
 
 ## Interesting
  * shader_billboardout modes.
