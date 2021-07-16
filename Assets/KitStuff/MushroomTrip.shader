@@ -920,14 +920,14 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				float3 onormal = mul(unity_WorldToObject, wnormal);		
 				float3 oposx = ddx_fine(opos2);
 				float3 oposy = ddy_fine(opos2);						
-				// #if UNITY_REVERSED_Z
-				// if (z == 0.f) {
-				// #else
-				// if (z == 1.f) {
-				// #endif
-				// 	// skybox
-				// 	return float4(0.f, 0.f, 0.f, 1.f);
-				// }
+				#if UNITY_REVERSED_Z
+				if (z == 0.f) {
+				#else
+				if (z == 1.f) {
+				#endif
+					// skybox
+					return float4(0.f, 0.f, 0.f, 1.f);
+				}
                 //Get more precise screenspace uv derivatives. 
                 float dx = ddx_fine(screenUV.x);
                 float dy = ddy_fine(screenUV.y);
@@ -950,7 +950,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				float3 wpos3 = direction * depth2 + _WorldSpaceCameraPos.xyz;
 
                 //float3 wpos = mul(unity_CameraToWorld, vpos2).xyz;
-                float4 opos = mul(unity_WorldToObject, float4(wpos, 1.0));
+                float4 opos = mul(unity_WorldToObject, float4(wpos3, 1.0));
                 float3 wnorm = normalize(wpos);
 
 
@@ -968,34 +968,35 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 float2 Offset[5];
 				float4 dgpos2 = ComputeGrabScreenPos(screenPos2);
 				float pd2 = 1.0f / dgpos2.w;
-				dgpos2 *= pd2;
+				float4 dgpos3 = dgpos2 * pd2;
+				dgpos3.xy *= 0.5f + 0.5f;
                 #ifndef UNITY_UV_STARTS_AT_TOP
-                    dgpos2.y = 1.0-dgpos2.y;
+                    dgpos3.y = 1.0-dgpos2.y;
                 #endif	
 
-                float3 rd2 = wpos - _WorldSpaceCameraPos;
+                float3 rd2 = (wpos3 - _WorldSpaceCameraPos);
 
-                Offset[0] = dgpos2.xy + (float2( 0, 0) / _ScreenParams.xy) ;
-                Offset[1] = dgpos2.xy + (float2(nx, 0) / _ScreenParams.xy) ;
-                Offset[2] = dgpos2.xy + (float2(-nx, 0) / _ScreenParams.xy);
-                Offset[3] = dgpos2.xy + (float2( 0, ny) / _ScreenParams.xy);
-                Offset[4] = dgpos2.xy + (float2( 0,-ny) / _ScreenParams.xy);
-                float M = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[0], dgpos2.zw)).r )));
-                float L = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[1], dgpos2.zw)).r )));
-                float R = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[2], dgpos2.zw)).r )));
-                float U = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[3], dgpos2.zw)).r )));
-                float D = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[4], dgpos2.zw)).r )));
+                Offset[0] = dgpos3.xy + (float2( 0, 0) / _ScreenParams.xy) ;
+                Offset[1] = dgpos3.xy + (float2(nx, 0) / _ScreenParams.xy) ;
+                Offset[2] = dgpos3.xy + (float2(-nx, 0) / _ScreenParams.xy);
+                Offset[3] = dgpos3.xy + (float2( 0, ny) / _ScreenParams.xy);
+                Offset[4] = dgpos3.xy + (float2( 0,-ny) / _ScreenParams.xy);
+                float M = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[0], dgpos3.zw)).r )));
+                float L = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[1], dgpos3.zw)).r )));
+                float R = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[2], dgpos3.zw)).r )));
+                float U = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[3], dgpos3.zw)).r )));
+                float D = abs(LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(Offset[4], dgpos3.zw)).r )));
                 float X = ((R-M)+(M-L))*.5;
                 float Y = ((D-M)+(M-U))*.5;
 
                 float4 N = float4(normalize(float3(X, Y, .01))-.5, 1.0);
 
 
-				float WPthis  = rd2 * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 1./_ScreenParams.x, 0 ), dgpos2.zw ))));
-				float WPleft  = (rd2 - ddx_fine( rd2 ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2(-1./_ScreenParams.x, 0 ), dgpos2.zw ))));
-				float WPright = (rd2 + ddx_fine( rd2 ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0, 0 ), dgpos2.zw ))));
-				float WPup    = (rd2 - ddy_fine( rd2 ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0, 1./_ScreenParams.y ), dgpos2.zw ))));
-				float WPdown  = (rd2 + ddy_fine( rd2 ) )* LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0,-1./_ScreenParams.y ), dgpos2.zw ))));
+				float WPthis  = direction * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 1./_ScreenParams.x, 0 ), dgpos2.zw ))));
+				float WPleft  = (direction - ddx_fine( direction ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2(-1./_ScreenParams.x, 0 ), dgpos2.zw ))));
+				float WPright = (direction + ddx_fine( direction ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0, 0 ), dgpos2.zw ))));
+				float WPup    = (direction - ddy_fine( direction ) ) * LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0, 1./_ScreenParams.y ), dgpos2.zw ))));
+				float WPdown  = (direction + ddy_fine( direction ) )* LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, float4(dgpos2.xy + float2( 0,-1./_ScreenParams.y ), dgpos2.zw ))));
 				
 				float3 deltas = 0.;
 				if( abs( WPthis - WPleft ) < abs( WPright - WPthis ) )
@@ -1011,9 +1012,9 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				deltas = normalize( deltas );	
 
 
-				N.xyz = N.xyz * .5 +  .5 * deltas + .5;
+				N.xyz = N.xyz * .5  + .5;
 				float3 wnorm2 = mul((float3x3)UNITY_MATRIX_I_V, N);
-				angle = lerp(angle,angle2,smoothstep(0.005,0.007,linearDepth));
+				//angle = lerp(angle,angle2,smoothstep(0.005,0.007,linearDepth));
                 float3 cwa = float3(angle, 1.,1.);
                 float3 cwac = hsv2rgb_smooth(cwa);
                 float4 sColor = snoise_grad(wpos*0.3);
