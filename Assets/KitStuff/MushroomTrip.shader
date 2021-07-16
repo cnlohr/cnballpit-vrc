@@ -955,7 +955,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 
 
 
-				float4 screenPos2 = UnityObjectToClipPos(opos); 
+				float4 screenPos2 = UnityObjectToClipPos(opos2); 
 				// float2 offset = 1.2 / _ScreenParams.xy * screenPos2.w ; 
 				// float3 worldPos1 = calculateWorldSpace(screenPos2);
 				// float3 worldPos2 = calculateWorldSpace(screenPos2 + float4(0, offset.y, 0, 0));
@@ -1014,6 +1014,8 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 
 				N.xyz = N.xyz * .5  + .5;
 				float3 wnorm2 = mul((float3x3)UNITY_MATRIX_I_V, N);
+				float3 onormal2 = mul(unity_WorldToObject, wnorm2);		
+
 				//angle = lerp(angle,angle2,smoothstep(0.005,0.007,linearDepth));
                 float3 cwa = float3(angle, 1.,1.);
                 float3 cwac = hsv2rgb_smooth(cwa);
@@ -1056,7 +1058,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
 				o.Occlusion = 1.0;
-				o.Normal = wnorm2;
+				o.Normal = onormal2;
 
 				UnityGI gi;
 				UNITY_INITIALIZE_OUTPUT(UnityGI, gi);
