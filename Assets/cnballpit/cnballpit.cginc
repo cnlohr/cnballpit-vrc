@@ -58,7 +58,7 @@ float4 GetColorTex( uint ballid )
 //
 //AT 10,10,10::2.4 NOT OK; 2.45 OK. (range of 6) ... Setting to range of sqrt(7) to be safe.
 
-static const float3 HashCellRange = float3( 11,11,11 );
+static const float3 HashCellRange = float3( 10.5,10.5,10.5 );
 static const int SearchExtents = 2;
 #define MAX_BINS_TO_CHECK 2
 static const float SeachExtentsRange = 2.6; 

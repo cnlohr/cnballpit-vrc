@@ -119,8 +119,10 @@ and utter garbage in col when 3+ ids get written
  * Increase Audio Reactivity on Kit's rainbow effect.
  * Detect too many balls to represent in one cell by lighting up white.
 
-## 10.0
+## 10.0 10:30 PM PT / July 16, 2021
  * Tweaked ball adjacency settings to reduce popping.
+ * Updated kit's shaders.
+
 
 ## Interesting
  * shader_billboardout modes.

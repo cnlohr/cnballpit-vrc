@@ -16,6 +16,8 @@
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
+		
+		Cull Off
 
 		// shadow caster rendering pass, implemented manually
 		// using macros from UnityCG.cginc
