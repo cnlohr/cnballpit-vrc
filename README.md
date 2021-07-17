@@ -125,6 +125,11 @@ and utter garbage in col when 3+ ids get written
  * Tweaked ball adjacency settings to reduce popping.
  * Updated kit's shaders.
 
+## 11.0 12:30 PM PT / July 17, 2016
+ * Implemented updated adjacency logic, reducing number of cameras.
+ * Kit fixed some of their shrooms.
+ * Added reference camrea.
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.
@@ -140,7 +145,9 @@ for( j = 0; j < 4; j++ )
 ```
  * Back and forth about rendering technique.
  * Render Probes vs Cameras
-
+ * Reference Camera
+ * Double-up the blending.
+ 
 ## Special Thanks
  * D4rkPl4y3r for the idea, and several pointers!  Also, the binning principle.
  * ERROR.mdl for the `SV_DepthLessEqual` trick to make unsorted high performance balls.
