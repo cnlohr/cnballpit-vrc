@@ -862,9 +862,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				float2 screenUV = (vop.screenPosition.xy * perspectiveDivide) * 0.5f + 0.5f;
 
 				// No idea
-                #ifdef UNITY_UV_STARTS_AT_TOP				
-					screenUV.y = 1 - screenUV.y; 
-                #endif
+				screenUV.y = 1 - screenUV.y; 
 				// VR stereo support
 				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
 				
