@@ -14,14 +14,15 @@ Shader "cnballpit/shaderAdjacency"
 		Tags { "RenderType"="Opaque"  "Compute" = "Compute" }
 		LOD 100
 		
-		// .r = original.r * Zero + new.r * DstAlpha;
-		// .a = original.a * Zero + new.a * One
+        // .r = original.r * Zero + new.r * DstAlpha;
+        // .a = original.a * Zero + new.a * One
+        
+        // On the first pixel,              VALUE = ( 0, 0, 0, ID0 );
+        // On the first overlapping pixel,  VALUE = ( ID0, ID0, ID0, ID1 );
+        // On the second overlapping pixel, VALUE = ( ID1, ID1, ID1, ID2 );
+        
+        // DstAlpha = original.a
 		
-		// On the first one,  VALUE = ( 0, 0, 0, ID+4 );
-		// On the second one, VALUE = ( ID+4, ID+4, ID+4, NEW_ID + 4);
-		
-		// DstAlpha = original.a
-
 		Blend DstAlpha Zero, One Zero
 
 		Pass
