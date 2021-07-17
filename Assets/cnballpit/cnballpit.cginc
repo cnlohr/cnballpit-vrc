@@ -3,13 +3,11 @@ texture2D< float4 > _PositionsIn;
 texture2D< float4 > _VelocitiesIn;
 texture2D< float4 > _ColorsIn;
 texture2D< float4 > _Adjacency0;
-texture2D< float4 > _Adjacency1;
 
 float4 _PositionsIn_TexelSize;
 float4 _VelocitiesIn_TexelSize;
 float4 _ColorsIn_TexelSize;
 float4 _Adjacency0_TexelSize;
-float4 _Adjacency1_TexelSize;
 
 float4 GetPosition( uint ballid )
 {
@@ -58,10 +56,10 @@ float4 GetColorTex( uint ballid )
 //
 //AT 10,10,10::2.4 NOT OK; 2.45 OK. (range of 6) ... Setting to range of sqrt(7) to be safe.
 
-static const float3 HashCellRange = float3( 10.5,10.5,10.5 );
+static const float3 HashCellRange = float3( 10,10,10 );
 static const int SearchExtents = 2;
 #define MAX_BINS_TO_CHECK 2
-static const float SeachExtentsRange = 2.6; 
+static const float SeachExtentsRange = 2.7; 
 
 uint2 Hash3ForAdjacency( float3 rlcoord )
 {
@@ -80,7 +78,7 @@ uint2 Hash3ForAdjacency( float3 rlcoord )
 	//OK but not graet hash.
 	//Offset by 142 to prevent the value from ever going negative, also
 	//it's pretty cause it puts the balls in the center of the hash texture.
-	uint3 normcoord = int3( (rlcoord+142)*HashCellRange );
-	return ( uint2( normcoord.x, normcoord.z ) + uint2( normcoord.y % 5, normcoord.y / 5 ) * 200 ) % 1024;
+	uint3 normcoord = int3( (rlcoord+127)*HashCellRange );
+	return ( uint2( normcoord.x, normcoord.z ) + uint2( normcoord.y % 6, normcoord.y / 6 ) * 170 ) % 1024;
 #endif
 }

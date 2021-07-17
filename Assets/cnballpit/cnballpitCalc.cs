@@ -14,17 +14,14 @@ public class cnballpitCalc : UdonSharpBehaviour
 	public Camera CamCalcA;
 	public Camera CamCalcB;
 	public Camera CamAdj0;
-	public Camera CamAdj1;
 
 	public Camera CamAdj4;
-	public Camera CamAdj5;
 
 	public RenderTexture rtPositionA;
 	public RenderTexture rtVelocityA;
 	public RenderTexture rtPositionB;
 	public RenderTexture rtVelocityB;
 	public RenderTexture CAR0;
-	public RenderTexture CAR1;
 	public Shader TestShaderAdjacency, TestShaderCalc, TestShaderCompositeDepth;
 	
 	public Material	  MatComputeB;
@@ -40,23 +37,23 @@ public class cnballpitCalc : UdonSharpBehaviour
 	{
 		CamCompositeDepth.SetReplacementShader (TestShaderCompositeDepth, "");
 		CamAdj0.SetReplacementShader (TestShaderAdjacency,				"");
-		CamAdj1.SetReplacementShader (TestShaderAdjacency,				"");
+		//CamAdj1.SetReplacementShader (TestShaderAdjacency,				"");
 		CamCalcB.SetReplacementShader(TestShaderCalc,					 "");
 		CamAdj4.SetReplacementShader (TestShaderAdjacency,				"");
-		CamAdj5.SetReplacementShader (TestShaderAdjacency,				"");
+		//CamAdj5.SetReplacementShader (TestShaderAdjacency,				"");
 		CamCalcA.SetReplacementShader(TestShaderCalc,					 "");
 			
 		//Tricky:  Call SetTargetBuffers in the order you want the cameras to execute.
 		RenderBuffer[] CAR0A = new RenderBuffer[] { CAR0.colorBuffer };
 		CamAdj0.SetTargetBuffers( CAR0A, CAR0.depthBuffer );
-		RenderBuffer[] CAR1A = new RenderBuffer[] { CAR1.colorBuffer };
-		CamAdj1.SetTargetBuffers( CAR1A, CAR1.depthBuffer );
+		//RenderBuffer[] CAR1A = new RenderBuffer[] { CAR1.colorBuffer };
+		//CamAdj1.SetTargetBuffers( CAR1A, CAR1.depthBuffer );
 		
 		RenderBuffer[] renderBuffersB = new RenderBuffer[] { rtPositionB.colorBuffer, rtVelocityB.colorBuffer };
 		CamCalcB.SetTargetBuffers(renderBuffersB, rtPositionB.depthBuffer);
 		
 		CamAdj4.SetTargetBuffers( CAR0A, CAR0.depthBuffer );
-		CamAdj5.SetTargetBuffers( CAR1A, CAR1.depthBuffer );
+		//CamAdj5.SetTargetBuffers( CAR1A, CAR1.depthBuffer );
 
 		RenderBuffer[] renderBuffersA = new RenderBuffer[] { rtPositionA.colorBuffer, rtVelocityA.colorBuffer };
 		CamCalcA.SetTargetBuffers(renderBuffersA, rtPositionA.depthBuffer);

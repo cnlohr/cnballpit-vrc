@@ -16,7 +16,6 @@ Shader "cnballpit/shaderCalcPrimary"
 		_PositionsIn ("Positions", 2D) = "white" {}
 		_VelocitiesIn ("Velocities", 2D) = "white" {}
 		_Adjacency0 ("Adjacencies0", 2D) = "white" {}
-		_Adjacency1 ("Adjacencies1", 2D) = "white" {}
         _DepthMapComposite ("Composite Depth", 2D) = "white" {}
 		_Friction( "Friction", float ) = .008
 		_DebugFloat("Debug", float) = 0
@@ -156,7 +155,6 @@ Shader "cnballpit/shaderCalcPrimary"
 					// Step 1 find collisions.
 					
 					int3 ballneighbor;
-					bool foundself = false;
 					for( ballneighbor.x = -SearchExtents; ballneighbor.x <= SearchExtents; ballneighbor.x++ )
 					for( ballneighbor.y = -SearchExtents; ballneighbor.y <= SearchExtents; ballneighbor.y++ )
 					for( ballneighbor.z = -SearchExtents; ballneighbor.z <= SearchExtents; ballneighbor.z++ )
@@ -167,21 +165,35 @@ Shader "cnballpit/shaderCalcPrimary"
 						if( length( ballneighbor ) > SeachExtentsRange ) continue;
 						
 						uint2 hashed = Hash3ForAdjacency(ballneighbor/HashCellRange+Position.xyz);
+						float4 adjacencyvalue = 0.;
+						{
+							uint4 data = _Adjacency0[hashed];
+							if( data.a >= 2 )
+							{
+								adjacencyvalue.x = data.a;
+							}
+							if( data.x >= 2 )
+							{
+								adjacencyvalue.y = data.x;
+							}
+						}
 						
+						int selfballidplus4 = ballid+4;
+
 						for( j = 0; j < MAX_BINS_TO_CHECK; j++ )
 						{
 							uint obid;
-							if( j == 0 )      obid = _Adjacency0[hashed];
-							else              obid = _Adjacency1[hashed];
+							if( j == 0 )      obid = adjacencyvalue.x;
+							else              obid = adjacencyvalue.y;
 
-							obid--;
 							//See if we hit ourselves.
-							if( obid == ballid )
+							if( obid == ballid || obid < 4 )
 							{
-								foundself = true;
 								continue;
 							}
 							
+							obid -= 4;
+						
 							float4 otherball = GetPosition( obid );
 							float len = length( Position.xyz - otherball.xyz );
 							
@@ -208,11 +220,6 @@ Shader "cnballpit/shaderCalcPrimary"
 							}
 						}
 					}
-					if( !foundself )
-					{
-						//Velocity.w = 1;
-					}
-
 				}
 				
 

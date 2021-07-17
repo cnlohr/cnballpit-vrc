@@ -3,9 +3,6 @@
     Properties
     {
         _Adjacency0 ("Adjacency0", 2D) = "white" {}
-        _Adjacency1 ("Adjacency1", 2D) = "white" {}
-        _Adjacency2 ("Adjacency2", 2D) = "black" {}
-        _Adjacency3 ("Adjacency3", 2D) = "black" {}
     }
     SubShader
     {
@@ -49,13 +46,20 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                uint4 data = uint4(
-					_Adjacency0[uint2(_Adjacency0_TexelSize.zw*i.uv)].x,
-					_Adjacency1[uint2(_Adjacency1_TexelSize.zw*i.uv)].x, 0, 0 );
-				float4 col = float4( data.xyz/32768., 1. )/2;
+                uint4 data = _Adjacency0[uint2(_Adjacency0_TexelSize.zw*i.uv)];
+
+				float4 col = float4( 0., 0., 0., 1. );
 				
-				if( _Adjacency1[uint2(_Adjacency1_TexelSize.zw*i.uv)].w > 2 )
-					col = float4( 2., 2., 2., 1. );
+				if( data.a >= 2 )
+				{
+					col.x = data.a - 4;
+				}
+				if( data.x >= 2 )
+				{
+					col.y = data.x - 4;
+				}
+				
+				col.xy/=32767;
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);

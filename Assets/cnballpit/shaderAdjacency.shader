@@ -7,9 +7,6 @@ Shader "cnballpit/shaderAdjacency"
 	{
 		_PositionsIn ("Positions", 2D) = "black" {}
 		_VelocitiesIn ("Velocities", 2D) = "black" {}
-		_Adjacency0 ("Adjacencies0", 2D) = "black" {}
-		_Adjacency1 ("Adjacencies1", 2D) = "black" {}
-		//_Adjacency2 ("Adjacencies2", 2D) = "black" {}
 		_wpass ("WPass", int) = 0
 	}
 	SubShader
@@ -17,7 +14,12 @@ Shader "cnballpit/shaderAdjacency"
 		Tags { "RenderType"="Opaque"  "Compute" = "Compute" }
 		LOD 100
 		
-		Blend One Zero, One One
+		// .r = original.r * Zero + new.r * DstAlpha;
+		// .a = original.a * Zero + new.a * One
+		
+		// On the first one,  VALUE = ( 0, 0, 0, ID+4 );
+		// On the second one, VALUE = ( ID+4, ID+4, ID+4, NEW_ID + 4);
+		Blend DstAlpha Zero, One Zero
 
 		Pass
 		{
@@ -41,7 +43,7 @@ Shader "cnballpit/shaderAdjacency"
 
 			struct g2f
 			{
-				float idplus1 : TEXCOORD0;
+				float idplus4 : TEXCOORD0;
 				float4 vertex : SV_POSITION;
 			};
 
@@ -67,7 +69,8 @@ Shader "cnballpit/shaderAdjacency"
 					float4 DataVel = GetVelocity(ballid);
 					
 					g2f outval;
-					outval.idplus1 = ballid+1;
+					//if( ballid != 32600 ) ballid = -4;
+					outval.idplus4 = ballid+4;
 					
 					uint2 coordout = Hash3ForAdjacency( DataPos.xyz );
 						
@@ -82,9 +85,9 @@ Shader "cnballpit/shaderAdjacency"
 			float4 frag (g2f i ) : SV_Target
 			{
 				//Clever @d4rkpl4y3r trick: Handle collisions correctly!
-				uint idplus1norm = i.idplus1;
+				uint idplus4norm = i.idplus4;
 				int2 screenCoord = i.vertex.xy;
-
+#if 0
 				//DEBUGGING -> Verify blocks are where they ought to be.
 				#if 0
 					//This has been verified C.L. 20210620195100
@@ -99,8 +102,8 @@ Shader "cnballpit/shaderAdjacency"
 				
 				if( (uint)(_Adjacency0[coordout].x) == idplus1norm ) discard;
 				if( (uint)(_Adjacency1[coordout].x) == idplus1norm ) discard;
-				
-				return float4( idplus1norm, 0, 0, 1);
+#endif			
+				return float4( (1.).xxx, idplus4norm );
 			}
 			ENDCG
 		}
