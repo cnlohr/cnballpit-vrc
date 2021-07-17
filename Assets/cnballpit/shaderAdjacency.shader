@@ -19,6 +19,9 @@ Shader "cnballpit/shaderAdjacency"
 		
 		// On the first one,  VALUE = ( 0, 0, 0, ID+4 );
 		// On the second one, VALUE = ( ID+4, ID+4, ID+4, NEW_ID + 4);
+		
+		// DstAlpha = original.a
+
 		Blend DstAlpha Zero, One Zero
 
 		Pass
