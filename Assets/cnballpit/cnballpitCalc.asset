@@ -43,7 +43,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 20
+      Data: 24
     - Name: 
       Entry: 7
       Data: 
@@ -454,7 +454,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtPositionA
+      Data: rtDepthThrowawayColor
     - Name: $v
       Entry: 7
       Data: 24|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -481,10 +481,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtPositionA
+      Data: rtDepthThrowawayColor
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtPositionA
+      Data: rtDepthThrowawayColor
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -517,7 +517,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtVelocityA
+      Data: rtTopDepth
     - Name: $v
       Entry: 7
       Data: 28|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -538,10 +538,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtVelocityA
+      Data: rtTopDepth
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtVelocityA
+      Data: rtTopDepth
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -574,7 +574,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtPositionB
+      Data: rtBotDepth
     - Name: $v
       Entry: 7
       Data: 31|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -595,10 +595,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtPositionB
+      Data: rtBotDepth
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtPositionB
+      Data: rtBotDepth
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -631,7 +631,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: rtVelocityB
+      Data: rtCompositeDepth
     - Name: $v
       Entry: 7
       Data: 34|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -652,10 +652,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: rtVelocityB
+      Data: rtCompositeDepth
     - Name: symbolUniqueName
       Entry: 1
-      Data: rtVelocityB
+      Data: rtCompositeDepth
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -688,7 +688,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: CAR0
+      Data: rtPositionA
     - Name: $v
       Entry: 7
       Data: 37|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -709,10 +709,10 @@ MonoBehaviour:
       Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: CAR0
+      Data: rtPositionA
     - Name: symbolUniqueName
       Entry: 1
-      Data: CAR0
+      Data: rtPositionA
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -745,7 +745,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: TestShaderAdjacency
+      Data: rtVelocityA
     - Name: $v
       Entry: 7
       Data: 40|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -753,14 +753,8 @@ MonoBehaviour:
       Entry: 7
       Data: 41|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
-      Entry: 7
-      Data: 42|System.RuntimeType, mscorlib
-    - Name: 
-      Entry: 1
-      Data: UnityEngine.Shader, UnityEngine.CoreModule
-    - Name: 
-      Entry: 8
-      Data: 
+      Entry: 9
+      Data: 26
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -769,13 +763,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineShader
+      Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: TestShaderAdjacency
+      Data: rtVelocityA
     - Name: symbolUniqueName
       Entry: 1
-      Data: TestShaderAdjacency
+      Data: rtVelocityA
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -784,7 +778,7 @@ MonoBehaviour:
       Data: 
     - Name: fieldAttributes
       Entry: 7
-      Data: 43|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+      Data: 42|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -808,16 +802,16 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: TestShaderCalc
+      Data: rtPositionB
     - Name: $v
       Entry: 7
-      Data: 44|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+      Data: 43|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: fieldSymbol
       Entry: 7
-      Data: 45|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+      Data: 44|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 9
-      Data: 42
+      Data: 26
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -826,13 +820,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineShader
+      Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: TestShaderCalc
+      Data: rtPositionB
     - Name: symbolUniqueName
       Entry: 1
-      Data: TestShaderCalc
+      Data: rtPositionB
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -840,8 +834,17 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: fieldAttributes
-      Entry: 9
-      Data: 43
+      Entry: 7
+      Data: 45|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: userBehaviourSource
       Entry: 6
       Data: 
@@ -856,7 +859,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: TestShaderCompositeDepth
+      Data: rtVelocityB
     - Name: $v
       Entry: 7
       Data: 46|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -865,7 +868,7 @@ MonoBehaviour:
       Data: 47|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 9
-      Data: 42
+      Data: 26
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -874,13 +877,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineShader
+      Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: TestShaderCompositeDepth
+      Data: rtVelocityB
     - Name: symbolUniqueName
       Entry: 1
-      Data: TestShaderCompositeDepth
+      Data: rtVelocityB
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -888,8 +891,17 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: fieldAttributes
-      Entry: 9
-      Data: 43
+      Entry: 7
+      Data: 48|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: userBehaviourSource
       Entry: 6
       Data: 
@@ -904,22 +916,16 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: MatComputeB
+      Data: CAR0
     - Name: $v
       Entry: 7
-      Data: 48|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+      Data: 49|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: fieldSymbol
       Entry: 7
-      Data: 49|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+      Data: 50|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
-      Entry: 7
-      Data: 50|System.RuntimeType, mscorlib
-    - Name: 
-      Entry: 1
-      Data: UnityEngine.Material, UnityEngine.CoreModule
-    - Name: 
-      Entry: 8
-      Data: 
+      Entry: 9
+      Data: 26
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -928,13 +934,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineMaterial
+      Data: UnityEngineRenderTexture
     - Name: symbolOriginalName
       Entry: 1
-      Data: MatComputeB
+      Data: CAR0
     - Name: symbolUniqueName
       Entry: 1
-      Data: MatComputeB
+      Data: CAR0
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -967,7 +973,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: MatComputeA
+      Data: TestShaderAdjacency
     - Name: $v
       Entry: 7
       Data: 52|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -975,8 +981,230 @@ MonoBehaviour:
       Entry: 7
       Data: 53|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
+      Entry: 7
+      Data: 54|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: UnityEngine.Shader, UnityEngine.CoreModule
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: declarationType
+      Entry: 3
+      Data: 1
+    - Name: syncMode
+      Entry: 3
+      Data: 0
+    - Name: symbolResolvedTypeName
+      Entry: 1
+      Data: UnityEngineShader
+    - Name: symbolOriginalName
+      Entry: 1
+      Data: TestShaderAdjacency
+    - Name: symbolUniqueName
+      Entry: 1
+      Data: TestShaderAdjacency
+    - Name: symbolDefaultValue
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: fieldAttributes
+      Entry: 7
+      Data: 55|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: userBehaviourSource
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: TestShaderCalc
+    - Name: $v
+      Entry: 7
+      Data: 56|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+    - Name: fieldSymbol
+      Entry: 7
+      Data: 57|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+    - Name: internalType
       Entry: 9
-      Data: 50
+      Data: 54
+    - Name: declarationType
+      Entry: 3
+      Data: 1
+    - Name: syncMode
+      Entry: 3
+      Data: 0
+    - Name: symbolResolvedTypeName
+      Entry: 1
+      Data: UnityEngineShader
+    - Name: symbolOriginalName
+      Entry: 1
+      Data: TestShaderCalc
+    - Name: symbolUniqueName
+      Entry: 1
+      Data: TestShaderCalc
+    - Name: symbolDefaultValue
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: fieldAttributes
+      Entry: 9
+      Data: 55
+    - Name: userBehaviourSource
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: TestShaderCompositeDepth
+    - Name: $v
+      Entry: 7
+      Data: 58|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+    - Name: fieldSymbol
+      Entry: 7
+      Data: 59|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+    - Name: internalType
+      Entry: 9
+      Data: 54
+    - Name: declarationType
+      Entry: 3
+      Data: 1
+    - Name: syncMode
+      Entry: 3
+      Data: 0
+    - Name: symbolResolvedTypeName
+      Entry: 1
+      Data: UnityEngineShader
+    - Name: symbolOriginalName
+      Entry: 1
+      Data: TestShaderCompositeDepth
+    - Name: symbolUniqueName
+      Entry: 1
+      Data: TestShaderCompositeDepth
+    - Name: symbolDefaultValue
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: fieldAttributes
+      Entry: 9
+      Data: 55
+    - Name: userBehaviourSource
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: MatComputeB
+    - Name: $v
+      Entry: 7
+      Data: 60|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+    - Name: fieldSymbol
+      Entry: 7
+      Data: 61|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+    - Name: internalType
+      Entry: 7
+      Data: 62|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: UnityEngine.Material, UnityEngine.CoreModule
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: declarationType
+      Entry: 3
+      Data: 1
+    - Name: syncMode
+      Entry: 3
+      Data: 0
+    - Name: symbolResolvedTypeName
+      Entry: 1
+      Data: UnityEngineMaterial
+    - Name: symbolOriginalName
+      Entry: 1
+      Data: MatComputeB
+    - Name: symbolUniqueName
+      Entry: 1
+      Data: MatComputeB
+    - Name: symbolDefaultValue
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: fieldAttributes
+      Entry: 7
+      Data: 63|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: userBehaviourSource
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: MatComputeA
+    - Name: $v
+      Entry: 7
+      Data: 64|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+    - Name: fieldSymbol
+      Entry: 7
+      Data: 65|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+    - Name: internalType
+      Entry: 9
+      Data: 62
     - Name: declarationType
       Entry: 3
       Data: 1
@@ -1000,7 +1228,7 @@ MonoBehaviour:
       Data: 
     - Name: fieldAttributes
       Entry: 7
-      Data: 54|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+      Data: 66|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -1027,13 +1255,13 @@ MonoBehaviour:
       Data: SceneLight
     - Name: $v
       Entry: 7
-      Data: 55|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+      Data: 67|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: fieldSymbol
       Entry: 7
-      Data: 56|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+      Data: 68|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 7
-      Data: 57|System.RuntimeType, mscorlib
+      Data: 69|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
       Data: UnityEngine.Light, UnityEngine.CoreModule
@@ -1063,7 +1291,7 @@ MonoBehaviour:
       Data: 
     - Name: fieldAttributes
       Entry: 7
-      Data: 58|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+      Data: 70|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -1090,13 +1318,13 @@ MonoBehaviour:
       Data: _TargetFramerate
     - Name: $v
       Entry: 7
-      Data: 59|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+      Data: 71|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: fieldSymbol
       Entry: 7
-      Data: 60|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+      Data: 72|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 7
-      Data: 61|System.RuntimeType, mscorlib
+      Data: 73|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
       Data: System.Single, mscorlib
@@ -1126,7 +1354,7 @@ MonoBehaviour:
       Data: 
     - Name: fieldAttributes
       Entry: 7
-      Data: 62|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+      Data: 74|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -1153,13 +1381,13 @@ MonoBehaviour:
       Data: AccumulatedFrameBoundary
     - Name: $v
       Entry: 7
-      Data: 63|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
+      Data: 75|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: fieldSymbol
       Entry: 7
-      Data: 64|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
+      Data: 76|UdonSharp.Compiler.SymbolDefinition, UdonSharp.Editor
     - Name: internalType
       Entry: 9
-      Data: 61
+      Data: 73
     - Name: declarationType
       Entry: 3
       Data: 2
@@ -1183,7 +1411,7 @@ MonoBehaviour:
       Data: 
     - Name: fieldAttributes
       Entry: 7
-      Data: 65|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
+      Data: 77|System.Collections.Generic.List`1[[System.Attribute, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0

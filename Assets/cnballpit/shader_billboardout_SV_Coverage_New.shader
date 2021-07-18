@@ -207,7 +207,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						else if( balldiv < 5 ) selccnote = 1;
 						else if( balldiv < 6 ) selccnote = 2;
 						else selccnote = 3;
-						float4 rnote =  AudioLinkData( ALPASS_CCINTERNAL + uint2( selccnote % 4, 0 ) );
+						float4 rnote =  AudioLinkData( ALPASS_CCINTERNAL + uint2( (selccnote % 4)+1, 0 ) );
 						float rgbcol;
 						if( rnote.x >= 0 )
 							colorDiffuse.xyz = AudioLinkCCtoRGB( rnote.x, rnote.z * 0.1 + 0.1, 0 );
