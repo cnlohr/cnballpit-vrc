@@ -70,6 +70,12 @@ public class DayNightControl : UdonSharpBehaviour
 			rprobeRender.enabled = true;
 			rprobeRender.RenderToCubemap( ctcopy, 63 );
 			rprobeRender.enabled = false;
+			
+			int enabled = (Networking.IsMaster)?1:0;
+
+			GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", LightMode+1 );
+			GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", enabled );
+
 		}
 		else
 		{

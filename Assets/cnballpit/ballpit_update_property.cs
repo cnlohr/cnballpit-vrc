@@ -16,12 +16,61 @@ public class ballpit_update_property : UdonSharpBehaviour
 	public bool  UpdateDrawMode;
 	public bool  MasterOnly;
 	public bool  AdjustQualityMode;
+	public bool  AllowAvatarShaderInteraction;
 	public int   NumQualityModes;
 	public GameObject MainControl;
+
+	void UpdateMaterialWithSelMode()
+	{
+		int mode = 1;
+		ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
+		int enabled = (!MasterOnly || Networking.IsMaster)?1:0;
+		
+		if( UpdateEnable )
+		{
+			if( m.balls_reset )
+				mode = 0;
+		}
+		
+		if( UpdateDrawMode )
+		{
+			mode = m.mode + 1;
+			enabled = 1;
+		}
+		
+		if( AdjustQualityMode )
+		{
+			mode = m.qualitymode;
+			enabled = 1;
+		}
+		
+		if( AllowAvatarShaderInteraction )
+		{
+			mode = m.bAllowAvatarShaderInteraction?1:0;
+			enabled = 1;
+		}
+
+		if( UpdateGravityFriction )
+		{
+			if( m.gravityF != SetValueGravity )
+				mode = 0;
+			enabled = 1;
+		}
+
+		GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", mode );
+		GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", enabled );
+	}
 
 	void Start()
 	{
 	}
+	
+	void Update()
+	{
+		//XXX Is this needed?
+		UpdateMaterialWithSelMode();
+	}
+	
 	void Interact()
 	{
 		if( !MasterOnly || Networking.IsMaster ) //|| Networking.IsInstanceOwner )
@@ -47,7 +96,18 @@ public class ballpit_update_property : UdonSharpBehaviour
 			{
 				m.qualitymode = ( m.qualitymode + 1 ) % NumQualityModes;
 			}
+			
+			if( AllowAvatarShaderInteraction )
+			{
+				m.bAllowAvatarShaderInteraction = !m.bAllowAvatarShaderInteraction;
+			}
 		}
+		UpdateMaterialWithSelMode();
+	}
+	
+	void OnDeserialize()
+	{
+		UpdateMaterialWithSelMode();
 	}
 }
 

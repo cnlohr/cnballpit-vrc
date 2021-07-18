@@ -62,7 +62,7 @@ public class cnballpitCalc : UdonSharpBehaviour
 		AccumulatedFrameBoundary = 0;
 	}
 	
-	void LateUpdate()
+	void FixedUpdate()
 	{
 		AccumulatedFrameBoundary += _TargetFramerate*Time.deltaTime;
 		MatComputeB.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>2)?0:1 );

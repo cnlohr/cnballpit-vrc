@@ -21,13 +21,21 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject ballpitRenderObject;
 	public Material VideoToStealMaterial;
 	public CustomRenderTexture CRTColors;
+	public Camera   depthCameraTop;
+	public Camera   depthCameraBottom;
+	public Shader   depthOverrideShader;
 	
 	public GameObject Fan0;
 	public GameObject Fan1;
 	public GameObject Fan2;
+	
+	public bool bAllowAvatarShaderInteraction = true;
+	public bool bDidAllowAvatarShaderInteraction = false;
 
 	void Start()
 	{
+		bAllowAvatarShaderInteraction = true;
+		bDidAllowAvatarShaderInteraction = false; //Force a reset.
 		if (Networking.IsMaster)
 		{
 			gravityF = 9.8f;
@@ -41,6 +49,22 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	
 	void Update()
 	{		
+		//NOTE: By using the replacement shader, a lot of things get janky - I recommend not doing this.
+		if( bAllowAvatarShaderInteraction != bDidAllowAvatarShaderInteraction )
+		{
+			if( bAllowAvatarShaderInteraction )
+			{
+				depthCameraTop.ResetReplacementShader();
+				depthCameraBottom.ResetReplacementShader();
+			}
+			else
+			{
+				depthCameraTop.SetReplacementShader( depthOverrideShader, "" );
+				depthCameraBottom.SetReplacementShader( depthOverrideShader, "" );
+			}
+			bDidAllowAvatarShaderInteraction = bAllowAvatarShaderInteraction;
+		}
+
 		Transform t;
 
 		t = Fan0.transform;

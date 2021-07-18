@@ -53,6 +53,9 @@ and utter garbage in col when 3+ ids get written
  * Make video player collide with player.
  * TODO: Set filter mode on top texture.
  * TODO: Make top and bottom textures also bind a color buffer using the explicit render buffer binding code.
+    --> Mostly done, test, update map.
+ * `Camera.SetReplacementShader()` on depth cameras.
+ * --> try out the button statuses.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.

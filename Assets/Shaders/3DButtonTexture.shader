@@ -12,7 +12,8 @@ Shader "Custom/3DButtonTexture"
         _NoisePow ("Noise Power", float ) = 1.8
         _RockAmbient ("Rock Ambient Boost", float ) = 0.1
 		_EmissionMux( "Emission Mux", Color) = (.3, .3, .3, 1. )
-
+		_SelMode( "Sel Mode", float ) = 1
+		_UserEnable( "User Enable", float ) = 1
     }
     SubShader
     {
@@ -53,9 +54,9 @@ Shader "Custom/3DButtonTexture"
         // Physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
 
-        // Use shader model 3.0 target, to get nicer looking lighting
-        #pragma target 3.0
-            #include "tanoise/tanoise.cginc"
+        #pragma target 5.0
+
+        #include "tanoise/tanoise.cginc"
 
         sampler2D _MainTex;
 
@@ -63,6 +64,7 @@ Shader "Custom/3DButtonTexture"
         {
             float2 uv_MainTex;
             float3 worldPos;
+			float4 screenPos;
         };
 
         half _Glossiness;
@@ -72,6 +74,8 @@ Shader "Custom/3DButtonTexture"
         half _NoisePow, _RockAmbient;
 		half4 _EmissionMux;
         fixed4 _Color;
+		float _SelMode;
+		float _UserEnable;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -82,10 +86,10 @@ Shader "Custom/3DButtonTexture"
         
         float4 densityat( float3 calcpos )
         {
-            float tim = glsl_mod(_Time.y,1000)*_TextureAnimation;
+            float tim = glsl_mod(_Time.y+_SelMode*10,1000)*_TextureAnimation;
             
             float4 col =
-                glsl_mod( abs( tanoise4( float4( calcpos*10., tim ) ) - 0.5 ) * 10., 1. ) * float4( 1., .5, 1., 1. ) +
+                glsl_mod( abs( tanoise4( float4( calcpos*10., tim ) ) - 0.5 ) * 10., 1. ) * float4( 1., 1., 1., 1. ) +
 				0;
             return col;
         }
@@ -97,7 +101,20 @@ Shader "Custom/3DButtonTexture"
             float3 calcpos = IN.worldPos.xyz * _TextureDetail;
             
             float4 col = densityat( calcpos );
+			
+			
+			static const float4 SelColor[8] = {
+				float4( 0.1, 0.1, 0.1, 1.0 ),
+				float4( 1.0, 1.0, 1.0, 1.0 ),
+				float4( 0.1, 1.0, 1.0, 1.0 ),
+				float4( 1.0, 1.0, 0.1, 1.0 ),
+				float4( 0.1, 0.1, 1.0, 1.0 ),
+				float4( 1.0, 0.1, 0.1, 1.0 ),
+				float4( 0.1, 1.0, 1.0, 1.0 ),
+				float4( 1.0, 0.1, 1.0, 1.0 ) };
+			
             c *= pow( col.xyzw, _NoisePow) + _RockAmbient;
+			c *= SelColor[(uint)(_SelMode)];
             o.Normal = normalize( float3( col.x, col.y, 1.5 ) );
             
             o.Albedo = c.rgb;
@@ -106,6 +123,12 @@ Shader "Custom/3DButtonTexture"
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;// * clamp( col.z*10.-7., 0, 1 );
             o.Alpha = c.a;
+
+			if( !_UserEnable )
+			{
+				uint2 spos = IN.screenPos.xy/IN.screenPos.w * _ScreenParams.xy;
+				clip( ((spos.x+spos.y)&1)?-1:1 );
+			}
         }
         ENDCG
     }
