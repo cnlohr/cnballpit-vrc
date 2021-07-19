@@ -58,7 +58,7 @@ Material:
     m_Floats:
     - _A2CEdge: 0.4
     - _BumpScale: 1
-    - _Cull: 2
+    - _Cull: 1
     - _Cutoff: 0.5
     - _DestinationBlend: 10
     - _DestinationBlendA: 10
