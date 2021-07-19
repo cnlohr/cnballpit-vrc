@@ -60,8 +60,8 @@ Material:
     - _BumpScale: 1
     - _Cull: 1
     - _Cutoff: 0.5
-    - _DestinationBlend: 10
-    - _DestinationBlendA: 10
+    - _DestinationBlend: 1
+    - _DestinationBlendA: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
