@@ -8,7 +8,6 @@ using VRC.Udon;
 
 public class ballpit_stable_control : UdonSharpBehaviour
 {
-
 	[UdonSynced] public float gravityF = 9.8f;
 	[UdonSynced] public float friction = .008f;
 	[UdonSynced] public int mode = 5;
@@ -28,6 +27,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject Fan0;
 	public GameObject Fan1;
 	public GameObject Fan2;
+	public GameObject Dragdrop;
 	
 	int numupdatebuttons;
 	ballpit_update_property [] updatebuttons;
@@ -121,6 +121,11 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		ballpitA.SetVector( "_FanRotation2", fan_rotation );
 		ballpitB.SetVector( "_FanPosition2", fan_position );
 		ballpitB.SetVector( "_FanRotation2", fan_rotation );
+		
+		t = Dragdrop.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_DragDropPos", fan_position );
+		ballpitB.SetVector( "_DragDropPos", fan_position );
 	}
 	
 	//https://github.com/MerlinVR/UdonSharp/wiki/events

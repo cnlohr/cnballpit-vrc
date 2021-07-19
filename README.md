@@ -48,7 +48,6 @@ and utter garbage in col when 3+ ids get written
  * Option to draw video on side of balls.
  * Why is AudioLink weird when doing colors.
  * Fix fadeout not writing fadeout tile to depth in depth pass.
- * TODO: Is the adjacency thing only running once per frame? Or double on demand?
  * TODO: Add another 2 stages, and flag on/off
  * Make video player collide with player.
 
@@ -135,6 +134,9 @@ and utter garbage in col when 3+ ids get written
  * Added ability to make top and bottom textures also bind a color buffer using the explicit render buffer binding code.  NOTE: this is disabled because it behaves weird and doesn't let users do fun things with shaders.
  * Button statuses update.
  * Added velocity mode.
+
+## 13.0 
+ * Added attractor ball
 
 ## Interesting
  * shader_billboardout modes.
