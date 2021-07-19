@@ -853,7 +853,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
             
 
 
-            float4 frag (vo __vo) : SV_Target
+            float4 frag (vo __vo, out uint Coverage[1] : SV_Coverage) : SV_Target
             {
                 vop = __vo;
 				// Compute projective scaling factor...
@@ -876,7 +876,15 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 #ifndef UNITY_UV_STARTS_AT_TOP
                     dgpos.y = 1.0-dgpos.y;
                 #endif
-
+                //Mostly adapted from d4rkplayer 
+                float vdx = ddx_fine(vop.dgpos.x);   
+                float vdy = ddy_fine(vop.dgpos.y);
+                float aaAlpha = _A2CEdge ? vop.dgpos / length(float2(vdx,vdy)) * 0.5 : 1;
+                clip(aaAlpha);
+                aaAlpha = saturate(aaAlpha) * GetRenderTargetSampleCount() + 0.5;
+                Coverage[0] = (1u << ((uint)(aaAlpha))) - 1u;
+				if (IsInMirror) // Bail if in mirror.
+					return float4(0.,0.,0.,0.);                  
 
                 const int mSize = 11;
                 const int kSize = (mSize-1)/2;
@@ -905,9 +913,9 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 }
 				
 				
-                float z = (fz/(rz*rz));
-                float z2 = pow(0.9,z);
-                    
+					float z = (fz/(rz*rz));
+					float z2 = pow(0.9,z);
+						
                     // #if UNITY_REVERSED_Z
                     // if (z == 0.f) {
                     // #else
@@ -918,35 +926,39 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                     // }
                     float depth = CorrectedLinearEyeDepth(z, rd.w);
                     float3 wpos = rd.xyz * depth + _WorldSpaceCameraPos.xyz;
+                    float dist = distance(wpos, _WorldSpaceCameraPos.xyz);
                     float4 opos = mul(unity_WorldToObject, float4(wpos, 1.0));
-                    float dist = distance(wpos, vop.vertex);
-                    opos.xyz /= opos.w;
-                    float fade = max(0,0.5 - opos.z);
                     float3 wnorm = normalize(wpos);
-                    float3 col = abs(wnorm);
-                    col = rgb2hsv(col);
+                    float3 skyCol = abs(wnorm);
+                    skyCol = rgb2hsv(skyCol);
+                    skyCol.r += _Time.y;
+                    skyCol = hsv2rgb_smooth(skyCol);
+                    skyCol = clamp(skyCol, 0.0, 1.0);  
+                    float4 col = snoise_grad(abs(wpos));
+                    col.xyz = rgb2hsv(col.xyz);
                     col.r += _Time.y;
-                    col = hsv2rgb(col);
-                    col = clamp(col, 0.0, 1.0);             
-                    #if UNITY_REVERSED_Z
-                    if (z == 0.f) {
+                    col.xyz = hsv2rgb_smooth(col.xyz);
+                    col = clamp(col, 0.0, 1.0);     
+					z = smoothstep(_LumWeight.x,_LumWeight.y,z);                
+                    float4 fcol = 1.;
+					float3 dd = wpos.xyz -_WorldSpaceCameraPos.xyz;
+					float d = sqrt(dot(dd,dd));		
+                	float z3 = smoothstep(_LumWeight.z,_LumWeight.w,d);
+
+					#if UNITY_REVERSED_Z
+						fcol.xyz = lerp(col.xyz, skyCol, 1.0-z3); 
+						fcol.a = lerp(lerp(col.a,1.0,0.5+0.5*_CosTime.w), 0.5+0.5*_CosTime.w, 1.0-z3); 
                     #else
-                    if (z == 1.f) {
+						fcol.xyz = lerp(skyCol, col.xyz, 1.0-z3); 
+						fcol.a = lerp(0.5+0.5*_CosTime.w, col.a, 1.0-z3); 
                     #endif
                         // skybox
-                        return float4(col, 1.0);
-                    }
-                    col = snoise_grad(abs(wpos));
-                    col = rgb2hsv(col);
-                    col.r += _Time.y;
-                    col = hsv2rgb(col);
-                    col = clamp(col, 0.0, 1.0);                     
                     // col = spectrum03(fCircle(wpos, depth));
                     // col = rgb2hsv(col);
                     // col.r += _Time.y;
                     // col = hsv2rgb(col);
                     // col = clamp(col, 0.0, 1.0);                       
-                    return float4(col, 1.0);
+                    return fcol;
             }
             ENDCG
         }
