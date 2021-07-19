@@ -32,6 +32,13 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	int numupdatebuttons;
 	ballpit_update_property [] updatebuttons;
 	
+	int was_mode = 100;
+	bool was_balls_reset = false;
+	float was_gravity_f = 0;
+	float was_friction = 0;
+	int was_qualitymode = 0;
+	bool was_master = false;
+
 	void Start()
 	{
 		if (Networking.IsMaster)
@@ -57,23 +64,33 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	
 	public void ModeUpdate()
 	{
-		ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
-		ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
-		ballpitRender.SetFloat( "_Mode", mode );
-
-		CRTColors.updateMode = (mode == 6)?CustomRenderTextureUpdateMode.Realtime:CustomRenderTextureUpdateMode.OnLoad;
-
-		ballpitA.SetFloat( "_GravityValue", gravityF );
-		ballpitB.SetFloat( "_GravityValue", gravityF );
-		ballpitA.SetFloat( "_Friction", friction );
-		ballpitB.SetFloat( "_Friction", friction );
-		ballpitRender.SetFloat( "_ExtraPretty", qualitymode );
-		Physics.gravity = new Vector3( 0, -(gravityF*.85f+1.5f), 0 );
-		
-		int i;
-		for( i = 0; i < numupdatebuttons; i++ )
+		if( was_mode != mode || was_balls_reset != balls_reset || gravityF != was_gravity_f || friction != was_friction || qualitymode != was_qualitymode || was_master != Networking.IsMaster )
 		{
-			updatebuttons[i].UpdateMaterialWithSelMode();
+			ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
+			ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
+			ballpitRender.SetFloat( "_Mode", mode );
+
+			CRTColors.updateMode = (mode == 6)?CustomRenderTextureUpdateMode.Realtime:CustomRenderTextureUpdateMode.OnLoad;
+
+			ballpitA.SetFloat( "_GravityValue", gravityF );
+			ballpitB.SetFloat( "_GravityValue", gravityF );
+			ballpitA.SetFloat( "_Friction", friction );
+			ballpitB.SetFloat( "_Friction", friction );
+			ballpitRender.SetFloat( "_ExtraPretty", qualitymode );
+			Physics.gravity = new Vector3( 0, -(gravityF*.85f+1.5f), 0 );
+			
+			int i;
+			for( i = 0; i < numupdatebuttons; i++ )
+			{
+				updatebuttons[i].UpdateMaterialWithSelMode();
+			}
+			
+			was_master = Networking.IsMaster;
+			was_qualitymode = qualitymode;
+			was_mode = mode;
+			was_balls_reset = balls_reset;
+			was_gravity_f = gravityF;
+			was_friction = friction;
 		}
 	}
 	
