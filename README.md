@@ -51,11 +51,6 @@ and utter garbage in col when 3+ ids get written
  * TODO: Is the adjacency thing only running once per frame? Or double on demand?
  * TODO: Add another 2 stages, and flag on/off
  * Make video player collide with player.
- * TODO: Set filter mode on top texture.
- * TODO: Make top and bottom textures also bind a color buffer using the explicit render buffer binding code.
-    --> Mostly done, test, update map.
- * `Camera.SetReplacementShader()` on depth cameras.
- * --> try out the button statuses.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -130,10 +125,16 @@ and utter garbage in col when 3+ ids get written
  * Tweaked ball adjacency settings to reduce popping.
  * Updated kit's shaders.
 
-## 11.0 12:30 AM PT / July 17, 2016
+## 11.0 12:30 AM PT / July 17, 2021
  * Implemented updated adjacency logic, reducing number of cameras.
  * Kit fixed some of their shrooms.
  * Added reference camrea.
+ 
+## 12.0 7:00 PM PT / July 18, 2021
+ * Set filter mode on top texture.
+ * Added ability to make top and bottom textures also bind a color buffer using the explicit render buffer binding code.  NOTE: this is disabled because it behaves weird and doesn't let users do fun things with shaders.
+ * Button statuses update.
+ * Added velocity mode.
 
 ## Interesting
  * shader_billboardout modes.
