@@ -121,7 +121,9 @@ Remark about those offsets from the original author:
 
 // 1 / 289
 #define NOISE_SIMPLEX_1_DIV_289 0.00346020761245674740484429065744f
+#define PHI 1.618033988749895
 
+#define LOX 1.420411
 float mod289(float x) {
 	return x - floor(x * NOISE_SIMPLEX_1_DIV_289) * 289.0;
 }
@@ -810,7 +812,13 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                 
                 return 0.5 * log2(delta_max_sqr);
             }            
-
+			float3 hueshift (in float3 color, in float3 shift) {
+				float3 p = float3(0.55735,0.55735,0.55735) * (float3(0.55735,0.55735,0.55735),color);
+				float3 u = color - p;
+				float3 v = cross(float3(0.55735,0.55735,0.55735),u);
+				color = u*cos(shift*6.2832) + v*sin(shift*6.2832) + p;
+				return color;
+			}
 
 	ENDCG
 	
@@ -929,14 +937,23 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                     float dist = distance(wpos, _WorldSpaceCameraPos.xyz);
                     float4 opos = mul(unity_WorldToObject, float4(wpos, 1.0));
                     float3 wnorm = normalize(wpos);
+
                     float3 skyCol = abs(wnorm);
+                    float4 col = snoise_grad(abs(wpos));
+
+					float a = 1.0;
                     skyCol = rgb2hsv(skyCol);
-                    skyCol.r += _Time.y;
+                    col.xyz = rgb2hsv(col.xyz);
+					if(AudioLinkIsAvailable()) {
+                		float ang = atan2(abs(wnorm.x), abs(wnorm.z)) / (0.51*UNITY_PI);
+						float cwal = AudioLinkLerp( ALPASS_AUTOCORRELATOR + float2(  ang * AUDIOLINK_WIDTH, 0. ));
+						a = 1-smoothstep( abs(length(wnorm.xz)-0.6+cwal*0.075) , 0.03, cwal );	
+                		col.xyz += hueshift(col.xyz, 0.5+a*0.02*LOX);
+					}
+					skyCol.r += _Time.y*0.66;
                     skyCol = hsv2rgb_smooth(skyCol);
                     skyCol = clamp(skyCol, 0.0, 1.0);  
-                    float4 col = snoise_grad(abs(wpos));
-                    col.xyz = rgb2hsv(col.xyz);
-                    col.r += _Time.y;
+					col.r += _Time.y*0.66;
                     col.xyz = hsv2rgb_smooth(col.xyz);
                     col = clamp(col, 0.0, 1.0);     
 					z = smoothstep(_LumWeight.x,_LumWeight.y,z);                
@@ -947,17 +964,17 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 
 					#if UNITY_REVERSED_Z
 						fcol.xyz = lerp(col.xyz, skyCol, 1.0-z3); 
-						fcol.a = lerp(lerp(col.a,1.0,0.5+0.5*_CosTime.w), 0.5+0.5*_CosTime.w, 1.0-z3); 
+						fcol.a = lerp(length(col),1.0,1.0-z3); 
                     #else
 						fcol.xyz = lerp(skyCol, col.xyz, 1.0-z3); 
-						fcol.a = lerp(0.5+0.5*_CosTime.w, col.a, 1.0-z3); 
+						fcol.a = lerp(1.0, length(col), 1.0-z3); 
                     #endif
                         // skybox
                     // col = spectrum03(fCircle(wpos, depth));
                     // col = rgb2hsv(col);
                     // col.r += _Time.y;
                     // col = hsv2rgb(col);
-                    // col = clamp(col, 0.0, 1.0);                       
+                    col = clamp(col, 0.0, 1.0);                       
                     return fcol;
             }
             ENDCG
