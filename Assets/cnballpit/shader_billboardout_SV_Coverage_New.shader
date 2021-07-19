@@ -183,8 +183,11 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					}
 					else if( _Mode == 2 )
 					{
-						colorDiffuse.xyz = SmoothHue;
-						float intensitymux = lerp( 1., sin(_Time.y+ballid)*1.1+1.3, _NightMode );
+						//float3 dvl = abs( DataVel.xyz ) - .03;
+						float3 dvl = length( DataVel.xyz ) * .5 - .03;
+						colorDiffuse.xyz = float3( dvl.x, dvl.y, dvl.z * 5. );
+						colorDiffuse.xyz = max( colorDiffuse.xyz, float3( 0., 0., 0. ) );
+						float intensitymux = lerp( 1., 2.0, _NightMode );
 						colorDiffuse *= intensitymux;				
 						colorAmbient   += colorDiffuse * lerp( .01, .04, _NightMode );
 

@@ -228,7 +228,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Collide with edges.
 				
 				float edgecfm = 1.5 * vcfmfpsP;
-				float edgecfmv = 3.5 * vcfmfpsV;
+				float edgecfmv = 1.5 * vcfmfpsV;
 				
 				// A bowl (not in use right now)
 				if( 0 )
@@ -252,6 +252,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				// World Edges
 				if( 1 )
 				{
+					edgecfm = 0.5 * vcfmfpsP;
+					edgecfmv = 100.5 * vcfmfpsV;
+				
 					//XXX XXX BIG XXX  THIS SHOULD ALL BE REWRITTEN AS A SDF!!!
 					float protrudelen;
 
@@ -299,7 +302,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 
 					//This is just a slight nudge to push the balls back in.
-					float adv = 0.001;
+					float adv = 0.00005;
 
 					// Diameter of pit, cylindrically.
 					protrudelen = length( Position.xz ) + Position.w - 5.95;

@@ -29,13 +29,11 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject Fan1;
 	public GameObject Fan2;
 	
-	public bool bAllowAvatarShaderInteraction = true;
-	public bool bDidAllowAvatarShaderInteraction = false;
-
+	int numupdatebuttons;
+	ballpit_update_property [] updatebuttons;
+	
 	void Start()
 	{
-		bAllowAvatarShaderInteraction = true;
-		bDidAllowAvatarShaderInteraction = false; //Force a reset.
 		if (Networking.IsMaster)
 		{
 			gravityF = 9.8f;
@@ -47,24 +45,40 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		Debug.Log( "ballpit stable control " + gravityF + " / " + friction );
 	}
 	
+	public void AddUpdatable( ballpit_update_property btn )
+	{
+		if( updatebuttons == null )
+		{
+			updatebuttons = new ballpit_update_property[20];
+			numupdatebuttons = 0;
+		}
+		updatebuttons[numupdatebuttons++] = btn;
+	}
+	
+	public void ModeUpdate()
+	{
+		ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
+		ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
+		ballpitRender.SetFloat( "_Mode", mode );
+
+		CRTColors.updateMode = (mode == 6)?CustomRenderTextureUpdateMode.Realtime:CustomRenderTextureUpdateMode.OnLoad;
+
+		ballpitA.SetFloat( "_GravityValue", gravityF );
+		ballpitB.SetFloat( "_GravityValue", gravityF );
+		ballpitA.SetFloat( "_Friction", friction );
+		ballpitB.SetFloat( "_Friction", friction );
+		ballpitRender.SetFloat( "_ExtraPretty", qualitymode );
+		Physics.gravity = new Vector3( 0, -(gravityF*.85f+1.5f), 0 );
+		
+		int i;
+		for( i = 0; i < numupdatebuttons; i++ )
+		{
+			updatebuttons[i].UpdateMaterialWithSelMode();
+		}
+	}
+	
 	void Update()
 	{		
-		//NOTE: By using the replacement shader, a lot of things get janky - I recommend not doing this.
-		if( bAllowAvatarShaderInteraction != bDidAllowAvatarShaderInteraction )
-		{
-			if( bAllowAvatarShaderInteraction )
-			{
-				depthCameraTop.ResetReplacementShader();
-				depthCameraBottom.ResetReplacementShader();
-			}
-			else
-			{
-				depthCameraTop.SetReplacementShader( depthOverrideShader, "" );
-				depthCameraBottom.SetReplacementShader( depthOverrideShader, "" );
-			}
-			bDidAllowAvatarShaderInteraction = bAllowAvatarShaderInteraction;
-		}
-
 		Transform t;
 
 		t = Fan0.transform;
@@ -90,19 +104,12 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		ballpitA.SetVector( "_FanRotation2", fan_rotation );
 		ballpitB.SetVector( "_FanPosition2", fan_position );
 		ballpitB.SetVector( "_FanRotation2", fan_rotation );
-
-		ballpitA.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
-		ballpitB.SetFloat( "_ResetBalls", balls_reset?1.0f:0.0f );
-		ballpitRender.SetFloat( "_Mode", mode );
-
-		CRTColors.updateMode = (mode == 6)?CustomRenderTextureUpdateMode.Realtime:CustomRenderTextureUpdateMode.OnLoad;
-
-		ballpitA.SetFloat( "_GravityValue", gravityF );
-		ballpitB.SetFloat( "_GravityValue", gravityF );
-		ballpitA.SetFloat( "_Friction", friction );
-		ballpitB.SetFloat( "_Friction", friction );
-		ballpitRender.SetFloat( "_ExtraPretty", qualitymode );
-		Physics.gravity = new Vector3( 0, -(gravityF*.85f+1.5f), 0 );
+	}
+	
+	//https://github.com/MerlinVR/UdonSharp/wiki/events
+	public override void OnDeserialization()
+	{
+		ModeUpdate();
 	}
 }
 

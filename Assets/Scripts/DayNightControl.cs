@@ -71,20 +71,18 @@ public class DayNightControl : UdonSharpBehaviour
 			rprobeRender.RenderToCubemap( ctcopy, 63 );
 			rprobeRender.enabled = false;
 			
-			int enabled = (Networking.IsMaster)?1:0;
-
 			GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", LightMode+1 );
-			GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", enabled );
-
 		}
 		else
 		{
 		}
 	}
 	
-	public void OnDeserialization()
+	public override void OnDeserialization()
 	{
 		UpdateLightMode();
+		int enabled = (Networking.IsMaster)?1:0;
+		GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", enabled );
 	}
 	
 	void Start()
