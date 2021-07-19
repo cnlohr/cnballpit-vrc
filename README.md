@@ -50,6 +50,7 @@ and utter garbage in col when 3+ ids get written
  * Fix fadeout not writing fadeout tile to depth in depth pass.
  * TODO: Add another 2 stages, and flag on/off
  * Make video player collide with player.
+ * TODO: Fix greyed out time of day box.
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -135,8 +136,9 @@ and utter garbage in col when 3+ ids get written
  * Button statuses update.
  * Added velocity mode.
 
-## 13.0 
+## 13.0 10:00 PM PT / July 18, 2021
  * Added attractor ball
+ * Improved selection buttons.
 
 ## Interesting
  * shader_billboardout modes.
