@@ -855,37 +855,58 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 
             float4 frag (vo __vo) : SV_Target
             {
-                    vop = __vo;
-                    float w = 1.f / vop.vertex.w;
-                    float4 rd = vop.rd * w;
-                    float2 dgpos = vop.dgpos.xy * w;
-                    if (IsInMirror) // Bail if in mirror.
-                        return float4(0.,0.,0.,0.);     
+                vop = __vo;
+				// Compute projective scaling factor...
+				float perspectiveDivide = 1.0f / vop.screenPosition.w;
 
-                    const int mSize = 11;
-                    const int kSize = (mSize-1)/2;
-                    float kernel[mSize];
-                    float sigma = 7.;
-                    float rz = 0.;
-                    float fz = 0.;
-                    for (int j = 0;j<=kSize; ++j)
-                    {
-                        kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
-                    }
-                    for (int k = 0;k<mSize; ++k)
-                    {
-                        rz += kernel[k];
-                    }
+				// Scale our view ray to unit depth.
+				float3 direction = vop.worldDirection * perspectiveDivide;
 
-                    for (int i = -kSize;i<=kSize; ++i)
-                    {
-                        for (int j = -kSize;j<=kSize; ++j)
-                        {
-                            fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, dgpos.xy + float2(float(i),float(j)) * fwidth(dgpos));
-                        }
-                    }
+				// Calculate our UV within the screen (for reading depth buffer)
+				float2 screenUV = (vop.screenPosition.xy * perspectiveDivide) * 0.5f + 0.5f;
 
-                    float z = (fz/(rz*rz));
+				// No idea
+				screenUV.y = 1 - screenUV.y; 
+				// VR stereo support
+				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
+				
+                float w = 1.f / vop.vertex.w;
+                float4 rd = vop.rd * w;
+                float2 dgpos = vop.dgpos.xy * w;
+                #ifndef UNITY_UV_STARTS_AT_TOP
+                    dgpos.y = 1.0-dgpos.y;
+                #endif
+
+
+                const int mSize = 11;
+                const int kSize = (mSize-1)/2;
+                float kernel[mSize];
+                float sigma = 7.;
+                float rz = 0.;
+                float fz = 0.;
+
+				
+                for (int j = 0;j<=kSize; ++j)
+                {
+                    kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
+                }
+                for (int k = 0;k<mSize; ++k)
+                {
+                    rz += kernel[k];
+                }
+
+                for (int i = -kSize;i<=kSize; ++i)
+                {
+                    for (int j = -kSize;j<=kSize; ++j)
+                    {
+						fz += kernel[kSize+j] * kernel[kSize+i] * DecodeFloatRG(tex2D(_CameraDepthTexture, float2(screenUV.xy + float2(float(i),float(j)) * fwidth(screenUV))));
+                        //fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV.xy + float2(float(i),float(j)) * fwidth(screenUV));
+                    }
+                }
+				
+				
+                float z = (fz/(rz*rz));
+                float z2 = pow(0.9,z);
                     
                     // #if UNITY_REVERSED_Z
                     // if (z == 0.f) {
