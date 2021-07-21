@@ -20,6 +20,7 @@ public class DayNightControl : UdonSharpBehaviour
 	public Camera rprobeRender;
 	public Cubemap       ctcopy;
 	
+	private int iWasMaster = 0;
 	private int LastLightMode = -1;
 
 	// Start is called before the first frame update
@@ -81,12 +82,18 @@ public class DayNightControl : UdonSharpBehaviour
 	public override void OnDeserialization()
 	{
 		UpdateLightMode();
-		int enabled = (Networking.IsMaster)?1:0;
-		GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", enabled );
+		int master = Networking.IsMaster?1:0;
+		if( iWasMaster != master )
+		{
+			GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", master );
+			iWasMaster = master;
+		}
 	}
 	
 	void Start()
 	{
+		
+		iWasMaster = 5;
 		LastLightMode = -1;
 		if( Networking.IsMaster )
 		{
