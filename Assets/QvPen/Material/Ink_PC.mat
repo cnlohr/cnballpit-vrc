@@ -20,5 +20,5 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - _Width: 0.01
+    - _Width: 0.015
     m_Colors: []

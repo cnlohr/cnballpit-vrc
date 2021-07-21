@@ -27,7 +27,9 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject Fan0;
 	public GameObject Fan1;
 	public GameObject Fan2;
-	public GameObject Dragdrop;
+	public GameObject Dragdrop0;
+	public GameObject Dragdrop1;
+	public GameObject Dragdrop2;
 	
 	int numupdatebuttons;
 	ballpit_update_property [] updatebuttons;
@@ -122,10 +124,18 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		ballpitB.SetVector( "_FanPosition2", fan_position );
 		ballpitB.SetVector( "_FanRotation2", fan_rotation );
 		
-		t = Dragdrop.transform;
+		t = Dragdrop0.transform;
 		fan_position = t.localPosition;
-		ballpitA.SetVector( "_DragDropPos", fan_position );
-		ballpitB.SetVector( "_DragDropPos", fan_position );
+		ballpitA.SetVector( "_DragDropPos0", fan_position );
+		ballpitB.SetVector( "_DragDropPos0", fan_position );
+		t = Dragdrop1.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_DragDropPos1", fan_position );
+		ballpitB.SetVector( "_DragDropPos1", fan_position );
+		t = Dragdrop2.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_DragDropPos2", fan_position );
+		ballpitB.SetVector( "_DragDropPos2", fan_position );
 	}
 	
 	//https://github.com/MerlinVR/UdonSharp/wiki/events

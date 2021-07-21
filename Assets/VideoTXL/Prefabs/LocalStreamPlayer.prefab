@@ -136,6 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: -1743794047, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnableAutomaticResync: 0
   videoURL:
     url: 
   autoPlay: 0

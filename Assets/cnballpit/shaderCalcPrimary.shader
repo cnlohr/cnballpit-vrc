@@ -29,7 +29,9 @@ Shader "cnballpit/shaderCalcPrimary"
 		_FanRotation1( "Fan Rotation 1", Vector ) = ( 0, 0, 0, 1 )
 		_FanPosition2( "Fan Position 2", Vector ) = ( 0, 0, 0 )
 		_FanRotation2( "Fan Rotation 2", Vector ) = ( 0, 0, 0, 1 )
-		_DragDropPos( "Drag Drop Pos", Vector ) = ( 0, 0, 0 )
+		_DragDropPos0( "Drag Drop Pos0", Vector ) = ( 0, 0, 0 )
+		_DragDropPos1( "Drag Drop Pos1", Vector ) = ( 0, 0, 0 )
+		_DragDropPos2( "Drag Drop Pos2", Vector ) = ( 0, 0, 0 )
 	}
 	SubShader
 	{
@@ -95,7 +97,9 @@ Shader "cnballpit/shaderCalcPrimary"
 			float4 _FanRotation1;
 			float3 _FanPosition2;
 			float4 _FanRotation2;
-			float3 _DragDropPos;
+			float3 _DragDropPos0;
+			float3 _DragDropPos1;
+			float3 _DragDropPos2;
 
 			v2f vert (appdata v)
 			{
@@ -415,16 +419,39 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Attract to dragdropper
 				if( 1 )
 				{
-					const static float dragdropforce = 0.010;
-					float3 diff = _DragDropPos - Position.xyz;
-					float l = length( diff );
-					float intensity = 5. - l;
+					const static float dragdropforce = 0.008;
+					float l, intensity;
+					float3 diff;
 					
+					diff = _DragDropPos0 - Position.xyz;
+					l = length( diff );
+					intensity = 5. - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
-						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.2 );
+						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
 					}
+
+
+					diff = _DragDropPos1 - Position.xyz;
+					l = length( diff );
+					intensity = 5. - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
+					}
+
+
+					diff = _DragDropPos2 - Position.xyz;
+					l = length( diff );
+					intensity = 5. - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
+					}
+
 				}
 
 				// Step 2: Actually perform physics.

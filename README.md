@@ -139,6 +139,15 @@ and utter garbage in col when 3+ ids get written
 ## 13.0 10:00 PM PT / July 18, 2021
  * Added attractor ball
  * Improved selection buttons.
+ 
+## 14.0 Fix Texel Player
+ * Adjusted attractor physics.
+ * Update TXLPlayer
+ * Add Playlist to TXLPlayer
+ * Added ability to fly.
+ * Added more attractors.
+ 
+
 
 ## Interesting
  * shader_billboardout modes.
