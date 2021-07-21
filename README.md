@@ -140,13 +140,15 @@ and utter garbage in col when 3+ ids get written
  * Added attractor ball
  * Improved selection buttons.
  
-## 14.0 Fix Texel Player
+## 14.0 12:00 AM PT / July 21, 2021
+ * Fix Texel Player
+ * Add AudioLink visual to idle animation on video player.
  * Adjusted attractor physics.
  * Update TXLPlayer
  * Add Playlist to TXLPlayer
  * Added ability to fly.
  * Added more attractors.
- 
+ * Make markers draw thicker lines.
 
 
 ## Interesting
