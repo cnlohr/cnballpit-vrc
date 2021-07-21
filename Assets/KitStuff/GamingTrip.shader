@@ -16,7 +16,7 @@
         [Enum(Off, 0, On, 1)] _ZWrite ("ZWrite", Int) = 1       
         _Metallic ("Metallic", Float) = 47.4
 		_Glossiness("Smoothness", Float) = 0.55
-        _LumWeight ("Lum Weight", Vector) = (5.0,0.69,0.44,1.0)
+		        _LumWeight ("Lum Weight", Vector) = (5.0,0.69,0.44,1.0)
         _A2CEdge ("A2C Edges", Range(0,26.85)) = 0.4
 
     }
@@ -858,7 +858,7 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 			sampler2D _BackDepthTexture;
             
       
-            
+
 
 
             float4 frag (vo __vo, out uint Coverage[1] : SV_Coverage) : SV_Target
@@ -945,10 +945,10 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
                     skyCol = rgb2hsv(skyCol);
                     col.xyz = rgb2hsv(col.xyz);
 					if(AudioLinkIsAvailable()) {
-                		float ang = atan2(abs(wnorm.x), abs(wnorm.z)) / (0.51*UNITY_PI);
+                		float ang = atan2(abs(wnorm.x), abs(wnorm.z)) / (5.8*UNITY_PI);
 						float cwal = AudioLinkLerp( ALPASS_AUTOCORRELATOR + float2(  ang * AUDIOLINK_WIDTH, 0. ));
-						a = 1-smoothstep( abs(length(wnorm.xz)-0.6+cwal*0.075) , 0.03, cwal );	
-                		col.xyz += hueshift(col.xyz, 0.5+a*0.02*LOX);
+						a = smoothstep( abs(length(wnorm.xz)-0.6+cwal*0.075) , 0.03, cwal );	
+                		col.xyz += hueshift(normalize(col.xyz), 0.5+a*0.03);
 					}
 					skyCol.r += _Time.y*0.66;
                     skyCol = hsv2rgb_smooth(skyCol);
