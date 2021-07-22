@@ -30,6 +30,12 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject Dragdrop0;
 	public GameObject Dragdrop1;
 	public GameObject Dragdrop2;
+	public GameObject Shroom0;
+	public GameObject Shroom1;
+	public GameObject Shroom2;
+	public GameObject Shroom3;
+	public GameObject Shroom4;
+	public GameObject Shroom5;
 	
 	int numupdatebuttons;
 	ballpit_update_property [] updatebuttons;
@@ -136,6 +142,36 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		fan_position = t.localPosition;
 		ballpitA.SetVector( "_DragDropPos2", fan_position );
 		ballpitB.SetVector( "_DragDropPos2", fan_position );
+
+		t = Shroom0.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_ShroomPos0", fan_position );
+		ballpitB.SetVector( "_ShroomPos0", fan_position );
+
+		t = Shroom1.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_ShroomPos1", fan_position );
+		ballpitB.SetVector( "_ShroomPos1", fan_position );	
+		
+		t = Shroom2.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_ShroomPos2", fan_position );
+		ballpitB.SetVector( "_ShroomPos2", fan_position );
+
+		t = Shroom3.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_ShroomPos3", fan_position );
+		ballpitB.SetVector( "_ShroomPos3", fan_position );		
+
+		t = Shroom4.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_ShroomPos4", fan_position );
+		ballpitB.SetVector( "_ShroomPos4", fan_position );
+
+		t = Shroom5.transform;
+		fan_position = t.localPosition;
+		ballpitA.SetVector( "_ShroomPos5", fan_position );
+		ballpitB.SetVector( "_ShroomPos5", fan_position );
 	}
 	
 	//https://github.com/MerlinVR/UdonSharp/wiki/events
