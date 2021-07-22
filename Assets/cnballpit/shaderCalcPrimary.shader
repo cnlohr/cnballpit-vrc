@@ -32,6 +32,12 @@ Shader "cnballpit/shaderCalcPrimary"
 		_DragDropPos0( "Drag Drop Pos0", Vector ) = ( 0, 0, 0 )
 		_DragDropPos1( "Drag Drop Pos1", Vector ) = ( 0, 0, 0 )
 		_DragDropPos2( "Drag Drop Pos2", Vector ) = ( 0, 0, 0 )
+		_ShroomPos0( "Shroom Pos0", Vector ) = ( 0, 0, 0 )
+		_ShroomPos1( "Shroom Pos1", Vector ) = ( 0, 0, 0 )
+		_ShroomPos2( "Shroom Pos2", Vector ) = ( 0, 0, 0 )
+		_ShroomPos3( "Shroom Pos3", Vector ) = ( 0, 0, 0 )
+		_ShroomPos4( "Shroom Pos4", Vector ) = ( 0, 0, 0 )
+		_ShroomPos5( "Shroom Pos4", Vector ) = ( 0, 0, 0 )
 	}
 	SubShader
 	{
@@ -84,7 +90,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				return conj / (q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
 			}
 
-
+			
 			
 			#include "cnballpit.cginc"
 			float _BallRadius, _DebugFloat, _ResetBalls, _GravityValue, _Friction, _DontPerformStep;
@@ -100,6 +106,12 @@ Shader "cnballpit/shaderCalcPrimary"
 			float3 _DragDropPos0;
 			float3 _DragDropPos1;
 			float3 _DragDropPos2;
+			float3 _ShroomPos0;
+			float3 _ShroomPos1;
+			float3 _ShroomPos2;			
+			float3 _ShroomPos3;			
+			float3 _ShroomPos4;			
+			float3 _ShroomPos5;			
 
 			v2f vert (appdata v)
 			{
@@ -453,6 +465,69 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 
 				}
+
+				// Disperse from shrooms because having drugs in your balls are bad.
+
+				if( 1 )
+				{
+					const static float repelforce = 0.17;
+					float l, intensity;
+					float3 diff;
+					
+					diff = Position.xyz - _ShroomPos0;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos1;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos2;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos3;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos4;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos5;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}												
+				}				
 
 				// Step 2: Actually perform physics.
 				Velocity.y -= _GravityValue*dt;
