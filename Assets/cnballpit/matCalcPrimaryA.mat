@@ -142,3 +142,9 @@ Material:
     - _FanRotation0: {r: 0, g: 0, b: 0, a: 1}
     - _FanRotation1: {r: 0, g: 0, b: 0, a: 1}
     - _FanRotation2: {r: 0, g: 0, b: 0, a: 1}
+    - _ShroomPos0: {r: -46.73, g: 0.35000002, b: -88.32001, a: 0}
+    - _ShroomPos1: {r: 97.57, g: 0.96000004, b: -0.84000206, a: 0}
+    - _ShroomPos2: {r: 37.3, g: 1.038, b: -78.81, a: 0}
+    - _ShroomPos3: {r: -70.143, g: 0.86399996, b: -24.935001, a: 0}
+    - _ShroomPos4: {r: 38.88, g: 0.98, b: 72.25, a: 0}
+    - _ShroomPos5: {r: -47.39, g: 0.70000005, b: 70.350006, a: 0}

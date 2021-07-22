@@ -62,11 +62,16 @@ public class cnballpitCalc : UdonSharpBehaviour
 		AccumulatedFrameBoundary = 0;
 	}
 	
-	void FixedUpdate()
+	void Update()
 	{
 		AccumulatedFrameBoundary += _TargetFramerate*Time.deltaTime;
-		MatComputeB.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>2)?0:1 );
-		MatComputeA.SetFloat( "_DontPerformStep", (AccumulatedFrameBoundary>1)?0:1 );
-		AccumulatedFrameBoundary = AccumulatedFrameBoundary % 1;
+		int i;
+		i = (AccumulatedFrameBoundary>1)?0:1;
+		if( i == 0 ) AccumulatedFrameBoundary--;
+		MatComputeB.SetFloat( "_DontPerformStep", i );
+		i = (AccumulatedFrameBoundary>1)?0:1;
+		if( i == 0 ) AccumulatedFrameBoundary--;
+		MatComputeA.SetFloat( "_DontPerformStep", i );
+		//Debug.Log( AccumulatedFrameBoundary );
 	}
 }

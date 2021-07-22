@@ -51,6 +51,7 @@ and utter garbage in col when 3+ ids get written
  * TODO: Add another 2 stages, and flag on/off
  * Make video player collide with player.
  * TODO: Fix greyed out time of day box.
+ * TODO: Credit Sacc's flying
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -150,6 +151,9 @@ and utter garbage in col when 3+ ids get written
  * Added more attractors.
  * Make markers draw thicker lines.
 
+## 15.0 
+ * Fix frame rate limiting glitch issue. TIL; Time.deltaTime in FixedUpdate is Time.fixedDeltaTime.
+ * Add new Subscription Update system for improved perf, by avoiding VRCObjectSync.
 
 ## Interesting
  * shader_billboardout modes.
@@ -189,3 +193,19 @@ Control: Everything off:  7ms / 7ms (framecap) (1.6ms / 2.5ms)
 Control: Only AudioLink: 7ms / 7ms (framecap) (1.8ms / 2.7ms)
 (repeat) Camera on PickupNoEnvironment, looking at PickupNoEnvironment: 8.1ms / 9.4ms
 Camera on UiMenu, looking at UiMenu: 7.6ms / 9.3ms
+
+
+## Control Update Test
+ * Running uncapped, baseline 5.505ms / 4.17MB
+ * Adding 500 tiles, each has VRCObjectSync, A custom script to handle disabling interaction on moving and VRCPickup.
+ * .5ms Udon time / 11.250ms / 4.19MB
+ * Removing VRCObjectSync
+ * .35ms Udon time / 6.3ms / 4.19MB
+ * Deltas: 
+ *   With VRCObjectSync:                 .15ms UDON Time / 5.75ms Frame Time
+ *   Without VRCObjectSync:               0ms  UDON Time / 0.8ms Frame Time
+ *   Switching my object to manual:       0ms  UDON Time / 0.6ms Frame Time
+ *   Adding an Update() method with i=0: 1.5ms UDON Time / 2.2ms Frame Time
+ *   Using a brokered update function   : .3ms UDON Time /  0.9ms Frame Time
+ * BetterObjectSync
+ 
