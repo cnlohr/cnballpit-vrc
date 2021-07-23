@@ -57,7 +57,6 @@ public class ManualIIRSyncManager : UdonSharpBehaviour
 	public void Update()
 	{
 		int i;
-		Debug.Log( UpdateObjectListCount );
 		for( i = 0; i < UpdateObjectListCount; i++ )
 		{
 			ManualIIRSyncObject behavior = UpdateObjectList[i];

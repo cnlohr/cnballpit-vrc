@@ -17,7 +17,7 @@ public class ManualIIRSyncObject : UdonSharpBehaviour
 	
     void Start()
     {
-		dispatchManager = GameObject.Find( "SmartUpdateManager" ).GetComponent<ManualIIRSyncManager>();
+		dispatchManager = GameObject.Find( "ManualIIRSyncManager" ).GetComponent<ManualIIRSyncManager>();
         thisCollider = GetComponent<Collider>();
 		WasMoving = false;
 		MasterMoving = false;
