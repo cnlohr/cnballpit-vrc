@@ -1267,7 +1267,7 @@ half3 BetterSH9 (half4 normal) {
 				UNITY_INITIALIZE_OUTPUT(SurfaceOutputStandard, o);
 				o.Albedo = albedo;
 				o.Alpha = 1.0;
-				o.Emission = col;
+				o.Emission = 0.0;
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
 				o.Occlusion = 1.0;
@@ -1283,10 +1283,11 @@ half3 BetterSH9 (half4 normal) {
 //     half fresnelTerm = rlPow4AndFresnelTerm.y;
 
 				UnityLight light;
-        		float fakeIntensity = clamp(length(_LightColor0.rgb), 0.55, 1);
+        		float fakeIntensity = clamp(length(_LightColor0.rgb), 0.75, 1);
         		// Toon lighting.
         		//gi.light.color = _LightColor0.rgb + float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w) + float3(unity_SHBr.z, unity_SHBg.z, unity_SHBb.z) / 3.0;
 				light.dir = normalize(normalize(unity_SHAr.xyz + unity_SHAg.xyz + unity_SHAb.xyz + 0.001) + float3(0.33333333,0.66666666,0.66666666));
+				//light.color = BetterSH9(float4(light.dir, .25)) + cwac * fakeIntensity;
 				light.color = BetterSH9(float4(light.dir, .25)) + cwac * fakeIntensity;
 				//https://gitlab.com/s-ilent/SCSS
 				light.ndotl = LambertTerm(onormal2, light.dir);
