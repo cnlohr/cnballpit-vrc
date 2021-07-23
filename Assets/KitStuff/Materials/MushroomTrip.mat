@@ -100,7 +100,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LumWeight: {r: 0.00001, g: 755, b: -2, a: 24}
-    - _LumWeight2: {r: 5, g: 0.69, b: 0.44, a: 36}
+    - _LumWeight: {r: 0.00001, g: 77777, b: -2, a: 2}
+    - _LumWeight2: {r: 5, g: 0.69, b: 155, a: 155}
     - _Specular: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 1, g: 1, b: 1, a: 1}
