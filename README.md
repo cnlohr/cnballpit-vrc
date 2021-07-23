@@ -30,17 +30,6 @@ Haven't gotten NeoFlight working yet.
  * Test out explicit CRT Rendering Orders https://docs.unity3d.com/Manual/class-CustomRenderTexture.html#custom-render-texture
  * Double up physics steps, and make them sensitive to time.
  * Cleanup shaders, leaving standard ones.
- * Experiment with D4rk's 
-```
-ok yes it works
-init the tex with float4(1,1,1,0)
-then Blend One DstAlpha, One Zero
-and return float4(1..xxx, id);
-this should leave 2 in col if only 1 id got written
-and should leave id + 2 in col if 2 ids got written
-and utter garbage in col when 3+ ids get written
-```
- * Fix AudioLink failing?
  * Re: CRT Testing: Try assigning material and updating, and cycling in one fell swoop.
  * Figure out why some users get inundated by warnings about adding a depth buffer.
  * Make textured ball effect.
@@ -151,7 +140,7 @@ and utter garbage in col when 3+ ids get written
  * Added more attractors.
  * Make markers draw thicker lines.
 
-## 15.0 
+## 15.0 12:48 AM PT / July 23, 2021
  * Fix frame rate limiting glitch issue. TIL; Time.deltaTime in FixedUpdate is Time.fixedDeltaTime.
  * Add new Subscription Update system for improved perf, by avoiding VRCObjectSync.
 
@@ -207,5 +196,7 @@ Camera on UiMenu, looking at UiMenu: 7.6ms / 9.3ms
  *   Switching my object to manual:       0ms  UDON Time / 0.6ms Frame Time
  *   Adding an Update() method with i=0: 1.5ms UDON Time / 2.2ms Frame Time
  *   Using a brokered update function   : .3ms UDON Time /  0.9ms Frame Time
- * BetterObjectSync
+ * BetterObjectSync -> Going back to original scene.
+ *   5.261ms.
+ * Took exact thing from TEST to Upload version and visit with --fps=0 and in RenderDoc, it was 4.757ms
  
