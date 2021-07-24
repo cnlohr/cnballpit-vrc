@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MushroomTrip
-  m_Shader: {fileID: 4800000, guid: 21bf119bda18596418b172af4101ceb3, type: 3}
+  m_Shader: {fileID: 4800000, guid: 516821029b6cdfd47bc7992ed92296dd, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -100,7 +100,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LumWeight: {r: 0.00001, g: 77777, b: -2, a: 2}
+    - _LumWeight: {r: 0.00001, g: 77777, b: -6, a: 2}
     - _LumWeight2: {r: 5, g: 0.69, b: 155, a: 155}
     - _Specular: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 1, g: 1, b: 1, a: 1}
