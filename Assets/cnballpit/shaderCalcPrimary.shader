@@ -111,7 +111,22 @@ Shader "cnballpit/shaderCalcPrimary"
 			float3 _ShroomPos2;			
 			float3 _ShroomPos3;			
 			float3 _ShroomPos4;			
-			float3 _ShroomPos5;			
+			float3 _ShroomPos5;
+
+			float SDFBoundary( float3 position )
+			{
+				if( _BallpitBoundaryMode == 2 )
+				{
+					return min( 
+						length( max( abs( position - _TubCenter ) - _TubSize, 0..xxx ) ),
+						length( max( abs( position - _TopCenter ) - _TopSize, 0..xxx ) ) );
+				}
+				else
+				{
+					return 0;
+				}
+			}
+
 
 			v2f vert (appdata v)
 			{
@@ -126,6 +141,14 @@ Shader "cnballpit/shaderCalcPrimary"
 				f2a ret;
 				int2 screenCoord = i.vertex.xy;
 				uint ballid = screenCoord.y * 1024 + screenCoord.x;
+				
+				if( ballid >= MAX_BALLS )
+				{
+					ret.Pos = float4( 10000., 10000., 10000., 0. );
+					ret.Vel = 0.;
+
+					return ret;
+				}
 
 				float dt;
 				float vcfmfpsP;
@@ -167,8 +190,8 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Collide with other balls - this section of code is about 350us per pass.
 				if( 1 )
 				{
-					const float cfmVelocity = 15.0 * vcfmfpsV;
-					const float cfmPosition = .008 * vcfmfpsP;
+					const float cfmVelocity = 20.0 * vcfmfpsV;
+					const float cfmPosition = .0008 * vcfmfpsP;
 					
 					// Step 1 find collisions.
 					
@@ -249,7 +272,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				float edgecfmv = 1.5 * vcfmfpsV;
 				
 				// A bowl (not in use right now)
-				if( 0 )
+				if( _BallpitBoundaryMode == 0 )
 				{
 					//Bowl Collision.
 					float3 bowlcenter = float3( 0., 31., 0. );
@@ -262,14 +285,11 @@ Shader "cnballpit/shaderCalcPrimary"
 						Position.xyz -= (normalize( enterdir ) * exitlength)*edgecfm;
 					}
 				}
-
-				const float2 WorldSize = float2( 16, 16 );
-				const float2 HighXZ = float2( 5, 5 );
-				const float2 LowXZ = float2( -5, -5 );
-				
-				// World Edges
-				if( 1 )
+				else if( _BallpitBoundaryMode == 1 )
 				{
+					const float2 HighXZ = float2( 5, 5 );
+					const float2 LowXZ = float2( -5, -5 );
+
 					edgecfm = 0.5 * vcfmfpsP;
 					edgecfmv = 100.5 * vcfmfpsV;
 				
@@ -277,7 +297,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					float protrudelen;
 
 					// Floor
-					protrudelen = -Position.y + Position.w -.04;
+					protrudelen = -Position.y + Position.w -.04 - .5;
 					if( protrudelen > 0 )
 					{
 						Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
@@ -287,16 +307,16 @@ Shader "cnballpit/shaderCalcPrimary"
 					//Outer floor
 					if( length( Position.xz ) + Position.w > 7.93 )
 					{
-						protrudelen = -Position.y + Position.w + .7;
+						protrudelen = -Position.y + Position.w + .7 - .5;
 						if( protrudelen > 0 )
 						{
 							Velocity.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfmv;
 							Position.xyz -= float3( 0, -1, 0 ) * protrudelen * edgecfm;
 						}
-					} else if( length( Position.xz ) + Position.w > 5.0 && Position.y < 5 ) //Between 6.5 and 8...
+					} else if( length( Position.xz ) + Position.w > 5.0 && Position.y < 5-.5 ) //Between 6.5 and 8...
 					{
 						//Lip edge of floor.
-						float3 delta = Position.xyz - float3( 0, 18, 0 );
+						float3 delta = Position.xyz - float3( 0, 18-.5, 0 );
 						protrudelen = length(delta)-18.93;
 						if( protrudelen > 0 )
 						{
@@ -330,15 +350,38 @@ Shader "cnballpit/shaderCalcPrimary"
 						Velocity.xyz -= norm * protrudelen * edgecfmv * adv;
 						Position.xyz -= norm * protrudelen * edgecfm * adv;
 					}
+				}
+				else if( _BallpitBoundaryMode == 2 )
+				{
+					//Stepped environment.
+					edgecfm = 0.5 * vcfmfpsP;
+					edgecfmv = 100.5 * vcfmfpsV;
 
+					float protrudelen = SDFBoundary( Position.xyz );
+					if( protrudelen > 0 )
+					{
+						float3 protNorm = normalize( float3( 
+							SDFBoundary( Position.xyz + float3( 0.01, 0, 0 ) ) - 
+							SDFBoundary( Position.xyz + float3(-0.01, 0, 0 ) ),
+							SDFBoundary( Position.xyz + float3( 0, 0.01, 0 ) ) - 
+							SDFBoundary( Position.xyz + float3( 0,-0.01, 0 ) ),
+							SDFBoundary( Position.xyz + float3( 0, 0, 0.01 ) ) - 
+							SDFBoundary( Position.xyz + float3( 0, 0,-0.01 ) )
+							) );
+						Velocity.xyz -= protNorm * protrudelen * edgecfmv;
+						Position.xyz -= protNorm * protrudelen * edgecfm;
+					}
+					
 				}
 
 				//Use depth cameras (Totals around 150us per camera on a 2070 laptop)
 				if( 1 ) 
 				{
+					const float2 WorldSize = float2( 16, 16 );
+
 					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
-					float heightcfm = 1.8 * vcfmfpsP;
-					float heightcfmv = 200. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
+					float heightcfm = 0.48 * vcfmfpsP;
+					float heightcfmv = 400. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
@@ -357,14 +400,18 @@ Shader "cnballpit/shaderCalcPrimary"
 						// Note: Out-of-bounds checking seems unncessary. 
 							
 						float2 Y = _DepthMapComposite[coord];
+
 						
 						// No top pixels - early out!
 						if( Y.x <= 0 ) continue;
-						
-						Y *= 20;
 
-						if( Y.y == 0 ) Y.y = 19.5;
-						Y.y = 19.5-((Y.y));
+	
+						Y *= _BallpitCameraHeight;
+						Y.x += CAMERA_Y_OFFSET;
+						Y.y -= CAMERA_Y_OFFSET;
+
+						if( Y.y == 0 ) Y.y = _BallpitCameraHeight;
+						Y.y = _BallpitCameraHeight-((Y.y));
 
 						//coord + 0.5 because we went from 2048 to 1024 here.
 						float2 xzWorldPos = (((coord + 0.5)* _DepthMapComposite_TexelSize.xy) - 0.5 ) * WorldSize;

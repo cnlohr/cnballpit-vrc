@@ -40,7 +40,11 @@ Haven't gotten NeoFlight working yet.
  * TODO: Add another 2 stages, and flag on/off
  * Make video player collide with player.
  * TODO: Fix greyed out time of day box.
- * TODO: Credit Sacc's flying
+ * Make better motion's IIR framerate agnostic.
+ * Exchange frame/total for udon/frame
+ * Smooth out ball colors when in vector motion mode.
+ * Add SlowUpdate feature.
+ * UNITY_GET_INSTANCE_ID
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -143,6 +147,10 @@ Haven't gotten NeoFlight working yet.
 ## 15.0 12:48 AM PT / July 23, 2021
  * Fix frame rate limiting glitch issue. TIL; Time.deltaTime in FixedUpdate is Time.fixedDeltaTime.
  * Add new Subscription Update system for improved perf, by avoiding VRCObjectSync.
+
+## 16.0
+ * Updated brokered object sync
+ * Allowed for parameterization of ball pit area for other worlds.
 
 ## Interesting
  * shader_billboardout modes.

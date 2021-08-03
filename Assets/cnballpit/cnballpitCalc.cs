@@ -49,7 +49,6 @@ public class cnballpitCalc : UdonSharpBehaviour
 		RenderBuffer[] renderBuffersB = new RenderBuffer[] { rtPositionB.colorBuffer, rtVelocityB.colorBuffer };
 		RenderBuffer[] renderBuffersA = new RenderBuffer[] { rtPositionA.colorBuffer, rtVelocityA.colorBuffer };
 
-			
 		//Tricky:  Call SetTargetBuffers in the order you want the cameras to execute.
 		CamDepthBottom.SetTargetBuffers( rtDepthThrowawayColor.colorBuffer, rtBotDepth.depthBuffer );
 		CamDepthTop.SetTargetBuffers( rtDepthThrowawayColor.colorBuffer, rtTopDepth.depthBuffer );
