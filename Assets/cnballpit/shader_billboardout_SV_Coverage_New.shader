@@ -46,9 +46,17 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			#include "UnityPBSLighting.cginc"
 
 
-			#define SHADOW_SIZE 0.4
+			#define SHADOW_SIZE 0.6
+			
+			//This is for the size of the bounding square that we are rendering the impostor into.
 			#define OVERDRAW_FUDGE 0.6
-
+			#define EXPAND_FUDGE  0.12
+			
+			#define RAIDUS_FUDGE_MUX 1.0 
+			#define RADIUS_FUDGE_ADD 0
+			//Expand the radius of the ball a tiny bit at distance to cover the edge fading.
+			#define RADIUS_FUDGE_ADD_BY_DISTANCE 0.001
+ 
 			struct v2g
 			{
 				float4	pos		: POSITION;
@@ -128,6 +136,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					}
  
 
+					float distance_to_ball = length( look );
 
 					look = normalize(look);
 					right = cross(up, look);
@@ -136,7 +145,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					up = normalize(cross( look, right ));
 					right = normalize(right);
 
-					float size = DataPos.w*2+.1; //DataPos.w is radius. (Add a little to not clip edges.)
+					float size = DataPos.w*2+EXPAND_FUDGE; //DataPos.w is radius. (Add a little to not clip edges.)
 					float halfS = 0.5f * size * OVERDRAW_FUDGE;
 					
 					//Pushthe view plane away a tiny bit, to prevent nastiness when doing the SV_DepthLessEqual for perf.
@@ -149,7 +158,6 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					v[3] = float4(rvpos - halfS * right + halfS * up, 1.0f);
 
 					float4x4 vp = mul( UNITY_MATRIX_MVP, unity_WorldToObject);
-
 
 					float4 colorDiffuse = float4( hash33((DataVel.www*10.+10.1)), 1. ) - .1;
 					
@@ -245,7 +253,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					
 					pIn.pos = mul(vp, v[0]);
 					pIn.uv = float2(1.0f, 0.0f);
-					pIn.ballcenter = DataPos.xyzw;
+					pIn.ballcenter = float4( DataPos.xyz, DataPos.w * RAIDUS_FUDGE_MUX + RADIUS_FUDGE_ADD + RADIUS_FUDGE_ADD_BY_DISTANCE * distance_to_ball );
 					pIn.hitworld = v[0];
 					pIn.props = float4( DataVel.w, 0, 0, 1 );
 					pIn.colorDiffuse = colorDiffuse;

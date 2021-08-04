@@ -379,9 +379,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				{
 					const float2 WorldSize = float2( 16, 16 );
 
-					//Tested at 1.8/100 on 6/22/2021 AM early.  Changed to 200 to make it snappier and more throwable.
 					float heightcfm = 0.48 * vcfmfpsP;
-					float heightcfmv = 400. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
+					float heightcfmv = 200. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
+					
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
 					//Collision with depth map.
