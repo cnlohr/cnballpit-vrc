@@ -55,7 +55,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			#define RAIDUS_FUDGE_MUX 1.0 
 			#define RADIUS_FUDGE_ADD 0
 			//Expand the radius of the ball a tiny bit at distance to cover the edge fading.
-			#define RADIUS_FUDGE_ADD_BY_DISTANCE 0.001
+			#define RADIUS_FUDGE_ADD_BY_DISTANCE 0.0015
  
 			struct v2g
 			{
