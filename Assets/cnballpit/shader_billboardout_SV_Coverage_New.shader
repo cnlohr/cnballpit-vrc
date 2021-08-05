@@ -51,11 +51,12 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			//This is for the size of the bounding square that we are rendering the impostor into.
 			#define OVERDRAW_FUDGE 0.6
 			#define EXPAND_FUDGE  0.12
+			#define RADIUS_FUDGE_ADD_BY_DISTANCE_BOUNDING .002
 			
 			#define RAIDUS_FUDGE_MUX 1.0 
 			#define RADIUS_FUDGE_ADD 0
 			//Expand the radius of the ball a tiny bit at distance to cover the edge fading.
-			#define RADIUS_FUDGE_ADD_BY_DISTANCE 0.0015
+			#define RADIUS_FUDGE_ADD_BY_DISTANCE 0.001
  
 			struct v2g
 			{
@@ -145,7 +146,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					up = normalize(cross( look, right ));
 					right = normalize(right);
 
-					float size = DataPos.w*2+EXPAND_FUDGE; //DataPos.w is radius. (Add a little to not clip edges.)
+					float size = DataPos.w*2+EXPAND_FUDGE+ RADIUS_FUDGE_ADD_BY_DISTANCE_BOUNDING * distance_to_ball; //DataPos.w is radius. (Add a little to not clip edges.)
 					float halfS = 0.5f * size * OVERDRAW_FUDGE;
 					
 					//Pushthe view plane away a tiny bit, to prevent nastiness when doing the SV_DepthLessEqual for perf.

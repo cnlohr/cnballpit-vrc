@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: AudioFadeZone
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: fa92b233b889f5e418348b2c5a4bce44,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 665d3298aa063dd4bb0804cf8b6a4324,
     type: 2}
   udonAssembly: 
   assemblyError: 
@@ -484,8 +484,8 @@ MonoBehaviour:
       Data: 32|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: Interval in seconds that player position is checked for correct fade within
-        the zones
+      Data: Interval in seconds that player position is checked for correct fade
+        within the zones
     - Name: 
       Entry: 8
       Data: 

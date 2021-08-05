@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: SyncAudioControls
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: d425264eda34a3240bc9840858f32245,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: fc0dc21de457c5e448dab3866b8d55a4,
     type: 2}
   udonAssembly: 
   assemblyError: 

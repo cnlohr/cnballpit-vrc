@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ZoneExitController
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: ee994b653c5de354ba8454e6347d76ab,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: cf59c26c65cc6f74db62de35acf47476,
     type: 2}
   udonAssembly: 
   assemblyError: 

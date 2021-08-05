@@ -1,12 +1,8 @@
 ﻿
 using UnityEngine;
 using VRC.SDKBase;
-
-#if UDON
 using UdonSharp;
 using VRC.Udon;
-#endif
-
 
 public class DayNightControl : UdonSharpBehaviour
 {

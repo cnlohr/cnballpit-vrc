@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: AudioManager
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 7a1efdbdd3eabfc439942b2efefaf084,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: d02091c26b679d34dbb4b63841986aff,
     type: 2}
   udonAssembly: 
   assemblyError: 
@@ -413,8 +413,8 @@ MonoBehaviour:
       Data: 28|UnityEngine.TooltipAttribute, UnityEngine.CoreModule
     - Name: tooltip
       Entry: 1
-      Data: Whether base sources are reconfigured to a full 2D blend by default.  When
-        enabled, overlay sources are also muted.
+      Data: Whether base sources are reconfigured to a full 2D blend by default. 
+        When enabled, overlay sources are also muted.
     - Name: 
       Entry: 8
       Data: 
