@@ -148,9 +148,14 @@ Haven't gotten NeoFlight working yet.
  * Fix frame rate limiting glitch issue. TIL; Time.deltaTime in FixedUpdate is Time.fixedDeltaTime.
  * Add new Subscription Update system for improved perf, by avoiding VRCObjectSync.
 
-## 16.0
+## 16.0 12:45 AM PT / August 6, 2021
  * Updated brokered object sync
  * Allowed for parameterization of ball pit area for other worlds.
+ * Improved rock texture to allow instancing and every instance of the rocks be different. (Instancing preferred)
+ * Updated to Unity 2019
+ * Switched to Ben's SuperPalm Trees
+
+
 
 ## Interesting
  * shader_billboardout modes.
