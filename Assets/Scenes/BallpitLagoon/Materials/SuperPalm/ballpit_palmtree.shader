@@ -13,19 +13,43 @@
 		_RockAmbient ("Rock Ambient Boost", float ) = 0.1
 		_EmissionMux( "Emission Mux", Color) = (.3, .3, .3, 1. )
 		_BarkColor( "Bark Color", Color ) = (1., 1., 1. ,1. )
+		
+		_FrawnDensity( "Frawn Density", float) = 300
 	}
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 200
-        Cull Off
+		
+		CGINCLUDE
+		
+		float _FrawnDensity;
+		float FragmentAlpha( float2 uv, float edginess )
+		{
+		
+			if( uv.y < 0.49 )
+			{
+				return 1;
+			}
+			else
+			{
+				float fLeafOffset = (uv.y-.75)*4;
+				float fLeafAlongLength = uv.x;
+				float fLeafCenterDistance = abs( fLeafOffset );
+				//float alpha = (( sin( fLeafAlongLength * _FrawnDensity ) + 1.2 )); //Sin-based frawning
+				float alpha = 1.-abs( 0.5 - frac( fLeafAlongLength * _FrawnDensity / 6.2 ) )*2.;
+				alpha += saturate( .5 - fLeafCenterDistance*2 )*3.; //center stem
+				alpha *= saturate(1.5-fLeafCenterDistance*1.5);
+				alpha *= saturate(1.7-fLeafAlongLength);
+				return ( (alpha-.05)*9. - 0.5 ) * edginess + 0.5;
+			}
+		}
+		ENDCG
 
 		// shadow caster rendering pass, implemented manually
 		// using macros from UnityCG.cginc
 		Pass
 		{
 			Tags {"LightMode"="ShadowCaster"}
-
+			Cull Off
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -34,26 +58,38 @@
 
 			struct v2f { 
 				V2F_SHADOW_CASTER;
+				float4 uv : TEXCOORD0;
 			};
 
 			v2f vert(appdata_base v)
 			{
 				v2f o;
 				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+				o.uv = v.texcoord;
 				return o;
 			}
 
 			float4 frag(v2f i) : SV_Target
 			{
+				float edginess = 1.;
+				float alpha = FragmentAlpha( i.uv, edginess );
+				clip( alpha-0.5 );
 				SHADOW_CASTER_FRAGMENT(i)
 			}
 			ENDCG
 		}
 
 
+		Tags{ "RenderType" = "TransparentCutout"  "Queue" = "AlphaTest+0" "IsEmissive" = "true"  }
+		AlphaToMask On
+		Cull Off
+		ZWrite On		AlphaToMask On
+
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows vertex:vert
+        //#pragma surface surf keepalpha Standard fullforwardshadows vertex:vert
+		#pragma surface surf Standard keepalpha addshadow fullforwardshadows vertex:vert 
+
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 4.0
@@ -68,6 +104,7 @@
 			float2 uv2_MainTex;
 			float3 worldPos;
 			float3 objPos;
+			float3 color;
 		};
 
 		half _TextureDetail;
@@ -96,6 +133,7 @@
 				length(float3(unity_ObjectToWorld[0].z, unity_ObjectToWorld[1].z, unity_ObjectToWorld[2].z))  // scale z axis
 				);
             o.objPos = v.vertex*worldScale;
+			o.color = v.color;
         }
 
 		float densityat( float3 calcpos )
@@ -119,12 +157,14 @@
         {
 			// Albedo comes from a texture tinted by color
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+
 			float3 calcpos = IN.objPos.xyz * _TextureDetail;
 			float4 col = 0.;
 			float2 normpert;
 			
 			if( IN.uv_MainTex.y <= 0.00 )
 			{
+				// Bark
 				float2 uvoffset = .36;
 				float segmentuv = glsl_mod( IN.uv_MainTex.y*8+uvoffset, 1. );
 				float segmentno = floor( IN.uv_MainTex.y*8+uvoffset );
@@ -134,25 +174,42 @@
 				float4 nrv = tanoise4( float4( compos.xyz*90.2, _Time.y*_TextureAnimation ) ) * .3;
 				nrv = smoothstep( 0, 1, nrv );
 				c = _BarkColor;
-				c = c * (floor( (nrv.x + .9)*8 )/8 + nrv.y*.6);
-				
+				c = c * ( pow( floor( (nrv.x + .9)*12 )/9,2 ) + nrv.y*.2);
+				c = c * pow( abs( segmentuv.x - 0.5 ) + 0.1, .45); //ribs
 				//Add some noise to the normal.
 				normpert = tanoise4( float4( compos.xyz*200.5, _Time.y*_TextureAnimation ) ) * .4 +
 					tanoise4( float4( compos.xyz*90.2, _Time.y*_TextureAnimation ) ) * .3;
 				
 			}
+			else if( IN.uv_MainTex.y < 0.5 )
+			{
+				//Brown nub.
+				//c = _BarkColor;
+				normpert.xy = 0.35;
+			}
 			else
 			{
+				// Leaf
+				normpert.xy = 0.35;
+				float fLeafOffset = (IN.uv_MainTex.y-.75)*4;
+				float fLeafAlongLength = IN.uv_MainTex.x;
+				float fLeafCenterDistance = abs( fLeafOffset );
 				//col = densityat( calcpos );
-				col = saturate( pow( sin( IN.uv_MainTex.x*100. +IN.uv_MainTex.y*20. )* .2 + 1.0, 10. ) );
+				//col = saturate( pow( sin( IN.uv_MainTex.x*100. +IN.uv_MainTex.y*20. )* .2 + 1.0, 10. ) );
+				c *= 8.;
 				c *= pow( col.xxxx, _NoisePow) + _RockAmbient;
+				//Brownness
+				c += float4( .08, 0., .07, 0. ) * fLeafCenterDistance * ( tanoise4_1d( float4( float3( calcpos*30. ), _Time.y ) ).xxxx + .8 );
 				normpert = tanoise4( float4( calcpos.xyz*10.2, _Time.y*_TextureAnimation ) ) * .1;
-
+				
 			}
+			o.Occlusion = IN.color * lerp( normalize( c ), 1..xxx, .2 )*2;
+
+			float edginess = 0.022/length( ddx( IN.objPos.xyz ) ) + length( ddy( IN.objPos.xyz ) );
+			c.a = FragmentAlpha( IN.uv_MainTex, edginess );
 			
 
 			o.Normal = normalize( float3( normpert.xy-.35, 1.5 ) );
-
 			o.Albedo = c.rgb * 1.2;
 			o.Emission = c * _EmissionMux;
 			// Metallic and smoothness come from slider variables

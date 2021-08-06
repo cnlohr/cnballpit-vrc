@@ -12,7 +12,7 @@ Shader "Custom/3DRockTexture"
 		_NoisePow ("Noise Power", float ) = 1.8
 		_RockAmbient ("Rock Ambient Boost", float ) = 0.1
 		_EmissionMux( "Emission Mux", Color) = (.3, .3, .3, 1. )
-
+		_InstanceID ("Instance ID", Vector ) = ( 0, 0, 0 ,0 )
 	}
 	SubShader
 	{
@@ -54,17 +54,31 @@ Shader "Custom/3DRockTexture"
 		// Physically based Standard lighting model, and enable shadows on all light types
 		#pragma surface surf Standard fullforwardshadows vertex:vert
 
+		#pragma multi_compile_instancing
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 4.0
 		#include "/Assets/Shaders/tanoise/tanoise.cginc"
 
 		sampler2D _MainTex;
-
+		
 		struct Input
 		{
 			float2 uv_MainTex;
 			float3 worldPos;
 			float3 objPos;
+			float4 color;
+			float4 extra;
+		};
+
+		struct appdata
+		{
+			float4 vertex    : POSITION;  // The vertex position in model space.
+			float3 normal    : NORMAL;    // The vertex normal in model space.
+			float4 texcoord  : TEXCOORD0; // The first UV coordinate.
+			float4 texcoord1 : TEXCOORD1; // The second UV coordinate.
+			float4 tangent   : TANGENT;   // The tangent vector in Model Space (used for normal mapping).
+			float4 color     : COLOR;     // Per-vertex color
+			UNITY_VERTEX_INPUT_INSTANCE_ID
 		};
 
 		half _Glossiness;
@@ -79,7 +93,7 @@ Shader "Custom/3DRockTexture"
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
 		// #pragma instancing_options assumeuniformscaling
 		UNITY_INSTANCING_BUFFER_START(Props)
-			// put more per-instance properties here
+			UNITY_DEFINE_INSTANCED_PROP( float4, _InstanceID)
 		UNITY_INSTANCING_BUFFER_END(Props)
 		
 		float densityat( float3 calcpos )
@@ -97,14 +111,23 @@ Shader "Custom/3DRockTexture"
 		}
 
 
-        void vert (inout appdata_full v, out Input o) {
+        void vert (inout appdata v, out Input o ) {
             UNITY_INITIALIZE_OUTPUT(Input,o);
-		    float3 worldScale = float3(
+			UNITY_SETUP_INSTANCE_ID(v);
+
+			float3 worldScale = float3(
 				length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x)), // scale x axis
 				length(float3(unity_ObjectToWorld[0].y, unity_ObjectToWorld[1].y, unity_ObjectToWorld[2].y)), // scale y axis
 				length(float3(unity_ObjectToWorld[0].z, unity_ObjectToWorld[1].z, unity_ObjectToWorld[2].z))  // scale z axis
 				);
             o.objPos = v.vertex*worldScale;
+#if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
+			int instanceid = UNITY_ACCESS_INSTANCED_PROP(Props, _InstanceID).x;
+			o.extra = float4( unity_InstanceID, instanceid, 0, 1 );
+#else
+			o.extra = float4( 0, 0, 0, 1 );
+#endif
+
         }
  
 		void surf (Input IN, inout SurfaceOutputStandard o)
@@ -113,6 +136,8 @@ Shader "Custom/3DRockTexture"
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
 			float3 calcpos = IN.objPos.xyz * _TextureDetail;
 			
+			//Pretend different instances are different places in space.
+			calcpos.y += IN.extra.y*10;
 			float4 col = densityat( calcpos );
 			c *= pow( col.xxxx, _NoisePow) + _RockAmbient;
 			
@@ -120,6 +145,8 @@ Shader "Custom/3DRockTexture"
 				tanoise4( float4( calcpos.xyz*90.2, _Time.y*_TextureAnimation ) ) * .3;
 			
 			o.Normal = normalize( float3( normpert.xy-.35, 1.5 ) );
+
+			//c = frac( IN.extra.y*.25+.05 ).xxxx;
 
 			o.Albedo = c.rgb * 1.2;
 			o.Emission = c * _EmissionMux;

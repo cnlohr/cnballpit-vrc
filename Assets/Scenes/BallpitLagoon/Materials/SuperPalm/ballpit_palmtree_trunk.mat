@@ -64,6 +64,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _FrawnDensity: 300
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
@@ -76,7 +77,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TextureAnimation: 1
+    - _TextureAnimation: 0.2
     - _TextureDetail: 1
     - _UVSec: 0
     - _ZWrite: 1
