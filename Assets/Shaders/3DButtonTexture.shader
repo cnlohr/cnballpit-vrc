@@ -26,6 +26,7 @@ Shader "Custom/3DButtonTexture"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+			#pragma multi_compile_instancing
             #pragma multi_compile_shadowcaster
             #include "UnityCG.cginc"
 
@@ -36,6 +37,7 @@ Shader "Custom/3DButtonTexture"
             v2f vert(appdata_base v)
             {
                 v2f o;
+				UNITY_SETUP_INSTANCE_ID(v);
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
                 return o;
             }
@@ -53,6 +55,7 @@ Shader "Custom/3DButtonTexture"
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
+		#pragma multi_compile_instancing
 
         #pragma target 5.0
 

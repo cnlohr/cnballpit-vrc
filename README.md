@@ -155,7 +155,9 @@ Haven't gotten NeoFlight working yet.
  * Updated to Unity 2019
  * Switched to Ben's SuperPalm Trees
 
-
+## 17.0 3:50 AM PT / August 6, 2021
+ * Improved batching situation to allow more things to batch.
+ * Reattached pens scripts.
 
 ## Interesting
  * shader_billboardout modes.

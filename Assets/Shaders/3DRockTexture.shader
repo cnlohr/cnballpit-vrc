@@ -27,6 +27,7 @@ Shader "Custom/3DRockTexture"
 			#pragma fragment frag
 			#pragma multi_compile_shadowcaster
 			#include "UnityCG.cginc"
+			#pragma multi_compile_instancing
 
 			struct v2f { 
 				V2F_SHADOW_CASTER;
@@ -35,6 +36,7 @@ Shader "Custom/3DRockTexture"
 			v2f vert(appdata_base v)
 			{
 				v2f o;
+				UNITY_SETUP_INSTANCE_ID(v);
 				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
 				return o;
 			}
@@ -47,8 +49,9 @@ Shader "Custom/3DRockTexture"
 		}
 
 
-		Tags { "RenderType"="Opaque"  "DisableBatching"="True" }
+		Tags { "RenderType"="Opaque" }
 		LOD 200
+		//"DisableBatching"="False"
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
@@ -76,6 +79,7 @@ Shader "Custom/3DRockTexture"
 			float3 normal    : NORMAL;    // The vertex normal in model space.
 			float4 texcoord  : TEXCOORD0; // The first UV coordinate.
 			float4 texcoord1 : TEXCOORD1; // The second UV coordinate.
+			float4 texcoord2 : TEXCOORD2; // The second UV coordinate.
 			float4 tangent   : TANGENT;   // The tangent vector in Model Space (used for normal mapping).
 			float4 color     : COLOR;     // Per-vertex color
 			UNITY_VERTEX_INPUT_INSTANCE_ID

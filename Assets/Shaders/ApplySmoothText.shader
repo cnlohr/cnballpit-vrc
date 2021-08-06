@@ -22,6 +22,7 @@
             Tags {"LightMode"="ShadowCaster"}
 			CGINCLUDE
 			#pragma vertex vert
+			#pragma multi_compile_instancing
 			#pragma fragment frag
 			// make fog work
 			#pragma multi_compile_fog
@@ -59,6 +60,7 @@
 			v2f vert (appdata v)
 			{
 				v2f o;
+				UNITY_SETUP_INSTANCE_ID(v);
 				//o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
@@ -109,6 +111,7 @@
 			Tags { "RenderType"="Opaque" "LightModel"="ForwardBase"}
 
 			CGPROGRAM
+			#pragma multi_compile_instancing
 
 			v2f vert (appdata v)
 			{
