@@ -1,16 +1,15 @@
 fileFormatVersion: 2
-guid: f55d4f8403139cc4cac4ca4c5d66874d
+guid: d0036f4d7f9a1f649878bc204866fc2d
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: Trunk
-    2100002: Crown
+    2100000: Crown
+    2100002: Trunk
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Trunk Mk 2.001
-    4300002: Palm Tree A
+    4300000: Palm Tree G
   externalObjects:
   - first:
       type: UnityEngine:Material

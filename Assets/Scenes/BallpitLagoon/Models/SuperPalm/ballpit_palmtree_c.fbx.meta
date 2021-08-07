@@ -10,17 +10,18 @@ ModelImporter:
     2300000: //RootNode
     3300000: //RootNode
     4300000: Frond Root.002
+    4300002: Palm Tree C
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Crown
-    second: {fileID: 2100000, guid: 760e46dbe0f72e94d9b77ec4c9598993, type: 2}
+    second: {fileID: 2100000, guid: a1f7529fd597cc64c92bcc4969667e41, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Trunk
-    second: {fileID: 2100000, guid: 656c0e67eb5722e4a8a032d057c8ffc1, type: 2}
+    second: {fileID: 2100000, guid: a1f7529fd597cc64c92bcc4969667e41, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
