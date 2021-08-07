@@ -158,6 +158,9 @@ Haven't gotten NeoFlight working yet.
 ## 17.0 3:50 AM PT / August 6, 2021
  * Improved batching situation to allow more things to batch.
  * Reattached pens scripts.
+ 
+## 18.0 1:31 AM PT / August 7, 2021
+ * Add some rocks
 
 ## Interesting
  * shader_billboardout modes.
