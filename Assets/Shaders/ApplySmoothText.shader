@@ -57,12 +57,12 @@
 
 			ENDCG
 			CGPROGRAM
-			v2f vert (appdata v)
+			v2f vert (appdata_base v)
 			{
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(v);
 				//o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
+				o.uv = v.texcoord;
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
 				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
