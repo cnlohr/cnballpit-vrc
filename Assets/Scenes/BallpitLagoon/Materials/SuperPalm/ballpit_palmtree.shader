@@ -73,6 +73,11 @@ Shader "SuperPalm/ballpit_palmtree"
 				v.xyz += topdisplacement;
 				//v.xyz += float3( 0, sin( _Time.y+fLeafAlongLength+v.x+v.y ), 0 ) * fLeafAlongLength * .1;
 				v.xyz += (tanoise4( float4( v*.2, instance + _Time.y/6.28 ) )*2 - 1) * fLeafAlongLength * .5;
+
+				float3 topdisplacement_advance = normalize( 
+					float3( sin( (_Time.y+2)*.78 + instance ), 1./_SwayStrength, sin( (_Time.y+2) * 1.24 + instance*2.3 ) )
+						) - float3( 0, 1, 0 );
+				v.xyz += topdisplacement_advance * fLeafAlongLength;
 			}
 			else if( uv.y > 0 )
 			{

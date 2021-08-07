@@ -167,8 +167,9 @@ Haven't gotten NeoFlight working yet.
  * Smooth edges of various things in map.
  * Updated palms.
  * Updated slates.
- 
- TODO: Make Palm Frawns Sway
+ * Removed Spheres
+ * Made frawns sway
+ * Made ball pit more prefabbable
 
 ## Interesting
  * shader_billboardout modes.

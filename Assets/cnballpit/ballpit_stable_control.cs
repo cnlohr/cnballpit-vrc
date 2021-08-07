@@ -27,9 +27,9 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	public GameObject Fan0;
 	public GameObject Fan1;
 	public GameObject Fan2;
-	public GameObject Dragdrop0;
-	public GameObject Dragdrop1;
-	public GameObject Dragdrop2;
+	public GameObject Magnet0;
+	public GameObject Magnet1;
+	public GameObject Magnet2;
 	public GameObject Shroom0;
 	public GameObject Shroom1;
 	public GameObject Shroom2;
@@ -106,72 +106,99 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	{		
 		Transform t;
 
-		t = Fan0.transform;
-		Vector3 fan_position = t.localPosition;
-		Vector4 fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
-		ballpitA.SetVector( "_FanPosition0", fan_position );
-		ballpitA.SetVector( "_FanRotation0", fan_rotation );
-		ballpitB.SetVector( "_FanPosition0", fan_position );
-		ballpitB.SetVector( "_FanRotation0", fan_rotation );
-
-		t = Fan1.transform;
-		fan_position = t.localPosition;
-		fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
-		ballpitA.SetVector( "_FanPosition1", fan_position );
-		ballpitA.SetVector( "_FanRotation1", fan_rotation );
-		ballpitB.SetVector( "_FanPosition1", fan_position );
-		ballpitB.SetVector( "_FanRotation1", fan_rotation );
-
-		t = Fan2.transform;
-		fan_position = t.localPosition;
-		fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
-		ballpitA.SetVector( "_FanPosition2", fan_position );
-		ballpitA.SetVector( "_FanRotation2", fan_rotation );
-		ballpitB.SetVector( "_FanPosition2", fan_position );
-		ballpitB.SetVector( "_FanRotation2", fan_rotation );
-		
-		t = Dragdrop0.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_DragDropPos0", fan_position );
-		ballpitB.SetVector( "_DragDropPos0", fan_position );
-		t = Dragdrop1.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_DragDropPos1", fan_position );
-		ballpitB.SetVector( "_DragDropPos1", fan_position );
-		t = Dragdrop2.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_DragDropPos2", fan_position );
-		ballpitB.SetVector( "_DragDropPos2", fan_position );
-
-		t = Shroom0.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_ShroomPos0", fan_position );
-		ballpitB.SetVector( "_ShroomPos0", fan_position );
-
-		t = Shroom1.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_ShroomPos1", fan_position );
-		ballpitB.SetVector( "_ShroomPos1", fan_position );	
-		
-		t = Shroom2.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_ShroomPos2", fan_position );
-		ballpitB.SetVector( "_ShroomPos2", fan_position );
-
-		t = Shroom3.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_ShroomPos3", fan_position );
-		ballpitB.SetVector( "_ShroomPos3", fan_position );		
-
-		t = Shroom4.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_ShroomPos4", fan_position );
-		ballpitB.SetVector( "_ShroomPos4", fan_position );
-
-		t = Shroom5.transform;
-		fan_position = t.localPosition;
-		ballpitA.SetVector( "_ShroomPos5", fan_position );
-		ballpitB.SetVector( "_ShroomPos5", fan_position );
+		if( Fan0 != null )
+		{
+			t = Fan0.transform;
+			Vector3 fan_position = t.localPosition;
+			Vector4 fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
+			ballpitA.SetVector( "_FanPosition0", fan_position );
+			ballpitA.SetVector( "_FanRotation0", fan_rotation );
+			ballpitB.SetVector( "_FanPosition0", fan_position );
+			ballpitB.SetVector( "_FanRotation0", fan_rotation );
+		}
+		if( Fan1 != null )
+		{
+			t = Fan1.transform;
+			Vector3 fan_position = t.localPosition;
+			Vector4 fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
+			ballpitA.SetVector( "_FanPosition1", fan_position );
+			ballpitA.SetVector( "_FanRotation1", fan_rotation );
+			ballpitB.SetVector( "_FanPosition1", fan_position );
+			ballpitB.SetVector( "_FanRotation1", fan_rotation );
+		}
+		if( Fan2 != null )
+		{
+			t = Fan2.transform;
+			Vector3 fan_position = t.localPosition;
+			Vector4 fan_rotation = new Vector4( t.localRotation.x, t.localRotation.y, t.localRotation.z, t.localRotation.w );
+			ballpitA.SetVector( "_FanPosition2", fan_position );
+			ballpitA.SetVector( "_FanRotation2", fan_rotation );
+			ballpitB.SetVector( "_FanPosition2", fan_position );
+			ballpitB.SetVector( "_FanRotation2", fan_rotation );
+		}
+		if( Magnet0 != null )
+		{
+			t = Magnet0.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_MagnetPos0", fan_position );
+			ballpitB.SetVector( "_MagnetPos0", fan_position );
+		}
+		if( Magnet1 != null )
+		{
+			t = Magnet1.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_MagnetPos1", fan_position );
+			ballpitB.SetVector( "_MagnetPos1", fan_position );
+		}
+		if( Magnet2 != null )
+		{
+			t = Magnet2.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_MagnetPos2", fan_position );
+			ballpitB.SetVector( "_MagnetPos2", fan_position );
+		}
+		if( Shroom0 != null )
+		{
+			t = Shroom0.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_ShroomPos0", fan_position );
+			ballpitB.SetVector( "_ShroomPos0", fan_position );
+		}
+		if( Shroom1 != null )
+		{
+			t = Shroom1.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_ShroomPos1", fan_position );
+			ballpitB.SetVector( "_ShroomPos1", fan_position );	
+		}
+		if( Shroom2 != null )
+		{
+			t = Shroom2.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_ShroomPos2", fan_position );
+			ballpitB.SetVector( "_ShroomPos2", fan_position );
+		}
+		if( Shroom3 != null )
+		{
+			t = Shroom3.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_ShroomPos3", fan_position );
+			ballpitB.SetVector( "_ShroomPos3", fan_position );		
+		}
+		if( Shroom4 != null )
+		{
+			t = Shroom4.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_ShroomPos4", fan_position );
+			ballpitB.SetVector( "_ShroomPos4", fan_position );
+		}
+		if( Shroom5 != null )
+		{
+			t = Shroom5.transform;
+			Vector3 fan_position = t.localPosition;
+			ballpitA.SetVector( "_ShroomPos5", fan_position );
+			ballpitB.SetVector( "_ShroomPos5", fan_position );
+		}
 	}
 	
 	//https://github.com/MerlinVR/UdonSharp/wiki/events

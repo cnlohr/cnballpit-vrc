@@ -77,6 +77,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SwayStrength: 0.12
     - _TextureAnimation: 0.3
     - _TextureDetail: 1
     - _UVSec: 0
@@ -86,3 +87,4 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionMux: {r: 0.29999998, g: 0.29999998, b: 0.29999998, a: 1}
+    - _InstanceID: {r: 0, g: 0, b: 0, a: 0}

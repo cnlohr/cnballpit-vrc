@@ -1091,7 +1091,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: Dragdrop0
+      Data: Magnet0
     - Name: $v
       Entry: 7
       Data: 65|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -1112,10 +1112,10 @@ MonoBehaviour:
       Data: UnityEngineGameObject
     - Name: symbolOriginalName
       Entry: 1
-      Data: Dragdrop0
+      Data: Magnet0
     - Name: symbolUniqueName
       Entry: 1
-      Data: Dragdrop0
+      Data: Magnet0
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -1148,7 +1148,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: Dragdrop1
+      Data: Magnet1
     - Name: $v
       Entry: 7
       Data: 68|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -1169,10 +1169,10 @@ MonoBehaviour:
       Data: UnityEngineGameObject
     - Name: symbolOriginalName
       Entry: 1
-      Data: Dragdrop1
+      Data: Magnet1
     - Name: symbolUniqueName
       Entry: 1
-      Data: Dragdrop1
+      Data: Magnet1
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -1205,7 +1205,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: Dragdrop2
+      Data: Magnet2
     - Name: $v
       Entry: 7
       Data: 71|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -1226,10 +1226,10 @@ MonoBehaviour:
       Data: UnityEngineGameObject
     - Name: symbolOriginalName
       Entry: 1
-      Data: Dragdrop2
+      Data: Magnet2
     - Name: symbolUniqueName
       Entry: 1
-      Data: Dragdrop2
+      Data: Magnet2
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
