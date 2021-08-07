@@ -29,6 +29,9 @@ ExportedObj/
 *.VC.db
 *.unitypackage
 
+*.blend1
+*.blend1.meta
+
 # Crashlytics generated file
 crashlytics-build.properties
 
