@@ -164,10 +164,17 @@ Haven't gotten NeoFlight working yet.
 
 ## 19.0 
  * Made screen made out of balls.
+ * Smooth edges of various things in map.
+ * Updated palms.
+ * Updated slates.
+ 
+ TODO: Make Palm Frawns Sway
 
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.
+ 
+ 
 ```glsl
  
 for( j = 0; j < 4; j++ )

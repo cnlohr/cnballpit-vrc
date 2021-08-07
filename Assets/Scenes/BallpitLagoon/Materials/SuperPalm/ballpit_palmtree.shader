@@ -1,4 +1,6 @@
-﻿Shader "SuperPalm/ballpit_palmtree"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "SuperPalm/ballpit_palmtree"
 {
     Properties
     {
@@ -15,13 +17,26 @@
 		_BarkColor( "Bark Color", Color ) = (1., 1., 1. ,1. )
 		
 		_FrawnDensity( "Frawn Density", float) = 300
+		_InstanceID ("Instance ID", Vector ) = ( 0, 0, 0 ,0 )
+		_SwayStrength( "Sway Strength", float) = 0.2
+
 	}
     SubShader
     {
 		
 		CGINCLUDE
+
+		#include "/Assets/Shaders/tanoise/tanoise.cginc"
+		#include "UnityCG.cginc"
+		#pragma multi_compile_instancing
+        #pragma target 4.0
 		
+		UNITY_INSTANCING_BUFFER_START(Props)
+			UNITY_DEFINE_INSTANCED_PROP( float4, _InstanceID)
+		UNITY_INSTANCING_BUFFER_END(Props)
+
 		float _FrawnDensity;
+		float _SwayStrength;
 		float FragmentAlpha( float2 uv, float edginess )
 		{
 		
@@ -42,6 +57,34 @@
 				return ( (alpha-.05)*9. - 0.5 ) * edginess + 0.5;
 			}
 		}
+			
+		float3 VertexDisplace( float3 v, float2 uv, float4 instanceProps, float3 norm )
+		{
+			float instance = instanceProps.x;
+			float3 topdisplacement = normalize( 
+				float3( sin( _Time.y*.78 + instance ), 1./_SwayStrength, sin( _Time.y * 1.24 + instance*2.3 ) )
+					) - float3( 0, 1, 0 );
+			if( uv.y >= 0.499 )
+			{
+				//Top
+				float fLeafOffset = (uv.y-.75)*4;
+				float fLeafAlongLength = uv.x;
+				float fLeafCenterDistance = abs( fLeafOffset );
+				v.xyz += topdisplacement;
+				//v.xyz += float3( 0, sin( _Time.y+fLeafAlongLength+v.x+v.y ), 0 ) * fLeafAlongLength * .1;
+				v.xyz += (tanoise4( float4( v*.2, instance + _Time.y/6.28 ) )*2 - 1) * fLeafAlongLength * .5;
+			}
+			else if( uv.y > 0 )
+			{
+				//Nut
+				v.xyz += topdisplacement;
+			}
+			else
+			{
+				v.xyz += topdisplacement * uv.y / -4;
+			}
+			return v;
+		}
 		ENDCG
 
 		// shadow caster rendering pass, implemented manually
@@ -54,18 +97,24 @@
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile_shadowcaster
-			#pragma multi_compile_instancing
-			#include "UnityCG.cginc"
 
 			struct v2f { 
 				V2F_SHADOW_CASTER;
 				float4 uv : TEXCOORD0;
 			};
 
-			v2f vert(appdata_base v)
+			v2f vert(appdata_base vi)
 			{
+				appdata_base v = vi;
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(v);
+				v.vertex.xyz = mul(unity_WorldToObject, 
+					VertexDisplace( 
+						mul(unity_ObjectToWorld, v.vertex.xyz ), 
+						v.texcoord,
+						UNITY_ACCESS_INSTANCED_PROP(Props, _InstanceID),
+						mul(unity_ObjectToWorld, v.normal )
+						) );
 				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
 				o.uv = v.texcoord;
 				return o;
@@ -91,12 +140,7 @@
         // Physically based Standard lighting model, and enable shadows on all light types
         //#pragma surface surf keepalpha Standard fullforwardshadows vertex:vert
 		#pragma surface surf Standard keepalpha addshadow fullforwardshadows vertex:vert 
-		#pragma multi_compile_instancing
 
-
-        // Use shader model 3.0 target, to get nicer looking lighting
-        #pragma target 4.0
-		#include "/Assets/Shaders/tanoise/tanoise.cginc"
 
         sampler2D _MainTex;
 
@@ -119,23 +163,21 @@
         half _Metallic;
         fixed4 _Color;
 
-        // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-        // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-        // #pragma instancing_options assumeuniformscaling
-        UNITY_INSTANCING_BUFFER_START(Props)
-            // put more per-instance properties here
-        UNITY_INSTANCING_BUFFER_END(Props)
-
-
-
         void vert (inout appdata_full v, out Input o) {
-            UNITY_INITIALIZE_OUTPUT(Input,o);
-		    float3 worldScale = float3(
+			UNITY_SETUP_INSTANCE_ID(v);
+			UNITY_INITIALIZE_OUTPUT(Input,o);
+			float3 worldScale = float3(
 				length(float3(unity_ObjectToWorld[0].x, unity_ObjectToWorld[1].x, unity_ObjectToWorld[2].x)), // scale x axis
 				length(float3(unity_ObjectToWorld[0].y, unity_ObjectToWorld[1].y, unity_ObjectToWorld[2].y)), // scale y axis
 				length(float3(unity_ObjectToWorld[0].z, unity_ObjectToWorld[1].z, unity_ObjectToWorld[2].z))  // scale z axis
 				);
-            o.objPos = v.vertex*worldScale;
+			float3 objpos = o.objPos = v.vertex*worldScale;
+			v.vertex.xyz = mul(unity_WorldToObject, 
+				VertexDisplace( 
+					mul(unity_ObjectToWorld, v.vertex.xyz ), 
+					v.texcoord, 
+					UNITY_ACCESS_INSTANCED_PROP(Props, _InstanceID),
+					mul(unity_ObjectToWorld, v.normal ) ) );
 			o.color = v.color;
         }
 

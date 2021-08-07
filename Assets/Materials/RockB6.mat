@@ -70,7 +70,7 @@ Material:
     - _InstanceID: 0
     - _Metallic: 0
     - _Mode: 0
-    - _NoisePow: 6.76
+    - _NoisePow: 6.17
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RockAmbient: 0.1
@@ -78,11 +78,11 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TextureAnimation: 0.3
-    - _TextureDetail: 1.38
+    - _TextureDetail: 0.83
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.8915094, g: 0.91754717, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionMux: {r: 0, g: 0, b: 0, a: 1}
     - _InstanceID: {r: 0, g: 0, b: 0, a: 0}
