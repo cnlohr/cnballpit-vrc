@@ -6,6 +6,7 @@ using VRC.Udon.Common.Interfaces;
 
 namespace QvPen.Udon
 {
+	[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class Eraser : UdonSharpBehaviour
     {
         [SerializeField]
@@ -65,6 +66,7 @@ namespace QvPen.Udon
             }
 
             objectSync = (VRCObjectSync)GetComponent(typeof(VRCObjectSync));
+			RequestSerialization();
         }
 
         public override void OnPickup()
@@ -72,6 +74,7 @@ namespace QvPen.Udon
             eraserManager.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(EraserManager.StartUsing));
 
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(OnPickupEvent));
+			RequestSerialization();
         }
 
         public override void OnDrop()
@@ -79,38 +82,45 @@ namespace QvPen.Udon
             eraserManager.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(EraserManager.EndUsing));
 
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(OnDropEvent));
+			RequestSerialization();
         }
 
         public override void OnPickupUseDown()
         {
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(StartErasing));
+			RequestSerialization();
         }
 
         public override void OnPickupUseUp()
         {
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(FinishErasing));
+			RequestSerialization();
         }
 
         public void OnPickupEvent()
         {
             renderer.sharedMaterial = normal;
+			RequestSerialization();
         }
 
         public void OnDropEvent()
         {
             renderer.sharedMaterial = erasing;
+			RequestSerialization();
         }
 
         public void StartErasing()
         {
             isErasing = true;
             renderer.sharedMaterial = erasing;
+			RequestSerialization();
         }
 
         public void FinishErasing()
         {
             isErasing = false;
             renderer.sharedMaterial = normal;
+			RequestSerialization();
         }
 
         private void OnTriggerEnter(Collider other)
@@ -130,6 +140,7 @@ namespace QvPen.Udon
 
                 Destroy(other.transform.parent.gameObject);
             }
+			RequestSerialization();
         }
 
         public bool IsHeld() => pickup.IsHeld;
@@ -140,6 +151,7 @@ namespace QvPen.Udon
 
             if (Networking.LocalPlayer.IsOwner(gameObject))
                 objectSync.Respawn();
+			RequestSerialization();
         }
     }
 }

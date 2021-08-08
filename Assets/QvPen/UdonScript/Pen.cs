@@ -7,6 +7,7 @@ using VRC.Udon.Common.Interfaces;
 
 namespace QvPen.Udon
 {
+	[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class Pen : UdonSharpBehaviour
     {
         [SerializeField]
@@ -193,6 +194,7 @@ namespace QvPen.Udon
             penManager.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PenManager.StartUsing));
 
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(ChangeStateToPenIdle));
+			RequestSerialization();
         }
 
         public override void OnDrop()
@@ -202,6 +204,7 @@ namespace QvPen.Udon
             penManager.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PenManager.EndUsing));
 
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(ChangeStateToPenIdle));
+			RequestSerialization();
         }
 
         public override void OnPickupUseDown()
@@ -239,6 +242,7 @@ namespace QvPen.Udon
                         break;
                 }
             }
+			RequestSerialization();
         }
 
         public override void OnPickupUseUp()
@@ -261,18 +265,21 @@ namespace QvPen.Udon
                     Debug.Log($"Unexpected state : {currentState} at {nameof(OnPickupUseUp)}");
                     break;
             }
+			RequestSerialization();
         }
 
         public void SetUseDoubleClick(bool value)
         {
             useDoubleClick = value;
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(ChangeStateToPenIdle));
+			RequestSerialization();
         }
 
         public void DestroyJustBeforeInk()
         {
             Destroy(justBeforeInk);
             inkNo--;
+			RequestSerialization();
         }
 
         #endregion
@@ -295,6 +302,7 @@ namespace QvPen.Udon
                     break;
             }
             currentState = StatePenIdle;
+			RequestSerialization();
         }
 
         public void ChangeStateToPenUsing()
@@ -315,6 +323,7 @@ namespace QvPen.Udon
                     break;
             }
             currentState = StatePenUsing;
+			RequestSerialization();
         }
 
         public void ChangeStateToEraseIdle()
@@ -333,6 +342,7 @@ namespace QvPen.Udon
                     break;
             }
             currentState = StateEraserIdle;
+			RequestSerialization();
         }
 
         public void ChangeStateToEraseUsing()
@@ -353,6 +363,7 @@ namespace QvPen.Udon
                     break;
             }
             currentState = StateEraserUsing;
+			RequestSerialization();
         }
 
         #endregion
@@ -365,6 +376,7 @@ namespace QvPen.Udon
 
             if (Networking.LocalPlayer.IsOwner(gameObject))
                 objectSync.Respawn();
+			RequestSerialization();
         }
 
         public void Clear()
@@ -373,11 +385,13 @@ namespace QvPen.Udon
                 Destroy(ink.gameObject);
 
             inkNo = 0;
+			RequestSerialization();
         }
 
         private void StartDrawing()
         {
             trailRenderer.gameObject.SetActive(true);
+			RequestSerialization();
         }
 
         private void FinishDrawing()
@@ -398,27 +412,32 @@ namespace QvPen.Udon
 
             trailRenderer.gameObject.SetActive(false);
             trailRenderer.Clear();
+			RequestSerialization();
         }
 
         private void StartErasing()
         {
             eraser.StartErasing();
+			RequestSerialization();
         }
 
         private void FinishErasing()
         {
             eraser.FinishErasing();
+			RequestSerialization();
         }
 
         private void ChangeToPen()
         {
             eraser.FinishErasing();
             eraser.gameObject.SetActive(false);
+			RequestSerialization();
         }
 
         private void ChangeToEraser()
         {
             eraser.gameObject.SetActive(true);
+			RequestSerialization();
         }
 
         public void CreateInkInstance(Vector3[] positions)
@@ -442,6 +461,7 @@ namespace QvPen.Udon
             lineInstance.gameObject.SetActive(true);
 
             justBeforeInk = lineInstance;
+			RequestSerialization();
         }
 
         private void CreateInkCollider(LineRenderer lineRenderer)
@@ -465,6 +485,7 @@ namespace QvPen.Udon
             meshCollider.sharedMesh = mesh;
 
             colliderInstance.SetActive(true);
+			RequestSerialization();
         }
     }
 }

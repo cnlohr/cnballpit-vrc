@@ -78,6 +78,10 @@ public class DayNightControl : UdonSharpBehaviour
 	public override void OnDeserialization()
 	{
 		UpdateLightMode();
+	}
+	
+	public void SnailUpdate()
+	{
 		int master = Networking.IsMaster?1:0;
 		if( iWasMaster != master )
 		{
@@ -88,7 +92,7 @@ public class DayNightControl : UdonSharpBehaviour
 	
 	void Start()
 	{
-		
+		GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>().RegisterSnailUpdate( this );
 		iWasMaster = 5;
 		LastLightMode = -1;
 		if( Networking.IsMaster )

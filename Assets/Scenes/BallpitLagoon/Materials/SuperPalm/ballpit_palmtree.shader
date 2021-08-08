@@ -19,7 +19,8 @@ Shader "SuperPalm/ballpit_palmtree"
 		_FrawnDensity( "Frawn Density", float) = 300
 		_InstanceID ("Instance ID", Vector ) = ( 0, 0, 0 ,0 )
 		_SwayStrength( "Sway Strength", float) = 0.2
-
+		_LeadSeconds( "Lead, seconds", float) = 1.0
+		_SwaySpeed("Sway Speed", float) = 0.5
 	}
     SubShader
     {
@@ -37,6 +38,9 @@ Shader "SuperPalm/ballpit_palmtree"
 
 		float _FrawnDensity;
 		float _SwayStrength;
+		float _LeadSeconds;
+		float _SwaySpeed;
+		
 		float FragmentAlpha( float2 uv, float edginess )
 		{
 		
@@ -62,8 +66,12 @@ Shader "SuperPalm/ballpit_palmtree"
 		{
 			float instance = instanceProps.x;
 			float3 topdisplacement = normalize( 
-				float3( sin( _Time.y*.78 + instance ), 1./_SwayStrength, sin( _Time.y * 1.24 + instance*2.3 ) )
+				float3( sin( _Time.y*.78*_SwaySpeed + instance ), 1./_SwayStrength, sin( _Time.y * 1.24 * _SwaySpeed + instance*2.3 ) )
 					) - float3( 0, 1, 0 );
+			
+			float ampfromdistance = saturate( (length( v - _WorldSpaceCameraPos ) - 2.)/2 );
+			topdisplacement *= ampfromdistance;
+
 			if( uv.y >= 0.499 )
 			{
 				//Top
@@ -75,11 +83,11 @@ Shader "SuperPalm/ballpit_palmtree"
 				v.xyz += (tanoise4( float4( v*.2, instance + _Time.y/6.28 ) )*2 - 1) * fLeafAlongLength * .5;
 
 				float3 topdisplacement_advance = normalize( 
-					float3( sin( (_Time.y+2)*.78 + instance ), 1./_SwayStrength, sin( (_Time.y+2) * 1.24 + instance*2.3 ) )
+					float3( sin( (_Time.y*_SwaySpeed+_LeadSeconds)*.78 + instance ), 1./_SwayStrength, sin( (_Time.y*_SwaySpeed+_LeadSeconds) * 1.24 + instance*2.3 ) )
 						) - float3( 0, 1, 0 );
 				v.xyz += topdisplacement_advance * fLeafAlongLength;
 			}
-			else if( uv.y > 0 )
+			else if( uv.y > 0.001 )
 			{
 				//Nut
 				v.xyz += topdisplacement;

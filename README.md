@@ -162,7 +162,7 @@ Haven't gotten NeoFlight working yet.
 ## 18.0 1:31 AM PT / August 7, 2021
  * Add some rocks
 
-## 19.0 
+## 19.0 9:30 PM ET / August 7, 2021
  * Made screen made out of balls.
  * Smooth edges of various things in map.
  * Updated palms.
@@ -170,6 +170,9 @@ Haven't gotten NeoFlight working yet.
  * Removed Spheres
  * Made frawns sway
  * Made ball pit more prefabbable
+ * Added Ben's blower.
+ * Moved over to new sync prefab.
+
 
 ## Interesting
  * shader_billboardout modes.
