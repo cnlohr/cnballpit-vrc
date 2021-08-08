@@ -135,16 +135,22 @@ Material:
     - _DragDropPos2: {r: -85.4, g: 0.365, b: -23.3, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FanPosition: {r: -4.13, g: -0.002, b: 1.46, a: 0}
-    - _FanPosition0: {r: -4.13, g: -0.002, b: 1.46, a: 0}
-    - _FanPosition1: {r: -9.16, g: 1.59, b: 6.22, a: 0}
-    - _FanPosition2: {r: -9.16, g: 1.59, b: 8.42, a: 0}
+    - _FanPosition0: {r: -4.62, g: -0.002, b: 1.5, a: 0}
+    - _FanPosition1: {r: -9.65, g: 1.59, b: 6.26, a: 0}
+    - _FanPosition2: {r: -9.65, g: 1.59, b: 8.460001, a: 0}
     - _FanRotation: {r: 0, g: 0, b: 0, a: 1}
-    - _FanRotation0: {r: 0, g: 0, b: 0, a: 1}
+    - _FanRotation0: {r: -0, g: -0, b: -0, a: 1}
     - _FanRotation1: {r: 0, g: 0, b: 0, a: 1}
     - _FanRotation2: {r: 0, g: 0, b: 0, a: 1}
-    - _ShroomPos0: {r: -46.73, g: 0.35000002, b: -88.32001, a: 0}
-    - _ShroomPos1: {r: 97.57, g: 0.96000004, b: -0.84000206, a: 0}
-    - _ShroomPos2: {r: 37.3, g: 1.038, b: -78.81, a: 0}
-    - _ShroomPos3: {r: -70.143, g: 0.86399996, b: -24.935001, a: 0}
-    - _ShroomPos4: {r: 42.639, g: 0.98, b: 74.083, a: 0}
-    - _ShroomPos5: {r: -48.32, g: 0.70000005, b: 70.73, a: 0}
+    - _Magnet0: {r: -1000, g: 0, b: 0, a: 1}
+    - _Magnet1: {r: -1000, g: 0, b: 0, a: 1}
+    - _Magnet2: {r: -1000, g: 0, b: 0, a: 1}
+    - _MagnetPos0: {r: -1000, g: 0, b: 0, a: 1}
+    - _MagnetPos1: {r: -1000, g: 0, b: 0, a: 1}
+    - _MagnetPos2: {r: -1000, g: 0, b: 0, a: 1}
+    - _ShroomPos0: {r: -47.22, g: 0.35000002, b: -88.28001, a: 0}
+    - _ShroomPos1: {r: 97.08, g: 0.96000004, b: -0.80000114, a: 0}
+    - _ShroomPos2: {r: 36.809998, g: 1.038, b: -78.77, a: 0}
+    - _ShroomPos3: {r: -70.632996, g: 0.86399996, b: -24.895, a: 0}
+    - _ShroomPos4: {r: 42.149002, g: 0.98, b: 74.123, a: 0}
+    - _ShroomPos5: {r: -48.809998, g: 0.70000005, b: 70.770004, a: 0}

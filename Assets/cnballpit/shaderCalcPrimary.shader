@@ -23,21 +23,21 @@ Shader "cnballpit/shaderCalcPrimary"
 		_GravityValue( "Gravity", float ) = 9.8
 		_TargetFPS ("Target FPS", float ) = 120
 		[ToggleUI] _DontPerformStep( "Don't Perform Step", float ) = 0
-		_FanPosition0( "Fan Position 0", Vector ) = ( 0, 0, 0 )
-		_FanRotation0( "Fan Rotation 0", Vector ) = ( 0, 0, 0, 1 )
-		_FanPosition1( "Fan Position 1", Vector ) = ( 0, 0, 0 )
+		_FanPosition0( "Fan Position 0", Vector ) = ( -1000, 0, 0, 0 )
+		_FanRotation0( "Fan Rotation 0", Vector ) = ( -1000, 0, 0, 1 )
+		_FanPosition1( "Fan Position 1", Vector ) = ( -1000, 0, 0, 0 )
 		_FanRotation1( "Fan Rotation 1", Vector ) = ( -1000, 0, 0, 1 )
-		_FanPosition2( "Fan Position 2", Vector ) = ( -1000, 0, 0 )
+		_FanPosition2( "Fan Position 2", Vector ) = ( -1000, 0, 0, 0 )
 		_FanRotation2( "Fan Rotation 2", Vector ) = ( -1000, 0, 0, 1 )
-		_Magnet0( "Magnet Pos0", Vector ) = ( -1000, 0, 0 )
-		_Magnet1( "Magnet Pos1", Vector ) = ( -1000, 0, 0 )
-		_Magnet2( "Magnet Pos2", Vector ) = ( -1000, 0, 0 )
-		_ShroomPos0( "Shroom Pos0", Vector ) = ( -1000, 0, 0 )
-		_ShroomPos1( "Shroom Pos1", Vector ) = ( -1000, 0, 0 )
-		_ShroomPos2( "Shroom Pos2", Vector ) = ( -1000, 0, 0 )
-		_ShroomPos3( "Shroom Pos3", Vector ) = ( -1000, 0, 0 )
-		_ShroomPos4( "Shroom Pos4", Vector ) = ( -1000, 0, 0 )
-		_ShroomPos5( "Shroom Pos4", Vector ) = ( -1000, 0, 0 )
+		_MagnetPos0( "Magnet Pos0", Vector ) = ( -1000, 0, 0, 0 )
+		_MagnetPos1( "Magnet Pos1", Vector ) = ( -1000, 0, 0, 0 )
+		_MagnetPos2( "Magnet Pos2", Vector ) = ( -1000, 0, 0, 0 )
+		_ShroomPos0( "Shroom Pos0", Vector ) = ( -1000, 0, 0, 0 )
+		_ShroomPos1( "Shroom Pos1", Vector ) = ( -1000, 0, 0, 0 )
+		_ShroomPos2( "Shroom Pos2", Vector ) = ( -1000, 0, 0, 0 )
+		_ShroomPos3( "Shroom Pos3", Vector ) = ( -1000, 0, 0, 0 )
+		_ShroomPos4( "Shroom Pos4", Vector ) = ( -1000, 0, 0, 0 )
+		_ShroomPos5( "Shroom Pos4", Vector ) = ( -1000, 0, 0, 0 )
 	}
 	SubShader
 	{
@@ -103,9 +103,9 @@ Shader "cnballpit/shaderCalcPrimary"
 			float4 _FanRotation1;
 			float3 _FanPosition2;
 			float4 _FanRotation2;
-			float3 _Magnet0;
-			float3 _Magnet1;
-			float3 _Magnet2;
+			float3 _MagnetPos0;
+			float3 _MagnetPos1;
+			float3 _MagnetPos2;
 			float3 _ShroomPos0;
 			float3 _ShroomPos1;
 			float3 _ShroomPos2;			
@@ -482,7 +482,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					float l, intensity;
 					float3 diff;
 					
-					diff = _Magnet0 - Position.xyz;
+					diff = _MagnetPos0 - Position.xyz;
 					l = length( diff );
 					intensity = 5. - l;					
 					if( intensity > 0 )
@@ -492,7 +492,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 
 
-					diff = _Magnet1 - Position.xyz;
+					diff = _MagnetPos1 - Position.xyz;
 					l = length( diff );
 					intensity = 5. - l;					
 					if( intensity > 0 )
@@ -502,7 +502,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					}
 
 
-					diff = _Magnet2 - Position.xyz;
+					diff = _MagnetPos2 - Position.xyz;
 					l = length( diff );
 					intensity = 5. - l;					
 					if( intensity > 0 )

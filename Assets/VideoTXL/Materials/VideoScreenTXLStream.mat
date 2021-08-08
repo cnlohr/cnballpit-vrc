@@ -36,11 +36,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 8400000, guid: e66de5930ba0a5e499bddf45c154ca37, type: 2}
+        m_Texture: {fileID: 2800000, guid: 20ea8c25d5668274cb0e6cadbf680aad, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 8400000, guid: f7dc74b731208124ebdb39d441d8cbd0, type: 2}
+        m_Texture: {fileID: 2800000, guid: 20ea8c25d5668274cb0e6cadbf680aad, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MarginTex:
@@ -83,7 +83,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ResolutionDecimation: 1
+    - _ResolutionDecimation: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 0
     - _SrcBlend: 1

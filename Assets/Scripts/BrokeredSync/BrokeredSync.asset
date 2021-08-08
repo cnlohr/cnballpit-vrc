@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
-  m_Name: ManualIIRSyncObject
+  m_Name: BrokeredSync
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 097a7c42f2ef60e4d8e5f937f385ae82,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 036fd9dc4da94a9478ad616c3db4fdaa,
     type: 2}
   udonAssembly: 
   assemblyError: 
-  sourceCsScript: {fileID: 11500000, guid: 1fa643e1dd09d504eaa4fad5bbb4c449, type: 3}
+  sourceCsScript: {fileID: 11500000, guid: f78acad8d06011a498ef845767bc35be, type: 3}
   behaviourSyncMode: 3
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
