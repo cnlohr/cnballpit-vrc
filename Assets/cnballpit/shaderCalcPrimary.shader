@@ -523,15 +523,13 @@ Shader "cnballpit/shaderCalcPrimary"
 					
 					diff = Position.xyz - _ShroomPos0;
 					l = length( diff );
-					intensity = 2.0 - l;					
+					intensity = 2.25 - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity);
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos0));
-						float b = 8 * acos(diff.y / l);
-						float a = 8 * atan2(diff.x, diff.z);						
-						Velocity.xyz += repelforce * exp(1.-intensity) * normalize( float3(sin(b) * sin(a), cos(b), sin(b) * cos(a)));						
+						Velocity.xyz += repelforce * exp(1.-intensity*intensity) * normalize(cross(Position.xyz, _ShroomPos0));
 					}
 					
 					diff = Position.xyz - _ShroomPos1;
@@ -540,30 +538,32 @@ Shader "cnballpit/shaderCalcPrimary"
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
-						//Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity);
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity);
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos1));
-						float b = 8 * acos(diff.y / l);
-						float a = 8 * atan2(diff.x, diff.z);						
-						Velocity.xyz += repelforce * exp(1.-intensity*intensity) * normalize( float3(sin(b) * sin(a), cos(b), sin(b) * cos(a)));						
+				
 					}
 					
 					diff = Position.xyz - _ShroomPos2;
 					l = length( diff );
-					intensity = 2.0 - l;					
+					intensity = 2.5 - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
-						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity);
+						float b = 9.* asin(diff.y / l);
+						float a = 9.* atan2(diff.x, diff.z);						
+						Velocity.xyz += exp(intensity*intensity) * 0.15 * diff * repelforce + 0.15 * normalize(exp(intensity*intensity) *  float3(sin(b) * sin(a), cos(b), sin(b) * cos(a)));								
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos2));
 					}
 					
 					diff = Position.xyz - _ShroomPos3;
 					l = length( diff );
-					intensity = 2.0 - l;					
+					intensity = 2.25 - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
-						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity);
+						//Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity);
+						Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos3));
+
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos3));
 					}
 					
@@ -574,16 +574,18 @@ Shader "cnballpit/shaderCalcPrimary"
 					{
 						diff = normalize( diff );
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity);
-						Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos4));
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity);
 					}
 					
 					diff = Position.xyz - _ShroomPos5;
 					l = length( diff );
-					intensity = 2.0 - l;					
+					intensity = 2.5 - l;					
 					if( intensity > 0 )
 					{
 						//Velocity.xyz += repelforce * exp(1.-intensity*intensity);
-						Velocity.xyz += repelforce * exp(1.-intensity*intensity) * normalize(cross(Position.xyz, _ShroomPos5));
+						float b = 9.* asin(diff.y / l);
+						float a = 9.* atan2(diff.x, diff.z);						
+						Velocity.xyz += exp(intensity*intensity) * 0.15 * diff * repelforce + 0.15 * normalize(exp(intensity*intensity) *  float3(sin(b) * sin(a), cos(b), sin(b) * cos(a)));	
 					}												
 				}				
 
