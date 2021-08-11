@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ballpit_palmtree_crown
+  m_Name: ballpit_palmtree_static
   m_Shader: {fileID: 4800000, guid: b3c39dbafb73df4468700d74a3da6c64, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -68,6 +68,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.247
     - _GlossyReflections: 1
+    - _LeadSeconds: 1
     - _Metallic: 0
     - _Mode: 0
     - _NoisePow: 1.8
@@ -77,12 +78,15 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TextureAnimation: 1
+    - _SwaySpeed: 0.75
+    - _SwayStrength: 0.18
+    - _TextureAnimation: 0.3
     - _TextureDetail: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _BarkColor: {r: 0.5471698, g: 0.4909535, b: 0.31229973, a: 1}
+    - _BarkColor: {r: 0.5660378, g: 0.53987175, b: 0.4352083, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionMux: {r: 0.29999998, g: 0.29999998, b: 0.29999998, a: 1}
+    - _InstanceID: {r: 0, g: 0, b: 0, a: 0}
