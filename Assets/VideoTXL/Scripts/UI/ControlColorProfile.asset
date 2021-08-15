@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ControlColorProfile
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: f5ded4c497c3eec4fbbe0dd49430e13e,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 5ab750d170a187a46aec9d3428f5a569,
     type: 2}
   udonAssembly: 
   assemblyError: 

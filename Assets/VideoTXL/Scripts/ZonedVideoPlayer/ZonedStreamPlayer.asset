@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ZonedStreamPlayer
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 3d66004dcc261e8429961ea475471047,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: f532a8f7f15994f47a7f4eb1ef51ce10,
     type: 2}
   udonAssembly: 
   assemblyError: 

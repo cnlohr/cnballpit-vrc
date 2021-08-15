@@ -3,6 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using BrokeredUpdates;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class MaterialPropertyInstanceIDIncrementer : UdonSharpBehaviour
@@ -11,7 +12,7 @@ public class MaterialPropertyInstanceIDIncrementer : UdonSharpBehaviour
     {
 		MaterialPropertyBlock block;
 		MeshRenderer mr;
-        int id = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>().GetIncrementingID();
+        int id = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>()._GetIncrementingID();
 		block = new MaterialPropertyBlock();
 		mr = GetComponent<MeshRenderer>();
 		//mr.GetPropertyBlock(block);

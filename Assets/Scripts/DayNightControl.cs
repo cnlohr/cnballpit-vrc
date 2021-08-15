@@ -3,6 +3,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using UdonSharp;
 using VRC.Udon;
+using BrokeredUpdates;
 
 public class DayNightControl : UdonSharpBehaviour
 {
@@ -80,7 +81,7 @@ public class DayNightControl : UdonSharpBehaviour
 		UpdateLightMode();
 	}
 	
-	public void SnailUpdate()
+	public void _SnailUpdate()
 	{
 		int master = Networking.IsMaster?1:0;
 		if( iWasMaster != master )
@@ -92,7 +93,7 @@ public class DayNightControl : UdonSharpBehaviour
 	
 	void Start()
 	{
-		GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>().RegisterSnailUpdate( this );
+		GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>()._RegisterSnailUpdate( this );
 		iWasMaster = 5;
 		LastLightMode = -1;
 		if( Networking.IsMaster )

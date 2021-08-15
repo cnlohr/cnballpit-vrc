@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ShowOrHideButton
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 0b43cc1c9c72d6c4492420d2def050ba,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: b6f4ca7aed21bf4488a3bd9ae339a956,
     type: 2}
   udonAssembly: 
   assemblyError: 
