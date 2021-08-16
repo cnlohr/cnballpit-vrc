@@ -23,6 +23,7 @@ namespace BrokeredUpdates
 		public bool bSnap;
 		public bool bHeld;
 		public bool bDisableColliderOnGrab = true;
+		public float fResetWhenHittingY = -1000;
 		
 		private bool wasMoving;
 		private Collider thisCollider;
@@ -33,6 +34,9 @@ namespace BrokeredUpdates
 		
 		private bool bUseGravityOnRelease;
 		private bool bKinematicOnRelease;
+		
+		private Vector3               resetPosition;
+		private Quaternion            resetQuaternion;
 
 		public void _LogBlockState()
 		{
@@ -43,8 +47,12 @@ namespace BrokeredUpdates
 		{
 			brokeredUpdateManager = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>();
 			brokeredUpdateManager._RegisterSlowObjectSyncUpdate( this );
+			brokeredUpdateManager._RegisterSnailUpdate( this );
 
 			thisCollider = GetComponent<Collider>();
+
+			resetPosition = transform.localPosition;
+			resetQuaternion = transform.localRotation;
 			
 			if( Networking.IsMaster )
 			{
@@ -77,7 +85,28 @@ namespace BrokeredUpdates
 			masterMoving = false;
 			bHeld = false;
 		}
-		
+
+		private void SendUpdateSystemAsMaster()
+		{
+			syncPosition = transform.localPosition;
+			syncRotation = transform.localRotation;
+			RequestSerialization();
+		}
+
+		public void _SnailUpdate()
+		{
+			//SLOWLY, over the course of many seconds get clients to resend
+			//all their objects if they're master.  **THIS SHOULD NOT BE REQUIRED**
+			//but something with photon is just broken.
+			if( !masterMoving )
+			{
+				if( Networking.GetOwner( gameObject ) == Networking.LocalPlayer )
+				{
+					SendUpdateSystemAsMaster();
+				}
+			}
+		}
+
 		public void _SlowObjectSyncUpdate()
 		{
 			// In Udon, when loading, sometimes later joining clients miss OnDeserialization().
@@ -100,9 +129,9 @@ namespace BrokeredUpdates
 						Quaternion.Angle( syncRotation, transform.localRotation) > .1 ) &&
 						syncPosition.magnitude > 0 )
 					{
-						syncPosition = transform.localPosition;
-						syncRotation = transform.localRotation;
-						RequestSerialization();
+						SendUpdateSystemAsMaster();
+						
+						//Also pause object.
 						if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
 						{
 							GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
@@ -241,6 +270,20 @@ namespace BrokeredUpdates
 		
 		public void _BrokeredUpdate()
 		{
+			if( transform.localPosition.y < fResetWhenHittingY )
+			{
+				if( Networking.GetOwner( gameObject ) == Networking.LocalPlayer )
+				{
+					transform.localPosition = resetPosition;
+					transform.localRotation = resetQuaternion;
+					if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
+					{
+						GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
+					}
+					SendUpdateSystemAsMaster();
+				}
+			}
+
 			if( masterMoving )
 			{
 				if( bSnap )
