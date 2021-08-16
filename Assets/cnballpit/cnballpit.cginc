@@ -12,7 +12,7 @@ static const float3 _TopSize = float3( 3, 2, 3 );
 #define _BallpitCameraHeight 20
 #define MAX_BALLS 32768
 #define CAMERA_Y_OFFSET -1
-
+#define REPEL_MODE_NEW false
 
 
 texture2D< float4 > _PositionsIn;

@@ -515,7 +515,7 @@ Shader "cnballpit/shaderCalcPrimary"
 
 				// Disperse from shrooms because having drugs in your balls are bad.
 
-				if( 1 )
+				if( REPEL_MODE_NEW )
 				{
 					const static float repelforce = 0.17;
 					float l, intensity;
@@ -586,6 +586,66 @@ Shader "cnballpit/shaderCalcPrimary"
 						float b = 9.* asin(diff.y / l);
 						float a = 9.* atan2(diff.x, diff.z);						
 						Velocity.xyz += exp(intensity*intensity) * 0.15 * diff * repelforce + 0.15 * normalize(exp(intensity*intensity) *  float3(sin(b) * sin(a), cos(b), sin(b) * cos(a)));	
+					}												
+				}
+				else
+				{
+					const static float repelforce = 0.17;
+					float l, intensity;
+					float3 diff;
+					
+					diff = Position.xyz - _ShroomPos0;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos1;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos2;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos3;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos4;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
+					}
+					
+					diff = Position.xyz - _ShroomPos5;
+					l = length( diff );
+					intensity = 1.5 - l;					
+					if( intensity > 0 )
+					{
+						diff = normalize( diff );
+						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}												
 				}				
 
