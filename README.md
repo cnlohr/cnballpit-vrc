@@ -2,6 +2,22 @@
 
 Finally released!
 
+Right now, I haven't quite got the unity packages able to be exported, but you can clone and use the prefabs.
+
+Credits:
+ * D4rkPl4y3r for all the tech help and the original VRChat ball pit fiend.
+ * Lleallo designed the map.
+ * QvPen
+ * Sacc flight
+ * Bendotcom's SuperPalm
+ * S-ilent's water.
+ * Texel Player
+ * gplord for various assets
+ * Kit's Mushrooms
+ * SCRN for the sky
+ * Error.MDL, TCL, Xiexe, Lyuma and the whole shader discord for the help.
+ * Texelsaur's video player.
+
 ## (How to open)
 
 Process:
