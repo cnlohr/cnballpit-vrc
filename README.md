@@ -1,6 +1,8 @@
 # cnballpit-vrc
 
-## Tools
+Finally released!
+
+## (How to open)
 
 Process:
  * Open Project, BUT NOT SCENE.
@@ -37,14 +39,9 @@ Haven't gotten NeoFlight working yet.
  * Option to draw video on side of balls.
  * Why is AudioLink weird when doing colors.
  * Fix fadeout not writing fadeout tile to depth in depth pass.
- * TODO: Add another 2 stages, and flag on/off
  * Make video player collide with player.
- * TODO: Fix greyed out time of day box.
  * Make better motion's IIR framerate agnostic.
- * Exchange frame/total for udon/frame
  * Smooth out ball colors when in vector motion mode.
- * Add SlowUpdate feature.
- * UNITY_GET_INSTANCE_ID
 
 ## 2.0 Release Notes (Morning of July 6)
  * Make balls look really beautiful, try to use D4rk's thing.
@@ -173,6 +170,12 @@ Haven't gotten NeoFlight working yet.
  * Added Ben's blower.
  * Moved over to new sync prefab.
 
+## 20.0 2:30 AM / August 23, 2021
+ * Released as open source.
+ * Added a lot of rocks.
+ * Tweak shrooms.
+ * Improved static behavior of trees.
+ * Updated brokered sync.
 
 ## Interesting
  * shader_billboardout modes.
