@@ -3,6 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using BrokeredUpdates;
 
 public class cnballpitCalc : UdonSharpBehaviour
 {
@@ -33,10 +34,20 @@ public class cnballpitCalc : UdonSharpBehaviour
 	public Material	  MatComputeA;
 
 	public float _TargetFramerate = 100.0f;
+	
+	[Header("Force Reload for Screenshots In Editor")] [Tooltip("Check and uncheck to force ballpit active.")]
+	public bool _ForceReload;
+	private bool _WasForceReload;
 
 	private float		AccumulatedFrameBoundary;
 
 	void Start()
+	{
+		_DoReload();
+		GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>()._RegisterSlowUpdate( this );
+	}
+	
+	private void _DoReload()
 	{
 		// Just FYI - tested with adding a tag for compute-only.  Only appeared as same speed in-game, or slower.
 		CamCompositeDepth.SetReplacementShader (TestShaderCompositeDepth, "");
@@ -61,8 +72,14 @@ public class cnballpitCalc : UdonSharpBehaviour
 		AccumulatedFrameBoundary = 0;
 	}
 	
-	void Update()
+	public void _SlowUpdate()
 	{
+		if( _ForceReload && !_WasForceReload )
+		{
+			_DoReload();
+		}
+		_WasForceReload = _ForceReload;
+
 		AccumulatedFrameBoundary += _TargetFramerate*Time.deltaTime;
 		int i;
 		i = (AccumulatedFrameBoundary>1)?0:1;

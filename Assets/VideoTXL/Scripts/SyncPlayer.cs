@@ -621,7 +621,7 @@ namespace VideoTXL
                 return accessControl._LocalHasAccess();
 
             VRCPlayerApi player = Networking.LocalPlayer;
-            return player.isMaster || player.isInstanceOwner;
+            return Utilities.IsValid(player) && (player.isMaster || player.isInstanceOwner);
         }
 
         public bool _CanTakeControl()
@@ -630,7 +630,7 @@ namespace VideoTXL
                 return !_syncLocked || accessControl._LocalHasAccess();
 
             VRCPlayerApi player = Networking.LocalPlayer;
-            return player.isMaster || player.isInstanceOwner || !_syncLocked;
+            return Utilities.IsValid(player) && (player.isMaster || player.isInstanceOwner || !_syncLocked);
         }
 
         public bool _TakeControl()

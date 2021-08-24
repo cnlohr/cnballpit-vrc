@@ -5,6 +5,7 @@ using VRC.SDKBase;
 #if UDON
 using UdonSharp;
 using VRC.Udon;
+using BrokeredUpdates;
 
 public class ballpit_stable_control : UdonSharpBehaviour
 {
@@ -58,6 +59,7 @@ public class ballpit_stable_control : UdonSharpBehaviour
 		}
 		qualitymode = 1;
 		Debug.Log( "ballpit stable control " + gravityF + " / " + friction );
+		GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>()._RegisterSlowUpdate( this );
 	}
 	
 	public void AddUpdatable( ballpit_update_property btn )
@@ -87,23 +89,27 @@ public class ballpit_stable_control : UdonSharpBehaviour
 			ballpitRender.SetFloat( "_ExtraPretty", qualitymode );
 			Physics.gravity = new Vector3( 0, -(gravityF*.85f+1.5f), 0 );
 			
-			int i;
-			for( i = 0; i < numupdatebuttons; i++ )
-			{
-				updatebuttons[i].UpdateMaterialWithSelMode();
-			}
-			
 			was_master = Networking.IsMaster;
 			was_qualitymode = qualitymode;
 			was_mode = mode;
 			was_balls_reset = balls_reset;
 			was_gravity_f = gravityF;
 			was_friction = friction;
+
+			int i;
+			for( i = 0; i < numupdatebuttons; i++ )
+			{
+				updatebuttons[i].UpdateMaterialWithSelMode();
+			}
 		}
 	}
 	
-	void Update()
-	{		
+	public void _SlowUpdate()
+	{
+		Debug.Log( "SlowUpdatE") ;
+		//TODO: This should not be needed every frame.
+		ModeUpdate();
+		
 		Transform t;
 
 		if( Utilities.IsValid( Fan0 ) )

@@ -6,6 +6,9 @@ using VRC.SDKBase;
 using UdonSharp;
 using VRC.Udon;
 
+using BrokeredUpdates;
+
+
 public class ballpit_update_property : UdonSharpBehaviour
 {
 	public float SetValueGravity;
@@ -55,11 +58,17 @@ public class ballpit_update_property : UdonSharpBehaviour
 		
 	}
 
+	public void _SnailUpdate()
+	{
+		UpdateMaterialWithSelMode();
+	}
 	void Start()
 	{
 		ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
 		m.AddUpdatable( this );
+		GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>()._RegisterSnailUpdate( this );
 	}
+	
 
 	public override void Interact()
 	{

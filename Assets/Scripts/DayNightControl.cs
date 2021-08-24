@@ -12,6 +12,7 @@ public class DayNightControl : UdonSharpBehaviour
 	public Light DirectionalLight;
 	public Material SkyboxMaterial;
 	public Material SkyboxMaterialNight;
+	public Material SkyboxBlackMaterial;
 	public Material WaterMaterial;
 	public Material BallMaterial;
 	public Camera rprobeRender;
@@ -61,6 +62,9 @@ public class DayNightControl : UdonSharpBehaviour
 					BallMaterial.SetFloat( "_Smoothness", .77f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
 					break;
+				case 3:
+					RenderSettings.skybox = SkyboxBlackMaterial;					
+					break;
 				default:
 					break;
 			}
@@ -89,6 +93,9 @@ public class DayNightControl : UdonSharpBehaviour
 			GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", master );
 			iWasMaster = master;
 		}
+		
+		// In case the variable is changed by other means.
+		UpdateLightMode();
 	}
 	
 	void Start()

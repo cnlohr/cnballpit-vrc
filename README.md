@@ -4,6 +4,8 @@ Finally released!
 
 Right now, I haven't quite got the unity packages able to be exported, but you can clone and use the prefabs.
 
+If you use this ballpit, I would appreciate a call out, but all code that is mine is under the MIT/x11 license.
+
 Credits:
  * D4rkPl4y3r for all the tech help and the original VRChat ball pit fiend.
  * Lleallo designed the map.
@@ -17,6 +19,13 @@ Credits:
  * SCRN for the sky
  * Error.MDL, TCL, Xiexe, Lyuma and the whole shader discord for the help.
  * Texelsaur's video player.
+
+## General Dependencies 
+
+ * Udon Sharp
+ * Brokered Sync (And you MUST have a brokered sync manager in your heirarchy)
+ * AudioLink (not needed in operation but must be included in project)
+ * (Soft) Texel's Video Player
 
 ## (How to open)
 
@@ -192,6 +201,12 @@ Haven't gotten NeoFlight working yet.
  * Tweak shrooms.
  * Improved static behavior of trees.
  * Updated brokered sync.
+
+## 21.0 
+ * Make YEETs exportable.
+ * Switch to Non-HDR camera.
+ * Enable texture atlasing for GUIs.
+ * Rework button / update system to reduce Udon load and make it able to take screenshots.
 
 ## Interesting
  * shader_billboardout modes.
