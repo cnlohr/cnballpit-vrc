@@ -315,8 +315,8 @@
 				* float2(_WaveScrollX, _WaveScrollY);
 			float2 wave2Scroll = _Wave2ScrollSpeed * _Time.y
 				* float2(_Wave2ScrollX, _Wave2ScrollY);
-			float2 waveUVs =  TRANSFORM_TEX(waveBaseUVs, _Wave) + frac(waveScroll);
-			float2 wave2UVs = TRANSFORM_TEX(waveBaseUVs, _Wave2) + frac(wave2Scroll);
+			float2 waveUVs =  TRANSFORM_TEX(waveBaseUVs, _Wave) + glsl_mod(waveScroll,1000);
+			float2 wave2UVs = TRANSFORM_TEX(waveBaseUVs, _Wave2) + glsl_mod(wave2Scroll,1000);
 
 			o.waveUVs = float4(waveUVs, wave2UVs);
 
@@ -346,25 +346,23 @@
 		float4 noisecol( float2 uv )
 		{
 			uv /= 10.;
-			return
-				tanoise2_hq( float2( uv*10. ) ) * 0.1 +
-				tanoise2_hq( float2( uv*30.1 ) ) * 0.1 +
-				tanoise2_hq( float2( uv*90.2 ) ) * 0.1 +
-				tanoise2_hq( float2( uv*320.5 ) ) * 0.1 +
-				tanoise2_hq( float2( uv*641. ) ) * .08 +
-				tanoise2_hq( float2( uv*1282. ) ) * .05;
+			return 0 + 
+				((abs( tanoise2_hq( float2( uv*320.5 )))-.5 )*2 ) * 0.1 +
+				((abs( tanoise2_hq( float2( uv*641.  )))-.5 )*2 ) * .08 +
+				((abs( tanoise2_hq( float2( uv*1282. )))-.5 )*2 ) * .05 + 
+				((abs( tanoise2_hq( float2( uv*1900. )))-.5 )*2 ) * .02;
 		}
 		float3 TzWave1( float2 uv )
 		{
 			float A = noisecol(uv);
 			float B = noisecol(uv+float2(0.001,0));
 			float C = noisecol(uv+float2(0,0.001));
-			return normalize( float3(A - B, A - C, .1));
+			return normalize( float3(A - B, A - C, .35));
 		}
 		
 		float3 TzWave2( float2 uv )
 		{
-			return TzWave1( uv );
+			return TzWave1( uv ) * float3( 1.5, 1.5, 1.0 );
 		}
 
 		void SilentWaterFunction (Input IN, inout SurfaceOutputStandard o)
@@ -385,11 +383,11 @@
 
 			// == Wave normals ==
 			float3 wave1 = 
-				//TzWave1( IN.waveUVs.xy );
-				UnpackScaleNormal(tex2D(_Wave, IN.waveUVs.xy), _WaveStrength);
+				TzWave1( IN.waveUVs.xy*_WaveStrength*.5 );
+				//UnpackScaleNormal(tex2D(_Wave, IN.waveUVs.xy), _WaveStrength);
 			float3 wave2 = 
-				//TzWave2( IN.waveUVs.xy ); 
-				UnpackScaleNormal(tex2D(_Wave2, IN.waveUVs.zw), _Wave2Strength);
+				TzWave2( IN.waveUVs.zw*_Wave2Strength*-.5 ); 
+				//UnpackScaleNormal(tex2D(_Wave2, IN.waveUVs.zw), _Wave2Strength);
 
 			o.Normal = BlendNormalsPD(wave1, wave2);
 

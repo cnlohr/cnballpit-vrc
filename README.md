@@ -202,11 +202,12 @@ Haven't gotten NeoFlight working yet.
  * Improved static behavior of trees.
  * Updated brokered sync.
 
-## 21.0 
+## 21.0 5:30 PM / August 24, 2021
  * Make YEETs exportable.
  * Switch to Non-HDR camera.
  * Enable texture atlasing for GUIs.
  * Rework button / update system to reduce Udon load and make it able to take screenshots.
+ * Make water use tanoise (to avoid repeating, and save file size)
 
 ## Interesting
  * shader_billboardout modes.

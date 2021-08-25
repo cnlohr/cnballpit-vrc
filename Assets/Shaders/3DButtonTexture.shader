@@ -89,11 +89,12 @@ Shader "Custom/3DButtonTexture"
         
         float4 densityat( float3 calcpos )
         {
-            float tim = glsl_mod(_Time.y+_SelMode*10,1000)*_TextureAnimation;
-            
-            float4 col =
-                glsl_mod( abs( tanoise4( float4( calcpos*10., tim ) ) - 0.5 ) * 10., 1. ) * float4( 1., 1., 1., 1. ) +
-				0;
+            float tim = glsl_mod(_Time.y+_SelMode*10,100)*_TextureAnimation;
+
+			float4 col_no_clamp = float4( abs( tanoise4_hq( float4( calcpos*10., tim ) ) - 0.5 ) * 10. ) * float4( 1., 1., 1., 1.);
+            float4 col = glsl_mod(  col_no_clamp, 1. );
+			col = pow(sin( col * 3.1415926 ), 1.2);
+
             return col;
         }
 

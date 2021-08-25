@@ -19,6 +19,8 @@
 //  float2 tanoise3_2d( in float3 x ) //1 Texture Lookup
 //  float4 tanoise2( in float2 x )    //1 Texture Lookup
 //  float4 tanoise2_hq( in float2 x ) //4 Texture Lookup (For when hardware interpreters aren't good enough)
+//  float4 tanoise3_hq( in float3 x ) //8 Texture Lookups
+//  float4 tanoise4_hq( in float4 x ) //16 Texture Lookups
 //
 //  The texture should be the noise texture bound. i.e. add this to properties
 //  Properties {
@@ -293,6 +295,102 @@ float4 tanoise2_hq( in float2 x )
 		lerp( A, B, uvmux.x ),
 		lerp( C, D, uvmux.x ),
 		uvmux.y);
+}
+
+
+float4 tanoise3_hq( in float3 x )
+{
+	float3 c = mul(tanoiseM,x );
+	float3 p = floor(c);
+	float3 f = frac(c);
+
+	// First level smoothing for nice interpolation between levels. This
+	// gets rid of the sharp artifacts that will come from the bilinear
+	// interpolation.
+	f = f * f * ( 3.0 - 2.0 * f );
+
+	// Compute a u,v coordinateback in
+	float2 uv = ( p.xy + p.z*tanoiseZOff ) + f.xy;
+
+	// Uncomment to debug final mnoise matrix.
+	
+	float2 uvfloor = floor((uv))+0.5;
+	float2 uvmux =   uv-uvfloor+0.5;
+	float4 A = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 B = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 C = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 D = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 r = lerp(
+		lerp( A, B, uvmux.x ),
+		lerp( C, D, uvmux.x ),
+		uvmux.y);
+	A = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	B = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	C = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	D = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 g = lerp(
+		lerp( A, B, uvmux.x ),
+		lerp( C, D, uvmux.x ),
+		uvmux.y);
+		
+	return lerp( r, g, f.z );
+}
+
+
+float4 tanoise4_hq( in float4 x )
+{
+	float4 c = mul(tanoiseM,x );
+	float4 p = floor(c);
+	float4 f = frac(c);
+
+	// First level smoothing for nice interpolation between levels. This
+	// gets rid of the sharp artifacts that will come from the bilinear
+	// interpolation.
+	f = f * f * ( 3.0 - 2.0 * f );
+
+	// Compute a u,v coordinateback in
+	float2 uv = ( p.xy + p.z*tanoiseZOff +  p.w*tanoiseWOff ) + f.xy;
+
+	// Uncomment to debug final mnoise matrix.
+	
+	float2 uvfloor = floor((uv))+0.5;
+	float2 uvmux =   uv-uvfloor+0.5;
+	float4 A = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 B = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 C = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 D = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 r = lerp(
+		lerp( A, B, uvmux.x ),
+		lerp( C, D, uvmux.x ),
+		uvmux.y);
+	A = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	B = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	C = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	D = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 g = lerp(
+		lerp( A, B, uvmux.x ),
+		lerp( C, D, uvmux.x ),
+		uvmux.y);
+
+	A = tex2Dlod( _TANoiseTex, float4( (tanoiseWOff+uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	B = tex2Dlod( _TANoiseTex, float4( (tanoiseWOff+uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	C = tex2Dlod( _TANoiseTex, float4( (tanoiseWOff+uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	D = tex2Dlod( _TANoiseTex, float4( (tanoiseWOff+uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 b = lerp(
+		lerp( A, B, uvmux.x ),
+		lerp( C, D, uvmux.x ),
+		uvmux.y);
+		
+	A = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff + tanoiseWOff+uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	B = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff + tanoiseWOff+uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	C = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff + tanoiseWOff+uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	D = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff + tanoiseWOff+uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
+	float4 a = lerp(
+		lerp( A, B, uvmux.x ),
+		lerp( C, D, uvmux.x ),
+		uvmux.y);
+		
+	return lerp(lerp( r, g, f.z ), lerp(b, a, f.z), f.w);
 }
 
 
