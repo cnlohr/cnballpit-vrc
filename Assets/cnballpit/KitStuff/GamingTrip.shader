@@ -874,15 +874,16 @@ float3 BlendOverlay (float3 base, float3 blend) // overlay
 				float2 screenUV = (vop.screenPosition.xy * perspectiveDivide) * 0.5f + 0.5f;
 
 				// No idea
-				screenUV.y = 1 - screenUV.y; 
+				if (_ProjectionParams.x < 0)
+					screenUV.y = 1 - screenUV.y; 
 				// VR stereo support
 				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
 				
                 float w = 1.f / vop.vertex.w;
                 float4 rd = vop.rd * w;
                 float2 dgpos = vop.dgpos.xy * w;
-                #ifndef UNITY_UV_STARTS_AT_TOP
-                    dgpos.y = 1.0-dgpos.y;
+                #ifdef UNITY_UV_STARTS_AT_TOP
+                    dgpos.y = lerp(dgpos.y, 1 - dgpos.y, step(0, _ProjectionParams.x));
                 #endif
                 //Mostly adapted from d4rkplayer 
                 float vdx = ddx_fine(vop.dgpos.x);   

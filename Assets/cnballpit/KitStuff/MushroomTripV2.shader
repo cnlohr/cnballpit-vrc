@@ -1076,15 +1076,17 @@ half3 BetterSH9 (half4 normal) {
 				float2 screenUV = (vop.screenPosition.xy * perspectiveDivide) * 0.5f + 0.5f;
 
 				// No idea
-				screenUV.y = 1 - screenUV.y; 
+				if (_ProjectionParams.x < 0)
+					screenUV.y = 1 - screenUV.y; 
+
 				// VR stereo support
 				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
 				
                 float w = 1.f / vop.vertex.w;
                 float4 rd = vop.rd * w;
                 float2 dgpos = vop.dgpos.xy * w;
-                #ifndef UNITY_UV_STARTS_AT_TOP
-                    dgpos.y = 1.0-dgpos.y;
+                #ifdef UNITY_UV_STARTS_AT_TOP
+                    dgpos.y = lerp(dgpos.y, 1 - dgpos.y, step(0, _ProjectionParams.x));
                 #endif
 
 
@@ -1176,10 +1178,12 @@ half3 BetterSH9 (half4 normal) {
 				float pd2 = 1.0f / dgpos2.w;
 				float4 dgpos3 = dgpos2 * pd2;
 				dgpos3.xy *= 0.5f + 0.5f;
-                #ifndef UNITY_UV_STARTS_AT_TOP
-                    dgpos3.y = 1.0-dgpos2.y;
-                #endif	
-
+                // #ifndef UNITY_UV_STARTS_AT_TOP
+                //     dgpos3.y = 1.0-dgpos2.y;
+                // #endif	
+                #ifdef UNITY_UV_STARTS_AT_TOP
+                    dgpos3.y = lerp(dgpos3.y, 1 - dgpos3.y, step(0, _ProjectionParams.x));
+                #endif
                 float3 rd2 = (wpos3 - _WorldSpaceCameraPos);
 
                 Offset[0] = dgpos3.xy + (float2( 0, 0) / _ScreenParams.xy) ;

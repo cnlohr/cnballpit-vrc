@@ -82,8 +82,8 @@
 				// Calculate our UV within the screen (for reading depth buffer)
 				float2 screenUV = (i.screenPosition.xy * perspectiveDivide) * 0.5f + 0.5f;
 
-				// No idea
-				screenUV.y = 1 - screenUV.y; 
+				if (_ProjectionParams.x < 0)
+					screenUV.y = 1 - screenUV.y; 
 
 				// VR stereo support
 				screenUV = UnityStereoTransformScreenSpaceTex(screenUV);

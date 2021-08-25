@@ -144,8 +144,8 @@
                 float w = 1.f / vop.vertex.w;
                 float4 rd = vop.rd * w;
                 float2 dgpos = vop.dgpos.xy * w;
-                #ifndef UNITY_UV_STARTS_AT_TOP
-                    dgpos.y = 1.0-dgpos.y;
+                #ifdef UNITY_UV_STARTS_AT_TOP
+                    dgpos.y = lerp(dgpos.y, 1 - dgpos.y, step(0, _ProjectionParams.x));
                 #endif
                 //Gaussian Blur
                 const int mSize = 11;
