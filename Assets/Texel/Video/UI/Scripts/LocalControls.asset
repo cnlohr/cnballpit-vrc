@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: LocalControls
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 1e7be9b541a449445aea0eb5ea02e3d6,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: baf42e9adeb4a1a4790faf6a9b3b1bf7,
     type: 2}
   udonAssembly: 
   assemblyError: 

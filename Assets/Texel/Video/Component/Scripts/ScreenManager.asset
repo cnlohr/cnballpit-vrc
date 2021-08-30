@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ScreenManager
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 4e425c77e4c2b4f48aeb1a4123bee548,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 0152677302945b44b80fed5cb798c878,
     type: 2}
   udonAssembly: 
   assemblyError: 
