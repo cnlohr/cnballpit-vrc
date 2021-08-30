@@ -209,6 +209,13 @@ Haven't gotten NeoFlight working yet.
  * Rework button / update system to reduce Udon load and make it able to take screenshots.
  * Make water use tanoise (to avoid repeating, and save file size)
 
+## 22.0 
+ * Reworked some systems to make it easier to clone/work on.
+ * Updated Texel Video Player
+ * TODO: Combine all rock textures into one material, that can be instanced unique.
+ * Fix Audio Radius
+ 
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.

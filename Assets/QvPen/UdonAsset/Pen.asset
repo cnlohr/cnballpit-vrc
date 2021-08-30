@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: Pen
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 989d76b4eebee774c9ae2fc84a9a536a,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 88780b6fcc5ebf0438de9dc5a7e717f3,
     type: 2}
   udonAssembly: 
   assemblyError: 
