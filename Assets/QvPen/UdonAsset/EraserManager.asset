@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: EraserManager
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 83d7aad202cf33b4693da5f5ec3fe2da,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 6ea1e55ea7aa91046bb5fe80b5994ed9,
     type: 2}
   udonAssembly: 
   assemblyError: 
