@@ -1,6 +1,8 @@
 # cnballpit-vrc
 
 Finally released!  See it here: https://vrchat.com/home/world/wrld_e54f6579-ceb1-4805-a967-e869e586b8d2
+![image](https://user-images.githubusercontent.com/2748168/132091713-4275ff51-a611-4760-acb2-0c1464eb8b6d.png)
+
 
 Right now, I haven't quite got the unity packages able to be exported, but you can clone and use the prefabs.
 
