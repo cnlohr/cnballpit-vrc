@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: AudioDebugPanel
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: fbcb116141448c245b5cb3ed714e308b,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: ed4892141da0c8945b05a41f83ba5f9d,
     type: 2}
   udonAssembly: 
   assemblyError: 

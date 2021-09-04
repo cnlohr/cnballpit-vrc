@@ -6,7 +6,6 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
-using Texel;
 
 #if UNITY_EDITOR && !COMPILER_UDONSHARP
 using UnityEditor;

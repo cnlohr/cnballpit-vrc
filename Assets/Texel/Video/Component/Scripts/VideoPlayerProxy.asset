@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: VideoPlayerProxy
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 6c2802def1da0bd4881920769f3031b6,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 918d91f4b21c7ea42a49a36e0d651e81,
     type: 2}
   udonAssembly: 
   assemblyError: 

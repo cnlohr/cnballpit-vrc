@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: BasicSyncPlayer
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: d91b33b9740c1564e9c5ac7779545e4e,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: e15b4a95de8cccb4c82ae4b57bae01da,
     type: 2}
   udonAssembly: 
   assemblyError: 
