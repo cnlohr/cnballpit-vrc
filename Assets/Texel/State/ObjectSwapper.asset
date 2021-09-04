@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ObjectSwapper
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: a8b6889bf8d7d704d9529f92cf1a4c88,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 082810eae5d5d6d46b195ed8d495bc57,
     type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 8d8a51fe23ae0974380e409fb0e47108, type: 3}
-  behaviourSyncMode: 3
+  behaviourSyncMode: 1
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
   hasInteractEvent: 0

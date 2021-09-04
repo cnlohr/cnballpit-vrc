@@ -25,6 +25,8 @@ namespace Texel
         public string playerEnterEvent;
         [Tooltip("The event message to send on a player trigger leave event.  Leave blank to do nothing.")]
         public string playerLeaveEvent;
+        [Tooltip("Variable in remote script to write player reference before calling an enter or leave event.  Leave blank to not set player reference.")]
+        public string playerTargetVariable;
         [Tooltip("How multiple colliders should be treated for triggering an enter event")]
         public int enterSetMode = SET_NONE;
         [Tooltip("How multiple colliders should be treated for triggering a leave event")]
@@ -36,6 +38,7 @@ namespace Texel
 
         bool hasPlayerEnter = false;
         bool hasPlayerLeave = false;
+        bool hasTargetVariable = false;
 
         int colliderCount = 0;
         int triggerActiveCount = 0;
@@ -50,6 +53,7 @@ namespace Texel
         {
             hasPlayerEnter = Utilities.IsValid(targetBehavior) && playerEnterEvent != null && playerEnterEvent != "";
             hasPlayerLeave = Utilities.IsValid(targetBehavior) && playerLeaveEvent != null && playerLeaveEvent != "";
+            hasTargetVariable = Utilities.IsValid(targetBehavior) && playerTargetVariable != null && playerTargetVariable != "";
 
             Collider[] colliders = GetComponents<Collider>();
             foreach (var col in colliders)
@@ -66,29 +70,32 @@ namespace Texel
 
             if (!localPlayerOnly)
             {
-                _SendPlayerEnter();
+                _SendPlayerEnter(player);
                 return;
             }
             if (!player.isLocal)
                 return;
 
             if (enterSetMode == SET_NONE)
-                _SendPlayerEnter();
+                _SendPlayerEnter(player);
 
             if (enterSetMode == SET_UNION && triggerActiveCount == 0)
-                _SendPlayerEnter();
+                _SendPlayerEnter(player);
 
             triggerActiveCount += 1;
             if (enterSetMode == SET_INTERSECT && triggerActiveCount == colliderCount)
             {
                 if (!latchUntilLeave || !enterLatched)
-                    _SendPlayerEnter();
+                    _SendPlayerEnter(player);
                 enterLatched = true;
             }
         }
 
-        void _SendPlayerEnter()
+        void _SendPlayerEnter(VRCPlayerApi player)
         {
+            if (hasTargetVariable)
+                targetBehavior.SetProgramVariable(playerTargetVariable, player);
+
             targetBehavior.SendCustomEvent(playerEnterEvent);
             leaveLatched = false;
         }
@@ -100,29 +107,32 @@ namespace Texel
 
             if (!localPlayerOnly)
             {
-                _SendPlayerLeave();
+                _SendPlayerLeave(player);
                 return;
             }
             if (!player.isLocal)
                 return;
 
             if (leaveSetMode == SET_NONE)
-                _SendPlayerLeave();
+                _SendPlayerLeave(player);
 
             if (leaveSetMode == SET_INTERSECT && triggerActiveCount == colliderCount)
             {
                 if (!latchUntilEnter || !leaveLatched)
-                    _SendPlayerLeave();
+                    _SendPlayerLeave(player);
                 leaveLatched = true;
             }
 
             triggerActiveCount -= 1;
             if (leaveSetMode == SET_UNION && triggerActiveCount == 0)
-                _SendPlayerLeave();
+                _SendPlayerLeave(player);
         }
 
-        void _SendPlayerLeave()
+        void _SendPlayerLeave(VRCPlayerApi player)
         {
+            if (hasTargetVariable)
+                targetBehavior.SetProgramVariable(playerTargetVariable, player);
+
             targetBehavior.SendCustomEvent(playerLeaveEvent);
             enterLatched = false;
         }
@@ -146,6 +156,7 @@ namespace Texel
         SerializedProperty localPlayerOnlyProperty;
         SerializedProperty playerEnterEventProperty;
         SerializedProperty playerLeaveEventProperty;
+        SerializedProperty playerTargetVariableProperty;
         SerializedProperty enterSetModeProperty;
         SerializedProperty leaveSetModeProperty;
         SerializedProperty latchUntilEnterProperty;
@@ -157,6 +168,7 @@ namespace Texel
             localPlayerOnlyProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.localPlayerOnly));
             playerEnterEventProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.playerEnterEvent));
             playerLeaveEventProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.playerLeaveEvent));
+            playerTargetVariableProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.playerTargetVariable));
             enterSetModeProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.enterSetMode));
             leaveSetModeProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.leaveSetMode));
             latchUntilEnterProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.latchUntilEnter));
@@ -192,6 +204,8 @@ namespace Texel
                     EditorGUILayout.PropertyField(latchUntilEnterProperty);
             }
             EditorGUILayout.PropertyField(playerLeaveEventProperty);
+
+            EditorGUILayout.PropertyField(playerTargetVariableProperty);
 
             if (serializedObject.hasModifiedProperties)
                 serializedObject.ApplyModifiedProperties();
