@@ -68,11 +68,11 @@ public class DayNightControl : UdonSharpBehaviour
 				default:
 					break;
 			}
-
+#if !UNITY_EDITOR
 			rprobeRender.enabled = true;
 			rprobeRender.RenderToCubemap( ctcopy, 63 );
 			rprobeRender.enabled = false;
-			
+#endif
 			GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", LightMode+1 );
 		}
 		else
