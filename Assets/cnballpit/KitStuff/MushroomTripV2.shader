@@ -27,7 +27,7 @@
 			#include "Lighting.cginc"
 			#include "UnityPBSLighting.cginc"
 			#include "AutoLight.cginc"            
-            #include "Assets/AudioLink/Shaders/AudioLink.cginc"
+            #include "/Assets/AudioLink/Shaders/AudioLink.cginc"
 
             #define glsl_mod(x,y) (((x)-(y)*floor((x)/(y))))
 

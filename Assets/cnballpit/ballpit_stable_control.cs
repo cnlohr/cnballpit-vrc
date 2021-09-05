@@ -105,7 +105,6 @@ public class ballpit_stable_control : UdonSharpBehaviour
 	
 	public void _SlowUpdate()
 	{
-		Debug.Log( "SlowUpdatE") ;
 		//TODO: This should not be needed every frame.
 		ModeUpdate();
 		
