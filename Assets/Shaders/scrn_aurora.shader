@@ -34,8 +34,8 @@ Shader "SCRN_Aurora MatCap"
 
             float4 _NoiseTex_ST;
 
-			#include "/Assets/Shaders/tanoise/tanoise.cginc"
-			#include "/Assets/AudioLink/Shaders/AudioLink.cginc"
+			#include "Assets/Shaders/tanoise/tanoise.cginc"
+			#include "Assets/AudioLink/Shaders/AudioLink.cginc"
 
 			#define TexInRes fixed2(2,2)
 			fixed4 loadValue(fixed2 re)

@@ -228,17 +228,21 @@
                 const float sigma = 22;
                 float rz = 0.;
                 float fz = 0.;
+				[unroll]
                 for (int j = 0;j<=kSize; ++j)
                 {
                     kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
                 }
+				[unroll]
                 for (int k = 0;k<mSize; ++k)
                 {
                     rz += kernel[k];
                 }
 
+				[unroll]
                 for (int i = -kSize;i<=kSize; ++i)
                 {
+					[unroll]
                     for (int j = -kSize;j<=kSize; ++j)
                     {
                         fz += kernel[kSize+j] * kernel[kSize+i] * SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, dgpos.xy + float2(float(i),float(j)) * fwidth(dgpos));
@@ -252,7 +256,7 @@
                 float colX = ((float3)0.);
                 float colY = ((float3)0.);
                 float coeffX, coeffY;
-                for (int i = -_BorderRadius;i<=_BorderRadius; i++)
+                for (i = -_BorderRadius;i<=_BorderRadius; i++)
                 {
                     for (int j = -_BorderRadius;j<=_BorderRadius; j++)
                     {

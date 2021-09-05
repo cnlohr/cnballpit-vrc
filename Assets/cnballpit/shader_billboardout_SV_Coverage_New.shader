@@ -29,8 +29,8 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 
 			CGINCLUDE
 			
-			#include "/Assets/cnballpit/hashwithoutsine/hashwithoutsine.cginc"
-			#include "/Assets/AudioLink/Shaders/AudioLink.cginc"
+			#include "Assets/cnballpit/hashwithoutsine/hashwithoutsine.cginc"
+			#include "Assets/AudioLink/Shaders/AudioLink.cginc"
 			#pragma vertex vert
 			#pragma geometry geo
 
