@@ -36,20 +36,20 @@ Process:
 
 Import the following, in order:
  * World SDK
+
+Re-Open Unity.
  * Udon Sharp
- * AudioLink v0.2.5
  * CyanEmu
  
 Extra:
- * Kaj Unity Shaders (I'm trying to learn to use this)
- * VRWorldToolkit (V1.11.2 current) (This seemed to fix me once when I could no longer export)
- 
-Close Project (and don't save).
+ * VRWorldToolkit (V1.11.2 current)
+ * You may need to
 
- * Open Project
+Run the Udon refresh scripts operation.
+
+Reopen Unity
  * Open Scene
 
-Haven't gotten NeoFlight working yet.
 
 ## TODO
  * Figure out why shadow edge length too short.
