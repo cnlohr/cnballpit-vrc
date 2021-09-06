@@ -112,7 +112,7 @@ SpriteAtlas:
   - BackwardIcon
   - UnlockedIcon
   - PauseIcon
-  - tex_PlusBoxIcon
+  - PlusBoxIcon
   - SettingsIcon
   - ForwardIcon
   m_Tag: UIAtlas

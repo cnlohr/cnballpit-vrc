@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ZoneTrigger
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 676bcac6eb825f345b1621520fb6638a,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 8485763a9b703164880e05b245ed86e7,
     type: 2}
   udonAssembly: 
   assemblyError: 
