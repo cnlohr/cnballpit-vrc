@@ -27,7 +27,15 @@ public class ballpit_update_property : UdonSharpBehaviour
 	{
 		int mode = 1;
 		ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
-		int enabled = (!MasterOnly || Networking.IsMaster)?1:0;
+		bool ACLOk = !MasterOnly || Networking.IsMaster;
+		if( !ACLOk )
+		{
+			if( Utilities.IsValid( ACL ) )
+			{
+				if( ACL._LocalHasAccess() )
+					ACLOk = true;
+			}
+		}
 		
 		if( UpdateEnable )
 		{
@@ -38,24 +46,21 @@ public class ballpit_update_property : UdonSharpBehaviour
 		if( UpdateDrawMode )
 		{
 			mode = m.mode + 1;
-			enabled = 1;
 		}
 		
 		if( AdjustQualityMode )
 		{
 			mode = m.qualitymode;
-			enabled = 1;
 		}
 
 		if( UpdateGravityFriction )
 		{
 			if( m.gravityF != SetValueGravity )
 				mode = 0;
-			enabled = 1;
 		}
 
 		GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", mode );
-		GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", enabled );
+		GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", ACLOk?1:0 );
 		
 	}
 

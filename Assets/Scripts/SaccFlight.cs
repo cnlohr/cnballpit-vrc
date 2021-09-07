@@ -13,6 +13,9 @@ public class SaccFlight : UdonSharpBehaviour
     private float controllertriggerR;
     private float controllertriggerL;
     private bool InVR = false;
+	public Texel.AccessControl ACL;
+
+
     private void Start()
     {
         localPlayer = Networking.LocalPlayer;
@@ -60,8 +63,17 @@ public class SaccFlight : UdonSharpBehaviour
 	// Update is called once per frame
 	void Interact()
 	{
-		if( Networking.IsMaster ) // ??? Why is this second one always 1? || Networking.IsInstanceOwner )
+		bool master = Networking.IsMaster;
+		
+		if( Utilities.IsValid( ACL ) )
 		{
+			if( ACL._LocalHasAccess() )
+				master = true;
+		}
+		
+		if( master )
+		{
+			Networking.SetOwner( Networking.LocalPlayer, gameObject );
 			EnableFlight = !EnableFlight;
 			RequestSerialization();
 			GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", EnableFlight?1:0 );

@@ -122,8 +122,17 @@ public class DayNightControl : UdonSharpBehaviour
 	// Update is called once per frame
 	void Interact()
 	{
-		if( Networking.IsMaster ) // ??? Why is this second one always 1? || Networking.IsInstanceOwner )
+		bool master = Networking.IsMaster;
+		
+		if( Utilities.IsValid( ACL ) )
 		{
+			if( ACL._LocalHasAccess() )
+				master = true;
+		}
+
+		if( master )
+		{
+			Networking.SetOwner( Networking.LocalPlayer, gameObject );
 			LightMode = ( LightMode + 1 ) % NumLightModes;
 			RequestSerialization();
 		}

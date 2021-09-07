@@ -219,9 +219,12 @@ Reopen Unity
  * Tweaked song in track list.
  * Make world smaller by making skybox only update in game not editor.
 
-## 23.0 
+## 23.0 2:41 AM / September 7, 2021
  * Add food
- * Added ACL to video player
+ * Added ACL to video player and rest of scene
+ * Update brokered sync.
+ * Added mushroom hut.
+ * Fix labels.
 
 ## Interesting
  * shader_billboardout modes.
