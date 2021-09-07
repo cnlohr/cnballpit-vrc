@@ -24,6 +24,8 @@ namespace BrokeredUpdates
 		public bool bHeld;
 		public bool bDisableColliderOnGrab = true;
 		public float fResetWhenHittingY = -1000;
+		public float UpdateEveryPeriod = 0.05f;
+		public float Snappyness = 0.001f;
 		
 		private bool wasMoving;
 		private Collider thisCollider;
@@ -307,8 +309,8 @@ namespace BrokeredUpdates
 				}
 				fDeltaMasterSendUpdateTime += Time.deltaTime;
 				
-				// Don't send location more than 20 FPS.
-				if( fDeltaMasterSendUpdateTime > 0.05f )
+				// Don't send location more than configurable FPS.
+				if( fDeltaMasterSendUpdateTime > UpdateEveryPeriod )
 				{
 					_SendMasterMove();
 					fDeltaMasterSendUpdateTime = 0.0f;
@@ -328,7 +330,7 @@ namespace BrokeredUpdates
 						GetComponent<MeshRenderer>().material.SetVector( "_Color", col );
 					}
 
-					float iir = Mathf.Pow( 0.001f, Time.deltaTime );
+					float iir = Mathf.Pow( Snappyness, Time.deltaTime );
 					float inviir = 1.0f - iir;
 					transform.localPosition = transform.localPosition * iir + syncPosition * inviir;
 					transform.localRotation = Quaternion.Slerp( transform.localRotation, syncRotation, inviir ); 

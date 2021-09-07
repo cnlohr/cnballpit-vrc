@@ -21,6 +21,7 @@ public class ballpit_update_property : UdonSharpBehaviour
 	public bool  AdjustQualityMode;
 	public int   NumQualityModes;
 	public GameObject MainControl;
+	public Texel.AccessControl ACL;
 
 	public void UpdateMaterialWithSelMode()
 	{
@@ -72,7 +73,16 @@ public class ballpit_update_property : UdonSharpBehaviour
 
 	public override void Interact()
 	{
-		if( !MasterOnly || Networking.IsMaster ) //|| Networking.IsInstanceOwner )
+		bool ACLOk = !MasterOnly || Networking.IsMaster;
+		if( !ACLOk )
+		{
+			if( Utilities.IsValid( ACL ) )
+			{
+				if( ACL._LocalHasAccess() )
+					ACLOk = true;
+			}
+		}
+		if( ACLOk ) 
 		{
 			ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
 			Networking.SetOwner( Networking.LocalPlayer, MainControl );

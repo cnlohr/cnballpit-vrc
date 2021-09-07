@@ -17,6 +17,7 @@ public class DayNightControl : UdonSharpBehaviour
 	public Material BallMaterial;
 	public Camera rprobeRender;
 	public Cubemap       ctcopy;
+	public Texel.AccessControl ACL;
 	
 	private int iWasMaster = 0;
 	private int LastLightMode = -1;
@@ -88,6 +89,13 @@ public class DayNightControl : UdonSharpBehaviour
 	public void _SnailUpdate()
 	{
 		int master = Networking.IsMaster?1:0;
+		
+		if( Utilities.IsValid( ACL ) )
+		{
+			if( ACL._LocalHasAccess() )
+				master = 1;
+		}
+		
 		if( iWasMaster != master )
 		{
 			GetComponent<MeshRenderer> ().material.SetFloat( "_UserEnable", master );
