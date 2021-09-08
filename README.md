@@ -225,6 +225,10 @@ Reopen Unity
  * Update brokered sync.
  * Added mushroom hut.
  * Fix labels.
+ 
+## 24.0 11:10 PM / September 9, 2021
+ * Added some animals
+ * Used phos' shroom
 
 ## Interesting
  * shader_billboardout modes.
