@@ -97,21 +97,21 @@ Shader "cnballpit/shaderCalcPrimary"
 			texture2D<float2> _DepthMapComposite;
 			float4 _DepthMapComposite_TexelSize;
 			float _TargetFPS;
-			float3 _FanPosition0;
+			float4 _FanPosition0;
 			float4 _FanRotation0;
-			float3 _FanPosition1;
+			float4 _FanPosition1;
 			float4 _FanRotation1;
-			float3 _FanPosition2;
+			float4 _FanPosition2;
 			float4 _FanRotation2;
-			float3 _MagnetPos0;
-			float3 _MagnetPos1;
-			float3 _MagnetPos2;
-			float3 _ShroomPos0;
-			float3 _ShroomPos1;
-			float3 _ShroomPos2;			
-			float3 _ShroomPos3;			
-			float3 _ShroomPos4;			
-			float3 _ShroomPos5;
+			float4 _MagnetPos0;
+			float4 _MagnetPos1;
+			float4 _MagnetPos2;
+			float4 _ShroomPos0;
+			float4 _ShroomPos1;
+			float4 _ShroomPos2;			
+			float4 _ShroomPos3;			
+			float4 _ShroomPos4;			
+			float4 _ShroomPos5;
 
 			float SDFBoundary( float3 position )
 			{
@@ -444,7 +444,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Fountain / Fan
 				if( 1 )
 				{
-					float3 FanPos[3];
+					float4 FanPos[3];
 					float4 FanQuat[3];
 					FanPos[0] = _FanPosition0;
 					FanPos[1] = _FanPosition1;
@@ -456,7 +456,8 @@ Shader "cnballpit/shaderCalcPrimary"
 					int i;
 					for( i = 0; i < 3; i++ )
 					{
-						float3 FanStart = FanPos[i];
+						float3 FanStart = FanPos[i].xyz;
+						float FanStrength = FanPos[i].w;
 						float3 FanVector = normalize( qtransform( q_inverse( FanQuat[i] ), float3( 0, 1, 0 ) ) );
 						
 						float3 RelPos = Position - FanStart;
@@ -465,7 +466,7 @@ Shader "cnballpit/shaderCalcPrimary"
 						float d = length( RelPos - lpos ); //Distance from fan vector
 						
 						float dforce = 1 - d;
-						dforce = min( dforce, (5-t)*.5 ); //Force contribution at extent
+						dforce = min( dforce, (5*FanStrength-t)*.5 ); //Force contribution at extent
 						dforce = min( t + 1, dforce ); //Force contribution behind.
 						
 						
@@ -483,32 +484,32 @@ Shader "cnballpit/shaderCalcPrimary"
 					float l, intensity;
 					float3 diff;
 					
-					diff = _MagnetPos0 - Position.xyz;
+					diff = _MagnetPos0.xyz - Position.xyz;
 					l = length( diff );
-					intensity = 5. - l;					
+					intensity = 5.*sqrt(_MagnetPos0.w) - l;					
 					if( intensity > 0 )
 					{
-						diff = normalize( diff );
+						diff = normalize( diff )*.8;
 						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
 					}
 
 
-					diff = _MagnetPos1 - Position.xyz;
+					diff = _MagnetPos1.xyz - Position.xyz;
 					l = length( diff );
-					intensity = 5. - l;					
+					intensity = 5.*sqrt(_MagnetPos1.w) - l;					
 					if( intensity > 0 )
 					{
-						diff = normalize( diff );
+						diff = normalize( diff )*.8;
 						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
 					}
 
 
-					diff = _MagnetPos2 - Position.xyz;
+					diff = _MagnetPos2.xyz - Position.xyz;
 					l = length( diff );
-					intensity = 5. - l;					
+					intensity = 5.*sqrt(_MagnetPos2.w) - l;					
 					if( intensity > 0 )
 					{
-						diff = normalize( diff );
+						diff = normalize( diff )*.8;
 						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
 					}
 
@@ -522,9 +523,9 @@ Shader "cnballpit/shaderCalcPrimary"
 					float l, intensity;
 					float3 diff;
 					
-					diff = Position.xyz - _ShroomPos0;
+					diff = Position.xyz - _ShroomPos0.xyz;
 					l = length( diff );
-					intensity = 2.25 - l;					
+					intensity = 2.25*_ShroomPos0.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
@@ -533,9 +534,9 @@ Shader "cnballpit/shaderCalcPrimary"
 						Velocity.xyz += repelforce * exp(1.-intensity*intensity) * normalize(cross(Position.xyz, _ShroomPos0));
 					}
 					
-					diff = Position.xyz - _ShroomPos1;
+					diff = Position.xyz - _ShroomPos1.xyz;
 					l = length( diff );
-					intensity = 2.0 - l;					
+					intensity = 2.0*_ShroomPos1.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
@@ -544,9 +545,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				
 					}
 					
-					diff = Position.xyz - _ShroomPos2;
+					diff = Position.xyz - _ShroomPos2.xyz;
 					l = length( diff );
-					intensity = 2.5 - l;					
+					intensity = 2.5*_ShroomPos2.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
@@ -556,9 +557,9 @@ Shader "cnballpit/shaderCalcPrimary"
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos2));
 					}
 					
-					diff = Position.xyz - _ShroomPos3;
+					diff = Position.xyz - _ShroomPos3.xyz;
 					l = length( diff );
-					intensity = 2.25 - l;					
+					intensity = 2.25*_ShroomPos3.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
@@ -568,9 +569,9 @@ Shader "cnballpit/shaderCalcPrimary"
 						//Velocity.xyz += diff * repelforce * exp(1.-intensity) * normalize(cross(Position.xyz, _ShroomPos3));
 					}
 					
-					diff = Position.xyz - _ShroomPos4;
+					diff = Position.xyz - _ShroomPos4.xyz;
 					l = length( diff );
-					intensity = 2.0 - l;					
+					intensity = 2.0*_ShroomPos4.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
@@ -578,9 +579,9 @@ Shader "cnballpit/shaderCalcPrimary"
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity);
 					}
 					
-					diff = Position.xyz - _ShroomPos5;
+					diff = Position.xyz - _ShroomPos5.xyz;
 					l = length( diff );
-					intensity = 2.5 - l;					
+					intensity = 2.5*_ShroomPos5.w - l;					
 					if( intensity > 0 )
 					{
 						//Velocity.xyz += repelforce * exp(1.-intensity*intensity);
@@ -595,54 +596,54 @@ Shader "cnballpit/shaderCalcPrimary"
 					float l, intensity;
 					float3 diff;
 					
-					diff = Position.xyz - _ShroomPos0;
+					diff = Position.xyz - _ShroomPos0.xyz;
 					l = length( diff );
-					intensity = 1.5 - l;					
+					intensity = 1.5*_ShroomPos0.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}
 					
-					diff = Position.xyz - _ShroomPos1;
+					diff = Position.xyz - _ShroomPos1.xyz;
 					l = length( diff );
-					intensity = 1.5 - l;					
+					intensity = 1.5*_ShroomPos1.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}
 					
-					diff = Position.xyz - _ShroomPos2;
+					diff = Position.xyz - _ShroomPos2.xyz;
 					l = length( diff );
-					intensity = 1.5 - l;					
+					intensity = 1.5*_ShroomPos2.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}
 					
-					diff = Position.xyz - _ShroomPos3;
+					diff = Position.xyz - _ShroomPos3.xyz;
 					l = length( diff );
-					intensity = 1.5 - l;					
+					intensity = 1.5*_ShroomPos3.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}
 					
-					diff = Position.xyz - _ShroomPos4;
+					diff = Position.xyz - _ShroomPos4.xyz;
 					l = length( diff );
-					intensity = 1.5 - l;					
+					intensity = 1.5*_ShroomPos4.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}
 					
-					diff = Position.xyz - _ShroomPos5;
+					diff = Position.xyz - _ShroomPos5.xyz;
 					l = length( diff );
-					intensity = 1.5 - l;					
+					intensity = 1.5*_ShroomPos5.w - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff );
