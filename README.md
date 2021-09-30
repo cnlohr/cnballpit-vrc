@@ -230,9 +230,14 @@ Reopen Unity
  * Added some animals
  * Used phos' shroom
 
+## 25.0 
+ * Make some things resizable
+ * Update TXL's video player
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.
+ * Try caching brokered sync on start.
 
  
 ```glsl

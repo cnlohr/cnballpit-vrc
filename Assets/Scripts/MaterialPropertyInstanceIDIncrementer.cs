@@ -8,11 +8,13 @@ using BrokeredUpdates;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class MaterialPropertyInstanceIDIncrementer : UdonSharpBehaviour
 {
+	public BrokeredUpdateManager brokeredUpdateManager;
+
     void Start()
     {
 		MaterialPropertyBlock block;
 		MeshRenderer mr;
-        int id = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>()._GetIncrementingID();
+        int id = brokeredUpdateManager.GetComponent<BrokeredUpdateManager>()._GetIncrementingID();
 		block = new MaterialPropertyBlock();
 		mr = GetComponent<MeshRenderer>();
 		//mr.GetPropertyBlock(block);

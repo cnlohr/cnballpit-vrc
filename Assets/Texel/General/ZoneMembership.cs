@@ -31,7 +31,7 @@ namespace Texel
             _RemovePlayer(playerEventArg);
         }
 
-        void _AddPlayer(VRCPlayerApi player)
+        public void _AddPlayer(VRCPlayerApi player)
         {
             if (!Utilities.IsValid(player))
                 return;
@@ -53,7 +53,7 @@ namespace Texel
             players[maxIndex] = id;
         }
 
-        void _RemovePlayer(VRCPlayerApi player)
+        public void _RemovePlayer(VRCPlayerApi player)
         {
             if (!Utilities.IsValid(player))
                 return;

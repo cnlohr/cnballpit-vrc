@@ -17,6 +17,8 @@ namespace Texel
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class CompoundZoneTrigger : UdonSharpBehaviour
     {
+        [Tooltip("If enabled, specify event handlers at edit time.  Handlers can still be registered at runtime.")]
+        public bool configureEvents = false;
         [Tooltip("The Udon Behavior to send messages to on enter and leave events")]
         public UdonBehaviour targetBehavior;
         [Tooltip("Whether colliders should only recognize the local player")]
@@ -36,14 +38,21 @@ namespace Texel
         [Tooltip("After sending a leave event, do not send another until enter has been triggered")]
         public bool latchUntilEnter;
 
-        bool hasPlayerEnter = false;
-        bool hasPlayerLeave = false;
-        bool hasTargetVariable = false;
+        int handlerCount = 0;
 
-        int colliderCount = 0;
+        [NonSerialized]
+        public int colliderCount = 0;
+
         int triggerActiveCount = 0;
         bool enterLatched;
         bool leaveLatched;
+
+        Collider[] colliders;
+
+        Component[] targetBehaviors;
+        string[] playerEnterEvents;
+        string[] playerLeaveEvents;
+        string[] playerTargetVariables;
 
         public const int SET_NONE = 0;
         public const int SET_UNION = 1;
@@ -51,11 +60,72 @@ namespace Texel
 
         void Start()
         {
-            hasPlayerEnter = Utilities.IsValid(targetBehavior) && playerEnterEvent != null && playerEnterEvent != "";
-            hasPlayerLeave = Utilities.IsValid(targetBehavior) && playerLeaveEvent != null && playerLeaveEvent != "";
-            hasTargetVariable = Utilities.IsValid(targetBehavior) && playerTargetVariable != null && playerTargetVariable != "";
+            if (configureEvents)
+                _Register(targetBehavior, playerEnterEvent, playerLeaveEvent, playerTargetVariable);
 
-            Collider[] colliders = GetComponents<Collider>();
+            if (colliderCount == 0)
+                _InitColliders();
+        }
+
+        public void _Register(UdonBehaviour target, string enterEvent, string leaveEvent, string targetVariable)
+        {
+            if (!Utilities.IsValid(target))
+                return;
+
+            if (!Utilities.IsValid(targetBehaviors))
+            {
+                targetBehaviors = new Component[0];
+                playerEnterEvents = new string[0];
+                playerLeaveEvents = new string[0];
+                playerTargetVariables = new string[0];
+            }
+
+            if (enterEvent == "")
+                enterEvent = null;
+            if (leaveEvent == "")
+                leaveEvent = null;
+            if (targetVariable == "")
+                targetVariable = null;
+
+            // For shortcut case
+            if (handlerCount == 0)
+            {
+                targetBehavior = target;
+                playerEnterEvent = enterEvent;
+                playerLeaveEvent = leaveEvent;
+                playerTargetVariable = targetVariable;
+            }
+
+            int count = targetBehaviors.Length + 1;
+            Component[] newTargetBehaviors = new Component[count];
+            string[] newEnterEvents = new string[count];
+            string[] newLeaveEvents = new string[count];
+            string[] newVariables = new string[count];
+
+            for (int i = 0; i < targetBehaviors.Length; i++)
+            {
+                newTargetBehaviors[i] = targetBehaviors[i];
+                newEnterEvents[i] = playerEnterEvents[i];
+                newLeaveEvents[i] = playerLeaveEvents[i];
+                newVariables[i] = playerTargetVariables[i];
+            }
+
+            newTargetBehaviors[count - 1] = target;
+            newEnterEvents[count - 1] = enterEvent;
+            newLeaveEvents[count - 1] = leaveEvent;
+            newVariables[count - 1] = targetVariable;
+
+            targetBehaviors = newTargetBehaviors;
+            playerEnterEvents = newEnterEvents;
+            playerLeaveEvents = newLeaveEvents;
+            playerTargetVariables = newVariables;
+
+            handlerCount += 1;
+        }
+
+        void _InitColliders()
+        {
+            colliders = GetComponents<Collider>();
             foreach (var col in colliders)
             {
                 if (Utilities.IsValid(col) && col.enabled)
@@ -63,11 +133,20 @@ namespace Texel
             }
         }
 
+        public void _PlayerTriggerReset()
+        {
+            triggerActiveCount = 0;
+            enterLatched = false;
+            leaveLatched = false;
+        }
+
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
-            if (!hasPlayerEnter)
-                return;
+            _PlayerTriggerEnter(player);
+        }
 
+        public void _PlayerTriggerEnter(VRCPlayerApi player)
+        {
             if (!localPlayerOnly)
             {
                 _SendPlayerEnter(player);
@@ -91,20 +170,40 @@ namespace Texel
             }
         }
 
+        void _SendPlayerEvent(VRCPlayerApi player, UdonBehaviour target, string eventName, string varName)
+        {
+            if (eventName == null)
+                return;
+
+            if (varName != null)
+                target.SetProgramVariable(varName, player);
+
+            target.SendCustomEvent(eventName);
+        }
+
         void _SendPlayerEnter(VRCPlayerApi player)
         {
-            if (hasTargetVariable)
-                targetBehavior.SetProgramVariable(playerTargetVariable, player);
+            if (handlerCount == 1)
+                _SendPlayerEvent(player, targetBehavior, playerEnterEvent, playerTargetVariable);
+            else
+            {
+                for (int i = 0; i < handlerCount; i++)
+                {
+                    UdonBehaviour target = (UdonBehaviour)targetBehaviors[i];
+                    _SendPlayerEvent(player, target, playerEnterEvents[i], playerTargetVariables[i]);
+                }
+            }
 
-            targetBehavior.SendCustomEvent(playerEnterEvent);
             leaveLatched = false;
         }
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
         {
-            if (!hasPlayerEnter)
-                return;
+            _PlayerTriggerExit(player);
+        }
 
+        public void _PlayerTriggerExit(VRCPlayerApi player)
+        {
             if (!localPlayerOnly)
             {
                 _SendPlayerLeave(player);
@@ -130,11 +229,31 @@ namespace Texel
 
         void _SendPlayerLeave(VRCPlayerApi player)
         {
-            if (hasTargetVariable)
-                targetBehavior.SetProgramVariable(playerTargetVariable, player);
+            if (handlerCount == 1)
+                _SendPlayerEvent(player, targetBehavior, playerLeaveEvent, playerTargetVariable);
+            else
+            {
+                for (int i = 0; i < handlerCount; i++)
+                {
+                    UdonBehaviour target = (UdonBehaviour)targetBehaviors[i];
+                    _SendPlayerEvent(player, target, playerLeaveEvents[i], playerTargetVariables[i]);
+                }
+            }
 
-            targetBehavior.SendCustomEvent(playerLeaveEvent);
             enterLatched = false;
+        }
+
+        public bool _LocalPlayerInZone()
+        {
+            if (!localPlayerOnly)
+                return false;
+
+            if (enterSetMode == SET_UNION)
+                return triggerActiveCount > 0;
+            if (enterSetMode == SET_INTERSECT)
+                return triggerActiveCount == colliderCount || (latchUntilLeave && enterLatched);
+
+            return false;
         }
 
         public void _LogEnter()
@@ -152,6 +271,7 @@ namespace Texel
     [CustomEditor(typeof(CompoundZoneTrigger))]
     internal class ZoneTriggerInspector : Editor
     {
+        SerializedProperty configureEventsProperty;
         SerializedProperty targetBehaviorProperty;
         SerializedProperty localPlayerOnlyProperty;
         SerializedProperty playerEnterEventProperty;
@@ -164,6 +284,7 @@ namespace Texel
 
         private void OnEnable()
         {
+            configureEventsProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.configureEvents));
             targetBehaviorProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.targetBehavior));
             localPlayerOnlyProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.localPlayerOnly));
             playerEnterEventProperty = serializedObject.FindProperty(nameof(CompoundZoneTrigger.playerEnterEvent));
@@ -180,7 +301,9 @@ namespace Texel
             if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target))
                 return;
 
-            EditorGUILayout.PropertyField(targetBehaviorProperty);
+            EditorGUILayout.PropertyField(configureEventsProperty);
+            if (configureEventsProperty.boolValue)
+                EditorGUILayout.PropertyField(targetBehaviorProperty);
             EditorGUILayout.PropertyField(localPlayerOnlyProperty);
 
             EditorGUILayout.Space();
@@ -192,7 +315,8 @@ namespace Texel
                 if (enterSetModeProperty.intValue == CompoundZoneTrigger.SET_INTERSECT)
                     EditorGUILayout.PropertyField(latchUntilLeaveProperty);
             }
-            EditorGUILayout.PropertyField(playerEnterEventProperty);
+            if (configureEventsProperty.boolValue)
+                EditorGUILayout.PropertyField(playerEnterEventProperty);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Leave Trigger", EditorStyles.boldLabel);
@@ -200,12 +324,14 @@ namespace Texel
             {
                 GUIContent leaveDesc = new GUIContent(leaveSetModeProperty.displayName, "How multiple colliders should be treated for triggering an leave event");
                 leaveSetModeProperty.intValue = EditorGUILayout.Popup(leaveDesc, leaveSetModeProperty.intValue, new string[] { "Independent", "Union", "Intersection" });
-                if (leaveSetModeProperty.intValue == CompoundZoneTrigger.SET_INTERSECT)
+                if (leaveSetModeProperty.intValue == CompoundZoneTrigger.SET_UNION)
                     EditorGUILayout.PropertyField(latchUntilEnterProperty);
             }
-            EditorGUILayout.PropertyField(playerLeaveEventProperty);
+            if (configureEventsProperty.boolValue)
+                EditorGUILayout.PropertyField(playerLeaveEventProperty);
 
-            EditorGUILayout.PropertyField(playerTargetVariableProperty);
+            if (configureEventsProperty.boolValue)
+                EditorGUILayout.PropertyField(playerTargetVariableProperty);
 
             if (serializedObject.hasModifiedProperties)
                 serializedObject.ApplyModifiedProperties();

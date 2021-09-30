@@ -29,7 +29,7 @@ namespace BrokeredUpdates
 		
 		private bool wasMoving;
 		private Collider thisCollider;
-		private BrokeredUpdateManager brokeredUpdateManager;
+		public BrokeredUpdateManager brokeredUpdateManager;
 		private bool masterMoving;
 		private bool firstUpdateSlave;
 		private float fDeltaMasterSendUpdateTime;
@@ -47,7 +47,8 @@ namespace BrokeredUpdates
 		
 		void Start()
 		{
-			brokeredUpdateManager = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>();
+			if( !Utilities.IsValid( brokeredUpdateManager ) )
+				brokeredUpdateManager = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>();
 			brokeredUpdateManager._RegisterSlowObjectSyncUpdate( this );
 			brokeredUpdateManager._RegisterSnailUpdate( this );
 

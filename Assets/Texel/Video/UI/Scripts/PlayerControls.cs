@@ -20,7 +20,6 @@ namespace Texel
     {
         public SyncPlayer videoPlayer;
         public AudioManager audioManager;
-        public Playlist playlist;
         //public ControlColorProfile colorProfile;
 
         public VRCUrlInputField urlInput;
@@ -45,6 +44,8 @@ namespace Texel
         public Image nextIcon;
         public Image prevIcon;
         public Image playlistIcon;
+        public Image masterIcon;
+        public Image whitelistIcon;
 
         public GameObject muteToggleOn;
         public GameObject muteToggleOff;
@@ -58,6 +59,7 @@ namespace Texel
         public Text urlText;
         public Text placeholderText;
         public Text modeText;
+        public Text queuedText;
 
         public Text playlistText;
 
@@ -68,6 +70,8 @@ namespace Texel
         public Text videoOwnerText;
         public InputField currentVideoInput;
         public InputField lastVideoInput;
+        public Text currentVideoText;
+        public Text lastVideoText;
 
         VideoPlayerProxy dataProxy;
 
@@ -85,6 +89,8 @@ namespace Texel
         const short VIDEO_SOURCE_AVPRO = 1;
         const short VIDEO_SOURCE_UNITY = 2;
 
+        Playlist playlist;
+
         bool infoPanelOpen = false;
 
         string statusOverride = null;
@@ -100,22 +106,46 @@ namespace Texel
             infoIcon.color = normalColor;
             _DisableAllVideoControls();
 
-            if (Utilities.IsValid(audioManager))
-                audioManager._RegisterControls(gameObject);
-            if (Utilities.IsValid(videoPlayer) && Utilities.IsValid(videoPlayer.dataProxy)) {
-                dataProxy = videoPlayer.dataProxy;
-                dataProxy._RegisterEventHandler(gameObject, "_VideoStateUpdate");
-                dataProxy._RegisterEventHandler(gameObject, "_VideoLockUpdate");
-                dataProxy._RegisterEventHandler(gameObject, "_VideoTrackingUpdate");
-                dataProxy._RegisterEventHandler(gameObject, "_VideoInfoUpdate");
-                dataProxy._RegisterEventHandler(gameObject, "_VideoPlaylistUpdate");
+            queuedText.text = "";
+            playlistText.text = "";
 
-                unlockedIcon.color = normalColor;
+            if (Utilities.IsValid(audioManager))
+                audioManager._RegisterControls(this);
+
+            if (Utilities.IsValid(videoPlayer))
+            {
+                if (Utilities.IsValid(videoPlayer.playlist))
+                    playlist = videoPlayer.playlist;
+
+                if (Utilities.IsValid(videoPlayer.dataProxy))
+                {
+                    dataProxy = videoPlayer.dataProxy;
+                    dataProxy._RegisterEventHandler(this, "_VideoStateUpdate");
+                    dataProxy._RegisterEventHandler(this, "_VideoLockUpdate");
+                    dataProxy._RegisterEventHandler(this, "_VideoTrackingUpdate");
+                    dataProxy._RegisterEventHandler(this, "_VideoInfoUpdate");
+                    dataProxy._RegisterEventHandler(this, "_VideoPlaylistUpdate");
+
+                    unlockedIcon.color = normalColor;
+                }
+            }
+
+            bool questCheck = Utilities.IsValid(videoPlayer.questCheckObject) && videoPlayer.questCheckObject.activeInHierarchy;
+            if (questCheck)
+            {
+                currentVideoText.enabled = true;
+                lastVideoText.enabled = true;
+            }
+            else
+            {
+                currentVideoInput.enabled = true;
+                lastVideoInput.enabled = true;
             }
 
 #if !UNITY_EDITOR
             instanceMaster = Networking.GetOwner(gameObject).displayName;
             _FindOwners();
+            SendCustomEventDelayedFrames("_RefreshPlayerAccessIcon", 1);
 #endif
         }
 
@@ -297,7 +327,7 @@ namespace Texel
                 return;
 
             if (videoPlayer._CanTakeControl())
-                videoPlayer._ChangeUrl(videoPlayer.lastUrl);
+                videoPlayer._PlayPlaylistUrl();
             else
                 _SetStatusOverride(MakeOwnerMessage(), 3);
         }
@@ -380,7 +410,8 @@ namespace Texel
             if (!Utilities.IsValid(videoPlayer))
                 return;
 
-            if (!videoPlayer._CanTakeControl()) {
+            if (!videoPlayer._CanTakeControl())
+            {
                 _SetStatusOverride(MakeOwnerMessage(), 3);
                 return;
             }
@@ -399,7 +430,7 @@ namespace Texel
 
             if (Utilities.IsValid(audioManager))
                 audioManager._SetMasterMute(!audioManager.masterMute);
-                //audioManager._ToggleMute();
+            //audioManager._ToggleMute();
         }
 
         public void _ToggleAudio2D()
@@ -418,7 +449,7 @@ namespace Texel
 
             if (Utilities.IsValid(audioManager) && Utilities.IsValid(volumeSlider))
                 audioManager._SetMasterVolume(volumeSlider.value);
-                //audioManager._ApplyVolume(volumeSlider.value);
+            //audioManager._ApplyVolume(volumeSlider.value);
         }
 
         public void _HandlePlaylist()
@@ -426,7 +457,7 @@ namespace Texel
             if (!Utilities.IsValid(playlist) || !Utilities.IsValid(videoPlayer))
                 return;
 
-            if (playlist.playlistEnabled)
+            if (!playlist.playlistEnabled)
                 return;
 
             playlist._SetEnabled(true);
@@ -517,24 +548,37 @@ namespace Texel
             bool canControl = videoPlayer._CanTakeControl();
             bool enableControl = !videoPlayer.locked || canControl;
 
-            string currentUrl = videoPlayer.currentUrl.Get();
-            string lastUrl = videoPlayer.lastUrl.Get();
+            string currentUrl = dataProxy.currentUrl.Get();
+            string lastUrl = dataProxy.lastUrl.Get();
 
             playCurrentIcon.color = (enableControl && currentUrl != "") ? normalColor : disabledColor;
             playLastIcon.color = (enableControl && lastUrl != "") ? normalColor : disabledColor;
 
+            bool questCheck = Utilities.IsValid(videoPlayer.questCheckObject) && videoPlayer.questCheckObject.activeInHierarchy;
+            if (questCheck)
+            {
+                currentVideoText.text = currentUrl;
+                lastVideoText.text = lastUrl;
+            }
+            else
+            {
+                currentVideoInput.text = currentUrl;
+                lastVideoInput.text = lastUrl;
+            }
+
             instanceOwnerText.text = instanceOwner;
             masterText.text = instanceMaster;
             // videoOwnerText.text = videoPlayer.videoOwner;
-            currentVideoInput.text = currentUrl;
-            lastVideoInput.text = lastUrl;
+
+            string queuedUrl = dataProxy.queuedUrl.Get();
+            queuedText.text = (queuedUrl != "") ? "QUEUED" : "";
 
             VRCPlayerApi owner = Networking.GetOwner(videoPlayer.gameObject);
             if (Utilities.IsValid(owner) && owner.IsValid())
                 playerOwnerText.text = owner.displayName;
             else
                 playerOwnerText.text = "";
-            
+
         }
 
         public void _UpdatePlaylistInfo()
@@ -550,8 +594,7 @@ namespace Texel
                 prevIcon.color = (enableControl && playlist.playlistEnabled && playlist._HasPrevTrack()) ? normalColor : disabledColor;
                 playlistIcon.color = enableControl ? normalColor : disabledColor;
 
-                string curIndex = playlist.playlistEnabled ? (playlist.currentIndex + 1).ToString() : "--";
-                playlistText.text = $"{curIndex} / {playlist.trackCount}";
+                playlistText.text = playlist.playlistEnabled ? $"TRACK: {playlist.currentIndex + 1} / {playlist.trackCount}" : "";
             }
             else
             {
@@ -762,6 +805,8 @@ namespace Texel
                 instanceMaster = owner.displayName;
             else
                 instanceMaster = "";
+
+            _RefreshPlayerAccessIcon();
         }
 
         void UpdateToggleVisual()
@@ -780,6 +825,30 @@ namespace Texel
                 }
             }
         }
+
+        public void _RefreshPlayerAccessIcon()
+        {
+            masterIcon.enabled = false;
+            whitelistIcon.enabled = false;
+
+            if (!Utilities.IsValid(videoPlayer.accessControl))
+            {
+                masterIcon.enabled = videoPlayer._IsAdmin();
+                return;
+            }
+
+            VRCPlayerApi player = Networking.LocalPlayer;
+            if (!Utilities.IsValid(player))
+                return;
+
+            AccessControl acl = videoPlayer.accessControl;
+            if (acl.allowInstanceOwner && player.isInstanceOwner)
+                masterIcon.enabled = true;
+            else if (acl.allowMaster && player.isMaster)
+                masterIcon.enabled = true;
+            else if (acl.allowWhitelist && acl._LocalWhitelisted())
+                whitelistIcon.enabled = true;
+        }
     }
 
 #if UNITY_EDITOR && !COMPILER_UDONSHARP
@@ -790,7 +859,6 @@ namespace Texel
 
         SerializedProperty videoPlayerProperty;
         SerializedProperty volumeControllerProperty;
-        SerializedProperty playlistProperty;
         //SerializedProperty colorProfileProperty;
 
         SerializedProperty urlInputProperty;
@@ -815,6 +883,8 @@ namespace Texel
         SerializedProperty nextIconProperty;
         SerializedProperty prevIconProperty;
         SerializedProperty playlistIconProperty;
+        SerializedProperty masterIconProperty;
+        SerializedProperty whitelistIconProperty;
 
         SerializedProperty muteToggleOnProperty;
         SerializedProperty muteToggleOffProperty;
@@ -828,6 +898,7 @@ namespace Texel
         SerializedProperty urlTextProperty;
         SerializedProperty placeholderTextProperty;
         SerializedProperty modeTextProperty;
+        SerializedProperty queuedTextProperty;
 
         SerializedProperty playlistTextProperty;
 
@@ -838,12 +909,13 @@ namespace Texel
         SerializedProperty videoOwnerTextProperty;
         SerializedProperty currentVideoInputProperty;
         SerializedProperty lastVideoInputProperty;
+        SerializedProperty currentVideoTextProperty;
+        SerializedProperty lastVideoTextProperty;
 
         private void OnEnable()
         {
             videoPlayerProperty = serializedObject.FindProperty(nameof(PlayerControls.videoPlayer));
             volumeControllerProperty = serializedObject.FindProperty(nameof(PlayerControls.audioManager));
-            playlistProperty = serializedObject.FindProperty(nameof(PlayerControls.playlist));
             //colorProfileProperty = serializedObject.FindProperty(nameof(PlayerControls.colorProfile));
 
             urlInputProperty = serializedObject.FindProperty(nameof(PlayerControls.urlInput));
@@ -868,6 +940,8 @@ namespace Texel
             nextIconProperty = serializedObject.FindProperty(nameof(PlayerControls.nextIcon));
             prevIconProperty = serializedObject.FindProperty(nameof(PlayerControls.prevIcon));
             playlistIconProperty = serializedObject.FindProperty(nameof(PlayerControls.playlistIcon));
+            masterIconProperty = serializedObject.FindProperty(nameof(PlayerControls.masterIcon));
+            whitelistIconProperty = serializedObject.FindProperty(nameof(PlayerControls.whitelistIcon));
 
             muteToggleOnProperty = serializedObject.FindProperty(nameof(PlayerControls.muteToggleOn));
             muteToggleOffProperty = serializedObject.FindProperty(nameof(PlayerControls.muteToggleOff));
@@ -881,6 +955,7 @@ namespace Texel
             progressSliderProperty = serializedObject.FindProperty(nameof(PlayerControls.progressSlider));
             syncSliderProperty = serializedObject.FindProperty(nameof(PlayerControls.syncSlider));
             modeTextProperty = serializedObject.FindProperty(nameof(PlayerControls.modeText));
+            queuedTextProperty = serializedObject.FindProperty(nameof(PlayerControls.queuedText));
 
             playlistTextProperty = serializedObject.FindProperty(nameof(PlayerControls.playlistText));
 
@@ -891,6 +966,8 @@ namespace Texel
             videoOwnerTextProperty = serializedObject.FindProperty(nameof(PlayerControls.videoOwnerText));
             currentVideoInputProperty = serializedObject.FindProperty(nameof(PlayerControls.currentVideoInput));
             lastVideoInputProperty = serializedObject.FindProperty(nameof(PlayerControls.lastVideoInput));
+            currentVideoTextProperty = serializedObject.FindProperty(nameof(PlayerControls.currentVideoText));
+            lastVideoTextProperty = serializedObject.FindProperty(nameof(PlayerControls.lastVideoText));
         }
 
         public override void OnInspectorGUI()
@@ -900,7 +977,6 @@ namespace Texel
 
             EditorGUILayout.PropertyField(videoPlayerProperty);
             EditorGUILayout.PropertyField(volumeControllerProperty);
-            EditorGUILayout.PropertyField(playlistProperty);
             EditorGUILayout.Space();
             //EditorGUILayout.PropertyField(colorProfileProperty);
             //EditorGUILayout.Space();
@@ -930,6 +1006,8 @@ namespace Texel
                 EditorGUILayout.PropertyField(nextIconProperty);
                 EditorGUILayout.PropertyField(prevIconProperty);
                 EditorGUILayout.PropertyField(playlistIconProperty);
+                EditorGUILayout.PropertyField(masterIconProperty);
+                EditorGUILayout.PropertyField(whitelistIconProperty);
                 EditorGUILayout.PropertyField(muteToggleOnProperty);
                 EditorGUILayout.PropertyField(muteToggleOffProperty);
                 EditorGUILayout.PropertyField(audio2DToggleOnProperty);
@@ -941,6 +1019,7 @@ namespace Texel
                 EditorGUILayout.PropertyField(urlTextProperty);
                 EditorGUILayout.PropertyField(placeholderTextProperty);
                 EditorGUILayout.PropertyField(modeTextProperty);
+                EditorGUILayout.PropertyField(queuedTextProperty);
                 EditorGUILayout.PropertyField(playlistTextProperty);
                 EditorGUILayout.PropertyField(infoPanelProperty);
                 EditorGUILayout.PropertyField(instanceOwnerTextProperty);
@@ -949,6 +1028,8 @@ namespace Texel
                 EditorGUILayout.PropertyField(videoOwnerTextProperty);
                 EditorGUILayout.PropertyField(currentVideoInputProperty);
                 EditorGUILayout.PropertyField(lastVideoInputProperty);
+                EditorGUILayout.PropertyField(currentVideoTextProperty);
+                EditorGUILayout.PropertyField(lastVideoTextProperty);
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.Space();
