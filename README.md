@@ -230,7 +230,7 @@ Reopen Unity
  * Added some animals
  * Used phos' shroom
 
-## 25.0 
+## 25.0 10:10 PM / September 29, 2021
  * Make some things resizable
  * Update TXL's video player
 
