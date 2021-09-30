@@ -164,7 +164,7 @@ Shader "Custom/GenericInstancedRockTexture"
 			float3 calcpos = IN.objPos.xyz * _TextureDetail;
 			
 			//Pretend different instances are different places in space.
-			calcpos.y += IN.extra.y*10;
+			calcpos.y += IN.extra.y;
 			float4 col = densityat( calcpos, _TextureAnimation );
 			c *= pow( col.xxxx, _NoisePow) + _RockAmbient;
 			

@@ -234,6 +234,10 @@ Reopen Unity
  * Make some things resizable
  * Update TXL's video player
 
+## 26.0 2:11 AM / September 30, 2021
+ * Fixed rock striations.
+ * Switched to Mochie water.
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.
