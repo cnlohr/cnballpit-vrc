@@ -14,6 +14,10 @@ public class MaterialPropertyInstanceIDIncrementer : UdonSharpBehaviour
     {
 		MaterialPropertyBlock block;
 		MeshRenderer mr;
+
+		if( !Utilities.IsValid( brokeredUpdateManager ) )
+				brokeredUpdateManager = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>();
+
         int id = brokeredUpdateManager.GetComponent<BrokeredUpdateManager>()._GetIncrementingID();
 		block = new MaterialPropertyBlock();
 		mr = GetComponent<MeshRenderer>();
