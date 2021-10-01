@@ -67,6 +67,7 @@ namespace BrokeredUpdates
 		
 		void MasterUpdateScale()
 		{
+			if( !bHeld ) return;
 			float porportion = _GetThrottle() / throttleAtGrab;
 			float newscale = scaleAtGrab * porportion;
 			if( newscale < _SizeLimitMin ) newscale = _SizeLimitMin;

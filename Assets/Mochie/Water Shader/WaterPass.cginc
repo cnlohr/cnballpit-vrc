@@ -52,14 +52,24 @@ float4 frag(v2f i, bool isFrontFace: SV_IsFrontFace) : SV_Target {
 	detailNormal0 = normalize(detailNormal0 + detailNormal1);
 	normalMap = BlendNormals(normalMap0, detailNormal0);
 	
+	float4 uvgrab = i.uvGrab;
+
 	float2 uvOffset = normalMap.xy * _DistortionStrength;
-	float proj = (i.uvGrab.w + 0.00001);
-	float2 screenUV = i.uvGrab.xy / proj;
+	float proj = (uvgrab.w + 0.00001);
+	float2 screenUV = uvgrab.xy / proj;
 	float2 uvFoamOffset = normalMap.xy * _FoamDistortionStrength * 0.1;
 	
-	float2 baseUV = i.uvGrab.xy/proj;
+	float2 baseUV = uvgrab.xy/proj;
 	float4 baseCol = _Color;
 	float4 col = _Color;
+	
+#ifndef UNITY_UV_STARTS_AT_TOP
+	if (_ProjectionParams.x < 0)
+	{
+		screenUV.y = 1 - screenUV.y; 
+		baseUV.y = 1 - baseUV.y; 
+	}
+#endif
 	
 	uvF0.xy += uvFoamOffset;
 	uvF1.xy += uvFoamOffset;

@@ -82,7 +82,7 @@ Material:
     - _FoamNoiseTexStrength: 0
     - _FoamOffset: 0
     - _FoamOpacity: 8.08
-    - _FoamPower: 250.8
+    - _FoamPower: 200
     - _FoamRoughness: 0.6
     - _FoamStochasticToggle: 0
     - _FoamToggle: 1

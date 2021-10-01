@@ -238,6 +238,12 @@ Reopen Unity
  * Fixed rock striations.
  * Switched to Mochie water.
 
+## 27.0
+ * Fixed water flipping for non-MSAA stuff
+ * Thanks, @sacred for the tiki hut.
+ * Made food non-kinematic.
+ * Mirrors are now grabbable.
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.

@@ -101,6 +101,8 @@ namespace Texel
         VRCUrl pendingSubmit;
         bool pendingFromLoadOverride = false;
 
+        VRCPlayerApi[] _playerBuffer = new VRCPlayerApi[100];
+
         void Start()
         {
             infoIcon.color = normalColor;
@@ -327,7 +329,7 @@ namespace Texel
                 return;
 
             if (videoPlayer._CanTakeControl())
-                videoPlayer._PlayPlaylistUrl();
+                videoPlayer._ChangeUrl(videoPlayer.lastUrl);
             else
                 _SetStatusOverride(MakeOwnerMessage(), 3);
         }
@@ -361,9 +363,9 @@ namespace Texel
                 return;
             }
 
-            if (videoPlayer.localPlayerState == PLAYER_STATE_ERROR)
-                loadActive = false;
-            else
+            //if (videoPlayer.localPlayerState == PLAYER_STATE_ERROR)
+            //    loadActive = false;
+            //else
                 loadActive = !loadActive;
 
             _UpdateAll();
@@ -381,6 +383,7 @@ namespace Texel
         }
 
         bool _draggingProgressSlider = false;
+        bool _updatingProgressSlider = false;
 
         public void _HandleProgressBeginDrag()
         {
@@ -391,11 +394,12 @@ namespace Texel
         public void _HandleProgressEndDrag()
         {
             _draggingProgressSlider = false;
+            _HandleProgressSliderChanged();
         }
 
         public void _HandleProgressSliderChanged()
         {
-            if (!_draggingProgressSlider)
+            if (_draggingProgressSlider || _updatingProgressSlider)
                 return;
 
             if (float.IsInfinity(dataProxy.trackDuration) || dataProxy.trackDuration <= 0)
@@ -457,10 +461,10 @@ namespace Texel
             if (!Utilities.IsValid(playlist) || !Utilities.IsValid(videoPlayer))
                 return;
 
+            playlist._SetEnabled(true);
             if (!playlist.playlistEnabled)
                 return;
 
-            playlist._SetEnabled(true);
             videoPlayer._ChangeUrl(playlist._GetCurrent());
         }
 
@@ -538,7 +542,10 @@ namespace Texel
                     SetStatusText(positionStr + " / " + durationStr);
                     progressSliderControl.SetActive(true);
                     syncSliderControl.SetActive(false);
+
+                    _updatingProgressSlider = true;
                     progressSlider.value = Mathf.Clamp01(dataProxy.trackPosition / dataProxy.trackDuration);
+                    _updatingProgressSlider = false;
                 }
             }
         }
@@ -612,13 +619,23 @@ namespace Texel
 
             int playerState = dataProxy.playerState;
 
+            if (enableControl && loadActive)
+            {
+                loadIcon.color = activeColor;
+                urlInputControl.SetActive(true);
+                urlInput.readOnly = !canControl;
+                SetPlaceholderText("Enter Video URL...");
+                SetStatusText("");
+            } else
+                loadIcon.color = enableControl ? normalColor : disabledColor;
+
             if (playerState == PLAYER_STATE_PLAYING && !loadActive)
             {
                 urlInput.readOnly = true;
                 urlInputControl.SetActive(false);
 
                 stopIcon.color = enableControl ? normalColor : disabledColor;
-                loadIcon.color = enableControl ? normalColor : disabledColor;
+                //loadIcon.color = enableControl ? normalColor : disabledColor;
                 resyncIcon.color = normalColor;
 
                 if (dataProxy.paused)
@@ -634,7 +651,7 @@ namespace Texel
                 _draggingProgressSlider = false;
 
                 stopIcon.color = disabledColor;
-                loadIcon.color = disabledColor;
+                //loadIcon.color = disabledColor;
                 progressSliderControl.SetActive(false);
                 syncSliderControl.SetActive(false);
                 urlInputControl.SetActive(true);
@@ -642,60 +659,66 @@ namespace Texel
                 if (playerState == PLAYER_STATE_LOADING)
                 {
                     stopIcon.color = enableControl ? normalColor : disabledColor;
-                    loadIcon.color = enableControl ? normalColor : disabledColor;
+                    //loadIcon.color = enableControl ? normalColor : disabledColor;
                     resyncIcon.color = normalColor;
                     pauseIcon.color = disabledColor;
 
-                    SetPlaceholderText("Loading...");
-                    urlInput.readOnly = true;
-                    SetStatusText("");
+                    if (!loadActive)
+                    {
+                        SetPlaceholderText("Loading...");
+                        urlInput.readOnly = true;
+                        SetStatusText("");
+                    }
                 }
                 else if (playerState == PLAYER_STATE_ERROR)
                 {
                     stopIcon.color = disabledColor;
-                    loadIcon.color = normalColor;
+                    //loadIcon.color = normalColor;
                     resyncIcon.color = normalColor;
                     pauseIcon.color = disabledColor;
-                    loadActive = false;
+                    //loadActive = false;
 
-                    switch (videoPlayer.localLastErrorCode)
+                    if (!loadActive)
                     {
-                        case VideoError.RateLimited:
-                            SetPlaceholderText("Rate limited, wait and try again");
-                            break;
-                        case VideoError.PlayerError:
-                            SetPlaceholderText("Video player error");
-                            break;
-                        case VideoError.InvalidURL:
-                            SetPlaceholderText("Invalid URL or source offline");
-                            break;
-                        case VideoError.AccessDenied:
-                            SetPlaceholderText("Video blocked, enable untrusted URLs");
-                            break;
-                        case VideoError.Unknown:
-                        default:
-                            SetPlaceholderText("Failed to load video");
-                            break;
-                    }
+                        switch (videoPlayer.localLastErrorCode)
+                        {
+                            case VideoError.RateLimited:
+                                SetPlaceholderText("Rate limited, wait and try again");
+                                break;
+                            case VideoError.PlayerError:
+                                SetPlaceholderText("Video player error");
+                                break;
+                            case VideoError.InvalidURL:
+                                SetPlaceholderText("Invalid URL or source offline");
+                                break;
+                            case VideoError.AccessDenied:
+                                SetPlaceholderText("Video blocked, enable untrusted URLs");
+                                break;
+                            case VideoError.Unknown:
+                            default:
+                                SetPlaceholderText("Failed to load video");
+                                break;
+                        }
 
-                    urlInput.readOnly = !canControl;
-                    SetStatusText("");
+                        urlInput.readOnly = !canControl;
+                        SetStatusText("");
+                    }
                 }
                 else if (playerState == PLAYER_STATE_PLAYING || playerState == PLAYER_STATE_STOPPED)
                 {
                     if (playerState == PLAYER_STATE_STOPPED)
                     {
-                        loadActive = false;
+                        //loadActive = false;
                         pendingFromLoadOverride = false;
                         stopIcon.color = disabledColor;
-                        loadIcon.color = disabledColor;
+                        //loadIcon.color = disabledColor;
                         resyncIcon.color = disabledColor;
                         pauseIcon.color = disabledColor;
                     }
                     else
                     {
                         stopIcon.color = enableControl ? normalColor : disabledColor;
-                        loadIcon.color = activeColor;
+                        //loadIcon.color = activeColor;
                         resyncIcon.color = normalColor;
 
                         if (dataProxy.paused)
@@ -704,16 +727,19 @@ namespace Texel
                             pauseIcon.color = (enableControl && videoPlayer.seekableSource) ? normalColor : disabledColor;
                     }
 
-                    urlInput.readOnly = !canControl;
-                    if (canControl)
+                    if (!loadActive)
                     {
-                        SetPlaceholderText("Enter Video URL...");
-                        SetStatusText("");
-                    }
-                    else
-                    {
-                        SetPlaceholderText("");
-                        SetStatusText(MakeOwnerMessage());
+                        urlInput.readOnly = !canControl;
+                        if (canControl)
+                        {
+                            SetPlaceholderText("Enter Video URL...");
+                            SetStatusText("");
+                        }
+                        else
+                        {
+                            SetPlaceholderText("");
+                            SetStatusText(MakeOwnerMessage());
+                        }
                     }
                 }
             }
@@ -776,10 +802,9 @@ namespace Texel
         void _FindOwners()
         {
             int playerCount = VRCPlayerApi.GetPlayerCount();
-            VRCPlayerApi[] playerList = new VRCPlayerApi[playerCount];
-            playerList = VRCPlayerApi.GetPlayers(playerList);
+            _playerBuffer = VRCPlayerApi.GetPlayers(_playerBuffer);
 
-            foreach (VRCPlayerApi player in playerList)
+            foreach (VRCPlayerApi player in _playerBuffer)
             {
                 if (!Utilities.IsValid(player) || !player.IsValid())
                     continue;
@@ -798,14 +823,15 @@ namespace Texel
                 return $"Controls locked to master {instanceMaster} and owner {instanceOwner}";
         }
 
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            _FindOwners();
+            _RefreshPlayerAccessIcon();
+        }
+
         public override void OnPlayerLeft(VRCPlayerApi player)
         {
-            VRCPlayerApi owner = Networking.GetOwner(gameObject);
-            if (Utilities.IsValid(owner) && owner.IsValid())
-                instanceMaster = owner.displayName;
-            else
-                instanceMaster = "";
-
+            _FindOwners();
             _RefreshPlayerAccessIcon();
         }
 

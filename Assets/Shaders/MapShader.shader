@@ -16,11 +16,59 @@ Shader "Custom/MapShader"
         _TextureDetail ("Detail", float)=1.0
 		_NoisePow ("Noise Power", float ) = 1.8
 		_RockAmbient ("Rock Ambient Boost", float ) = 0.1
+		_FrawnDensity( "Frawn Density", float) = 300
     }
     SubShader
     {
         Tags { "RenderType"="Opaque"  "DisableBatching"="True" }
         LOD 200
+		
+		CGINCLUDE
+		
+		#include "tanoise/tanoise.cginc"
+
+		float _FrawnDensity;
+        half _Glossiness;
+        half _Metallic;
+        fixed4 _ColorA, _ColorB;
+		float4 _EmissionMux;
+		float _TextureAnimation, _RockAmbient, _TextureDetail;
+		float _NoisePow;
+
+		float FragmentAlpha( float2 uv, float edginess )
+		{
+		
+			if( uv.y < 0.49 )
+			{
+				return 1;
+			}
+			else
+			{
+				float fLeafOffset = (uv.y-.75)*4;
+				float fLeafAlongLength = uv.x;
+				float fLeafCenterDistance = abs( fLeafOffset );
+				//float alpha = (( sin( fLeafAlongLength * _FrawnDensity ) + 1.2 )); //Sin-based frawning
+				float alpha = 1.-abs( 0.5 - frac( fLeafAlongLength * _FrawnDensity / 6.2 ) )*2.;
+				alpha += saturate( .5 - fLeafCenterDistance*2 )*3.; //center stem
+				alpha *= saturate(1.5-fLeafCenterDistance*1.5);
+				alpha *= saturate(1.7-fLeafAlongLength);
+				return ( (alpha-.05)*9. - 0.5 ) * edginess + 0.5;
+			}
+		}
+		
+
+
+		float4 densityat( float3 calcpos )
+		{
+			float tim = _Time.y*_TextureAnimation;
+			//calcpos.y += tim * _TextureAnimation;
+			float col =
+				tanoise4( float4( calcpos*float3(20.,20.,20.), tim ) ) * 3. +
+				tanoise4( float4( calcpos.xyz*30.1, tim ) ) * 0.1;
+			return col;
+		}
+		
+		ENDCG
 		
         // shadow caster rendering pass, implemented manually
         // using macros from UnityCG.cginc
@@ -59,7 +107,6 @@ Shader "Custom/MapShader"
 
         #pragma target 5.0
 
-		#include "tanoise/tanoise.cginc"
 
         sampler2D _MainTex;
 
@@ -73,12 +120,6 @@ Shader "Custom/MapShader"
 			float3 normal_input;
         };
 
-        half _Glossiness;
-        half _Metallic;
-        fixed4 _ColorA, _ColorB;
-		float4 _EmissionMux;
-		float _TextureAnimation, _RockAmbient, _TextureDetail;
-		float _NoisePow;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -87,16 +128,6 @@ Shader "Custom/MapShader"
             // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
 
-
-		float4 densityat( float3 calcpos )
-		{
-			float tim = _Time.y*_TextureAnimation;
-			//calcpos.y += tim * _TextureAnimation;
-			float col =
-				tanoise4( float4( calcpos*float3(20.,20.,20.), tim ) ) * 3. +
-				tanoise4( float4( calcpos.xyz*30.1, tim ) ) * 0.1;
-			return col;
-		}
 
 		void vert(inout appdata_full i, out Input o)
 		{      
@@ -117,38 +148,68 @@ Shader "Custom/MapShader"
 
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{
+			float2 uv = IN.uv_MainTex;
 			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex);
+			fixed4 c = 1.;
 			float3 calcpos = IN.worldPos.xyz * _TextureDetail;
 
-			float3x3 tbn = { IN.tangent_input, IN.binormal_input, IN.normal_input };
-//			o.Emission = IN.tangent_input;
-//			return;
-			
-			o.Metallic = _Metallic;
-			o.Smoothness = _Glossiness;// * clamp( col.z*10.-7., 0, 1 );
-			o.Alpha = c.a;
-
-			float2 woodgrain = mul( tbn, calcpos ).xy;
-			
-			float2 aloc = floor( woodgrain * 2. );
-			float2 delta = (woodgrain*2. - aloc) - 0.5;
-			
-			//calcpos *= abs( axis )*.8+ .2;
-			//calcpos *= float3( 1., .1, 1. );
-			float4 dat = densityat( calcpos );
-			
-
-			float amp = glsl_mod( ( length( delta )*8. + dat.x*.1 ), .5 ) * 2.0;
-			float4 col = lerp( _ColorA, _ColorB, amp );
-			c = c * col + _RockAmbient;
 		
-            o.Normal = normalize( float3( dat.xy-.35, amp + 10 ) );
+			o.Metallic = _Metallic;
+			o.Smoothness = _Glossiness;
 
-			//o.Normal = float3( 0., 0., 1.0 );
-			//c.xyz = glsl_mod( calcpos, 1 );
-			o.Albedo = c.rgb*2.;
-			o.Emission = c * _EmissionMux;
+
+			if( uv.x < 0.5 || uv.y < 0.5 )
+			{
+				//float3x3 tbn;
+				float2 extradetail = 0;
+				if( uv.x < 0.5 )
+				{
+					//Poles
+					extradetail = float2( 50., 0 );
+				}
+				else
+				{
+					extradetail = float2( 0, 8 );
+				}
+				
+				o.Alpha = c.a;
+
+				float2 woodgrain = uv*extradetail;//mul( tbn, calcpos * extradetail ).xy;
+				float2 aloc = floor( woodgrain * 2. );
+				float2 delta = (woodgrain*2. - aloc) - 0.5;
+				
+				float4 dat = densityat( calcpos * length(extradetail) );
+
+				float amp = glsl_mod( ( length( delta )*8. + dat.x*.1 ), .5 ) * 2.0;
+				float4 col = lerp( _ColorA, _ColorB, amp );
+				c = c * col + _RockAmbient;
+			
+				o.Normal = normalize( float3( dat.xy-.35, amp + 10 ) );
+
+				o.Albedo = c.rgb*2.;
+				o.Emission = c * _EmissionMux;
+			}
+			else
+			{
+				float3 normpert;
+				float4 col = 0.;
+				//uv = >0.5,>0.5
+				normpert.xy = 0.35;
+				float fLeafOffset = (IN.uv_MainTex.y-.75)*4;
+				float fLeafAlongLength = IN.uv_MainTex.x;
+				float fLeafCenterDistance = abs( fLeafOffset );
+				//col = densityat( calcpos );
+				//col = saturate( pow( sin( IN.uv_MainTex.x*100. +IN.uv_MainTex.y*20. )* .2 + 1.0, 10. ) );
+				c *= 8.;
+				c *= pow( col.xxxx, _NoisePow) + _RockAmbient;
+				//Brownness
+				c += float4( .08, 0., .07, 0. ) * fLeafCenterDistance * ( tanoise4_1d( float4( float3( calcpos*30. ), _Time.y ) ).xxxx + .8 );
+				normpert = tanoise4( float4( calcpos.xyz*10.2, _Time.y*_TextureAnimation ) ) * .1;
+
+				o.Albedo = c.rgb;
+				o.Normal = float3( 0., 1., 0. );
+				o.Emission = 0;
+			}
 			// Metallic and smoothness come from slider variables
 		}
 		
