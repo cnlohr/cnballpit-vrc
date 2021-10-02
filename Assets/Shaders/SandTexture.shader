@@ -11,7 +11,7 @@ Shader "Custom/SandTexture"
 		_TANoiseTex ("TANoise", 2D) = "white" {}
 		_NoisePow ("Noise Power", float ) = 1.8
 		_RockAmbient ("Rock Ambient Boost", float ) = 0.1
-		_EmissionMux( "Emission Mux", Color) = (.3, .3, .3, 1. )
+		_EmissionMux( "Emission Mux", Color) = (.1, .1, .1, 1. )
 
 	}
 	SubShader

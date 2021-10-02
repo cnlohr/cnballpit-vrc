@@ -9,8 +9,10 @@ Shader "AudioLink/AudioLinkSandbox/BrazierParticleEffect"
     }
     SubShader
     {
+		Tags { "RenderType"="Transparent" "Queue"="Transparent" }
         //Tags { "RenderType"="Opaque" }
-        Blend SrcAlpha One
+        //Blend SrcAlpha OneMinusSrcAlpha
+		Blend One One
         //ZWrite Off
         LOD 100
 
@@ -109,6 +111,8 @@ Shader "AudioLink/AudioLinkSandbox/BrazierParticleEffect"
 	#else
 					//Nothing.
 	#endif
+				//DISABLE:
+				//o.pos = 0.;
 				return o;
 			}
 

@@ -10,7 +10,7 @@ using System;
 /// This toggle only works locally
 /// </summary>
 [AddComponentMenu("Udon Sharp/Utilities/Interact Toggle")]
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class InteractToggleBallpit : UdonSharpBehaviour 
 {
 	[Tooltip("List of objects to toggle on and off")]

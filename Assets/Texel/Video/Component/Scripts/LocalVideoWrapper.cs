@@ -8,7 +8,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/VideoTXL/Local Video Wrapper")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class LocalVideoWrapper : UdonSharpBehaviour
     {
         public LocalPlayer localPlayer;

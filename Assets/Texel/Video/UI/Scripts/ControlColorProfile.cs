@@ -7,7 +7,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("VideoTXL/UI/Control Color Profile")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class ControlColorProfile : UdonSharpBehaviour
     {
         public Color backgroundColor = new Color(0.10f, 0.15f, 0.12f);

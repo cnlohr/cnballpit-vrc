@@ -7,7 +7,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/General/Interact Trigger")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class InteractTrigger : UdonSharpBehaviour
     {
         [Tooltip("The Udon Behavior to send messages to on enter and leave events")]

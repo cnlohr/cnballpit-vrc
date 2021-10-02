@@ -8,6 +8,7 @@ Shader "SCRN_Aurora MatCap"
 		_MatCap ("MatCap", 2D) = "black" {}
 		_Position ("Position", Vector) = (0.0,0.05,0.0)
 		_TANoiseTex ("TANoise", 2D) = "white" {}
+		_GeneralBrightness( "General Brightness", float ) = 1.0
 	}
 	Subshader
 	{
@@ -37,6 +38,7 @@ Shader "SCRN_Aurora MatCap"
 			#include "Assets/Shaders/tanoise/tanoise.cginc"
 			#include "Assets/AudioLink/Shaders/AudioLink.cginc"
 
+			float _GeneralBrightness;
 			#define TexInRes fixed2(2,2)
 			fixed4 loadValue(fixed2 re)
 			{
@@ -141,7 +143,7 @@ Shader "SCRN_Aurora MatCap"
 				}
 				
 				col *= saturate(rd.y*2.+.4); // horizon fade
-				return col*3.;
+				return col*3.*(_GeneralBrightness*0.1+0.9);
 			}
 
 			#if 1
@@ -257,7 +259,7 @@ Shader "SCRN_Aurora MatCap"
 				}
 				*/
 				
-				col = bg(rd)*.6;
+				col = bg(rd)*.6*(_GeneralBrightness*.7+0.3);
 				fixed3 apos = fixed3(7.-varInput.y,-.2,7.-varInput.y);
 				fixed4 aur = smoothstep(0.,1.5,aurora(apos,rd));
 				col += stars(rd) * (1.-aur.a) + aur.rgb;

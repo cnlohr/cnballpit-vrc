@@ -19,7 +19,7 @@ using UdonSharpEditor;
 namespace Texel
 {
     [AddComponentMenu("VideoTXL/Specialty/Zoned Stream Player")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class LocalPlayer : UdonSharpBehaviour
     {
         [Tooltip("A proxy for dispatching video-related events to other listening behaviors, such as a screen manager")]

@@ -203,11 +203,23 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					}
 					else if( _Mode == 3 )
 					{
+					/* Old - is bad.
 						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( ballid % 16, (ballid / 128)%4 ) ) * 6 + .05 );
 						colorDiffuse.xyz = SmoothHue;
 						//colorDiffuse *= intensity; 
 						colorAmbient += colorDiffuse * intensity * .35;
 						colorDiffuse = colorDiffuse * .5 + .04;
+					*/
+						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
+						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
+						static const float3 ballcolors[4] = { float3( 1., .8, 0 ), float3( 0.05, .05, .05 ), float3( 1., .3, 0 ), float3( 0.9, .9, .9 ) };
+
+						colorDiffuse.xyz = ballcolors[ballid%4];
+
+						//colorDiffuse *= intensity; 
+						colorAmbient += colorDiffuse * intensity * .35;
+						colorDiffuse = colorDiffuse * .5 + .02;
+
 					}
 					else if( _Mode == 4 )
 					{

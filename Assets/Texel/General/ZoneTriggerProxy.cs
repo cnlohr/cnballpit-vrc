@@ -7,7 +7,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/General/Zone Trigger Proxy")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class ZoneTriggerProxy : UdonSharpBehaviour
     {
         [Tooltip("After sending an enter event, do not send another until leave has been triggered")]

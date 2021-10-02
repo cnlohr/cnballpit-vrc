@@ -25,7 +25,7 @@ public class ballpit_update_property : UdonSharpBehaviour
 
 	public void UpdateMaterialWithSelMode()
 	{
-		int mode = 1;
+		int mode = 3;
 		ballpit_stable_control m = MainControl.GetComponent<ballpit_stable_control>();
 		bool ACLOk = !MasterOnly || Networking.IsMaster;
 		if( !ACLOk )

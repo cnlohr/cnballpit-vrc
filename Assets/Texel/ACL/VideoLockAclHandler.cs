@@ -7,7 +7,7 @@ using VRC.Udon;
 
 namespace Texel
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class VideoLockAclHandler : UdonSharpBehaviour
     {
         public AccessControl acl;

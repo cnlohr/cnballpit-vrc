@@ -238,7 +238,7 @@ Reopen Unity
  * Fixed rock striations.
  * Switched to Mochie water.
 
-## 27.0
+## 27.0 3:30 AM / October 2, 2021
  * Fixed water flipping for non-MSAA stuff
  * Thanks, @sacred for the tiki hut.
  * Made food non-kinematic.
@@ -247,6 +247,8 @@ Reopen Unity
  * Add couches.
  * Remove water underneath a lot of the map (to prevent extra time drawing)
  * Upgraded to AudioLink 2.6RC3
+ * Make campfires realtime.
+ * Add dark mode (Default)
 
 ## Interesting
  * shader_billboardout modes.
