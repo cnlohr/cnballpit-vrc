@@ -61,7 +61,7 @@ public class SaccFlight : UdonSharpBehaviour
     }
 	
 	// Update is called once per frame
-	void Interact()
+	public override void Interact()
 	{
 		bool master = Networking.IsMaster;
 		

@@ -63,8 +63,8 @@ float4 frag(v2f i, bool isFrontFace: SV_IsFrontFace) : SV_Target {
 	float4 baseCol = _Color;
 	float4 col = _Color;
 	
-#ifndef UNITY_UV_STARTS_AT_TOP
-	if (_ProjectionParams.x < 0)
+#ifdef UNITY_UV_STARTS_AT_TOP
+	if (_ProjectionParams.x >= 0)
 	{
 		screenUV.y = 1 - screenUV.y; 
 		baseUV.y = 1 - baseUV.y; 

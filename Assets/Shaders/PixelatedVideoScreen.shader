@@ -2,6 +2,7 @@
 {
 	Properties
 	{
+		_MainTex("Emissive (RGB)", 2D) = "white" {} //Unused
 		_EmissionMap ("Texture", 2D) = "white" {}
 		_ShilouetteTex ("Shilouette", 2D) = "white" {}
 		_ResolutionDecimation ("Pretend Resolution Divisor", float ) = 1.0

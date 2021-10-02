@@ -13,7 +13,7 @@ public class DayNightControl : UdonSharpBehaviour
 	public Material SkyboxMaterial;
 	public Material SkyboxMaterialNight;
 	public Material SkyboxBlackMaterial;
-	public Material WaterMaterial;
+	//public Material WaterMaterial;
 	public Material BallMaterial;
 	public Camera rprobeRender;
 	public Cubemap       ctcopy;
@@ -35,7 +35,7 @@ public class DayNightControl : UdonSharpBehaviour
 					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
 					RenderSettings.ambientIntensity = 1.0f;
 					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
-					WaterMaterial.SetFloat( "_Glossiness", 1.0f );
+					//WaterMaterial.SetFloat( "_Glossiness", 1.0f );
 					BallMaterial.SetFloat( "_NightMode", 0 );
 					BallMaterial.SetFloat( "_Smoothness", .77f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
@@ -47,7 +47,7 @@ public class DayNightControl : UdonSharpBehaviour
 					//SkyboxMaterial.SetFloat( "_AtmosphereThickness", 0.5f );
 					RenderSettings.skybox = SkyboxMaterialNight;
 					RenderSettings.ambientIntensity = 1.0f;
-					WaterMaterial.SetFloat( "_Glossiness", 0.8f );
+					//WaterMaterial.SetFloat( "_Glossiness", 0.8f );
 					BallMaterial.SetFloat( "_NightMode", 1 );
 					BallMaterial.SetFloat( "_Smoothness", 1.0f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
@@ -58,7 +58,7 @@ public class DayNightControl : UdonSharpBehaviour
 					DirectionalLight.transform.rotation = Quaternion.Euler( 0, 128, 0 );
 					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
 					RenderSettings.ambientIntensity = 1.0f;
-					WaterMaterial.SetFloat( "_Glossiness", 1.0f );
+					//WaterMaterial.SetFloat( "_Glossiness", 1.0f );
 					BallMaterial.SetFloat( "_NightMode", 0 );
 					BallMaterial.SetFloat( "_Smoothness", .77f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
@@ -120,7 +120,7 @@ public class DayNightControl : UdonSharpBehaviour
 	}
 
 	// Update is called once per frame
-	void Interact()
+	public override void Interact()
 	{
 		bool master = Networking.IsMaster;
 		

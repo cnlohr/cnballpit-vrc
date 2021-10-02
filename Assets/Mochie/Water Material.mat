@@ -82,7 +82,7 @@ Material:
     - _FoamNoiseTexStrength: 0
     - _FoamOffset: 0
     - _FoamOpacity: 8.08
-    - _FoamPower: 200
+    - _FoamPower: 100
     - _FoamRoughness: 0.6
     - _FoamStochasticToggle: 0
     - _FoamToggle: 1
@@ -136,8 +136,8 @@ Material:
     - _MainTexScroll: {r: 0, g: 0.1, b: 0, a: 0}
     - _NoiseTexScale: {r: 1, g: 1, b: 0, a: 0}
     - _NoiseTexScroll: {r: 0.3, g: 0.06, b: 0, a: 0}
-    - _NormalMapScale0: {r: 1500, g: 1500, b: 0, a: 0}
-    - _NormalMapScale1: {r: 2000, g: 2000, b: 0, a: 0}
+    - _NormalMapScale0: {r: 1000, g: 1000, b: 0, a: 0}
+    - _NormalMapScale1: {r: 1379, g: 1379, b: 0, a: 0}
     - _NormalMapScroll0: {r: 0, g: -0.00005, b: 0, a: 0}
     - _NormalMapScroll1: {r: 0, g: -0.0001, b: 0, a: 0}
     - _Offset: {r: 0, g: 1, b: 0, a: 0}

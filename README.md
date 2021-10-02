@@ -243,6 +243,10 @@ Reopen Unity
  * Thanks, @sacred for the tiki hut.
  * Made food non-kinematic.
  * Mirrors are now grabbable.
+ * Add campground.
+ * Add couches.
+ * Remove water underneath a lot of the map (to prevent extra time drawing)
+ * Upgraded to AudioLink 2.6RC3
 
 ## Interesting
  * shader_billboardout modes.

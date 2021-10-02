@@ -364,7 +364,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 
 		Pass
 		{
-			Tags { "RenderType"="Opaque" "LightModel"="ForwardBase"}
+			Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
 			//LOD 200
 			//Tags {"Queue" = "Transparent" "RenderType"="Opaque" } 
 			//AlphaToMask On
@@ -584,6 +584,56 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						normal, -dir,
 						light, indirectLight
 					).rgb + input.colorAmbient.xyz * EmissiveShift;
+					
+					float3 unityLightPositions[4] = { 
+						float3( unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x ),
+						float3( unity_4LightPosX0.y, unity_4LightPosY0.y, unity_4LightPosZ0.y ),
+						float3( unity_4LightPosX0.z, unity_4LightPosY0.z, unity_4LightPosZ0.z ),
+						float3( unity_4LightPosX0.w, unity_4LightPosY0.w, unity_4LightPosZ0.w )
+						};
+					float3 deltas[4] = {
+						unityLightPositions[0].xyz - wPos,
+						unityLightPositions[1].xyz - wPos,
+						unityLightPositions[2].xyz - wPos,
+						unityLightPositions[3].xyz - wPos };
+
+					float4 comps = float4(
+						length( deltas[0] ),
+						length( deltas[1] ),
+						length( deltas[2] ),
+						length( deltas[3] ) );
+						
+					deltas[0] = normalize( deltas[0] );
+					deltas[1] = normalize( deltas[1] );
+					deltas[2] = normalize( deltas[2] );
+					deltas[3] = normalize( deltas[3] );
+						
+					float4 ndotls = float4(
+						dot( normal, normalize( deltas[0] ) ),
+						dot( normal, normalize( deltas[1] ) ),
+						dot( normal, normalize( deltas[2] ) ),
+						dot( normal, normalize( deltas[3] ) ) );
+
+					float4 squaredDistance = comps * comps;
+					
+					float4 attenuations_base = 1.0 / (1.0 + 
+						unity_4LightAtten0 * squaredDistance);
+
+					float4 attenuations = attenuations_base * (saturate( ndotls )+.03);
+					attenuations = saturate( attenuations - .1 );
+
+					//specularReflection = attenuations * _LightColor0.rgb * _SpecColor.rgb * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), _Shininess);
+					float _Shininess = 5;
+					
+					float4 attenuationspec = saturate( attenuations_base/2 - 0.1 ) ;
+					
+					float3 basergb = saturate( input.colorAmbient.xyz * 20 );
+					albcolor.rgb += unity_LightColor[0] * ( attenuations.x * basergb + attenuationspec.x * pow(max(0.0, dot(reflect(-deltas[0], normal), -dir)), _Shininess) ); 
+					albcolor.rgb += unity_LightColor[1] * ( attenuations.y * basergb + attenuationspec.y * pow(max(0.0, dot(reflect(-deltas[1], normal), -dir)), _Shininess) );
+					albcolor.rgb += unity_LightColor[2] * ( attenuations.z * basergb + attenuationspec.z * pow(max(0.0, dot(reflect(-deltas[2], normal), -dir)), _Shininess) );
+					albcolor.rgb += unity_LightColor[3] * ( attenuations.w * basergb + attenuationspec.w * pow(max(0.0, dot(reflect(-deltas[3], normal), -dir)), _Shininess) );
+					
+										
 				}
 				else
 				{

@@ -158,7 +158,8 @@ Shader "Custom/MapShader"
 			o.Smoothness = _Glossiness;
 
 
-			if( uv.x < 0.5 || uv.y < 0.5 )
+			//if( uv.x < 0.5 || uv.y < 0.5 )
+			if( true )
 			{
 				//float3x3 tbn;
 				float2 extradetail = 0;
@@ -169,7 +170,7 @@ Shader "Custom/MapShader"
 				}
 				else
 				{
-					extradetail = float2( 0, 8 );
+					extradetail = float2( 10, 0 );
 				}
 				
 				o.Alpha = c.a;
@@ -183,8 +184,24 @@ Shader "Custom/MapShader"
 				float amp = glsl_mod( ( length( delta )*8. + dat.x*.1 ), .5 ) * 2.0;
 				float4 col = lerp( _ColorA, _ColorB, amp );
 				c = c * col + _RockAmbient;
-			
-				o.Normal = normalize( float3( dat.xy-.35, amp + 10 ) );
+				
+				
+				// Compute a LoD to blur it out over distance.
+				fixed2 derivX = ddx( uv.xy*extradetail );
+				fixed2 derivY = ddy( uv.xy*extradetail );
+				float delta_max_sqr = max(dot(derivX, derivX), dot(derivY, derivY));
+				float invsq = 1./sqrt(delta_max_sqr);
+				float2 ftsize = 8;
+				invsq /= length( ftsize );
+
+				//Don't aggressively show the pixels. (-.5)
+				float LoD = invsq - 0.5;
+				
+				float closeness_to_edge = 1.-(abs( amp - 0.5 ))*2.;
+				LoD = saturate( LoD*1. + closeness_to_edge*4. - 3. );
+				c = lerp( _ColorA*.7+0.1, c, LoD );
+				//c = LoD;
+				o.Normal = normalize( float3( dat.xy-.35, amp + 20 ) );
 
 				o.Albedo = c.rgb*2.;
 				o.Emission = c * _EmissionMux;
@@ -209,6 +226,7 @@ Shader "Custom/MapShader"
 				o.Albedo = c.rgb;
 				o.Normal = float3( 0., 1., 0. );
 				o.Emission = 0;
+				//o.Alpha = FragmentAlpha( ;
 			}
 			// Metallic and smoothness come from slider variables
 		}
