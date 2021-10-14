@@ -16,7 +16,7 @@ using UdonSharpEditor;
 namespace Texel
 {
     [AddComponentMenu("VideoTXL/UI/Basic Player Controls")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class BasicPlayerControls : UdonSharpBehaviour
     {
         public BasicSyncPlayer videoPlayer;

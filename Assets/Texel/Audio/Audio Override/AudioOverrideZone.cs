@@ -8,7 +8,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/Audio/Audio Override Zone")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class AudioOverrideZone : UdonSharpBehaviour
     {
         public ZoneMembership membership;

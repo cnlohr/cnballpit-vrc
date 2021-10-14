@@ -7,7 +7,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/Audio/Audio Manager")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class AudioManager : UdonSharpBehaviour
     {
         [Header("Optional Components")]

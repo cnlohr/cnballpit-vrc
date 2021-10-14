@@ -9,7 +9,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/VideoTXL/Data Proxy")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class VideoPlayerProxy : UdonSharpBehaviour
     {
         [NonSerialized]

@@ -68,7 +68,7 @@ namespace Texel
         public VRCUnityVideoPlayer unityVideo;
 
         float retryTimeout = 6;
-        float syncLatchUpdateFrequency = 0.2f;
+        //float syncLatchUpdateFrequency = 0.2f;
 
         [UdonSynced]
         short _syncVideoSource = VIDEO_SOURCE_NONE;
@@ -168,17 +168,15 @@ namespace Texel
                 avProVideo.Loop = false;
                 avProVideo.Stop();
                 avProVideo.EnableAutomaticResync = false;
+                _currentPlayer = avProVideo;
             }
             if (Utilities.IsValid(unityVideo))
             {
                 unityVideo.Loop = false;
                 unityVideo.Stop();
                 unityVideo.EnableAutomaticResync = false;
+                _currentPlayer = unityVideo;
             }
-
-            //_currentPlayer = avProVideo;
-            //if (Utilities.IsValid(unityVideo))
-            //    _currentPlayer = unityVideo;
 
             _UpdateVideoSource(VIDEO_SOURCE_AVPRO, _syncVideoSourceOverride);
             _UpdatePlayerState(PLAYER_STATE_STOPPED);
@@ -667,6 +665,9 @@ namespace Texel
 
         public void _OnVideoError(VideoError videoError)
         {
+            if (localPlayerState == PLAYER_STATE_STOPPED)
+                return;
+
             _VideoStop();
 
             string code = "";
@@ -1082,7 +1083,8 @@ namespace Texel
         void _VideoStop()
         {
             DebugLogVideo("Stop");
-            _currentPlayer.Stop();
+            if (Utilities.IsValid(_currentPlayer))
+                _currentPlayer.Stop();
         }
 
         void _VideoPause()
@@ -1105,14 +1107,20 @@ namespace Texel
 
         public void _StopAVPro()
         {
-            DebugLogAs("AVPro", "Stop");
-            avProVideo.Stop();
+            if (Utilities.IsValid(avProVideo))
+            {
+                DebugLogAs("AVPro", "Stop");
+                avProVideo.Stop();
+            }
         }
 
         public void _StopUnity()
         {
-            DebugLogAs("UnityVideo", "Stop");
-            unityVideo.Stop();
+            if (Utilities.IsValid(unityVideo))
+            {
+                DebugLogAs("UnityVideo", "Stop");
+                unityVideo.Stop();
+            }
         }
 
         void _UpdateVideoSource(int source, int sourceOverride)

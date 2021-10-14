@@ -13,7 +13,7 @@ using UdonSharpEditor;
 namespace Texel
 {
     [AddComponentMenu("Texel/Audio/Audio Override Settings")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class AudioOverrideSettings : UdonSharpBehaviour
     {
         public bool applyVoice = true;

@@ -249,6 +249,13 @@ Reopen Unity
  * Upgraded to AudioLink 2.6RC3
  * Make campfires realtime.
  * Add dark mode (Default)
+ 
+## 28.0 11:53 PM / October 13, 2021
+ * Removed second campfire to increase perf
+ * Switched to hard shadows for perf
+ * Moved camp to ball pit
+ * Upgraded Texel video player for beta VRC
+ * Upgraded the brokered object sync.
 
 ## Interesting
  * shader_billboardout modes.

@@ -105,6 +105,8 @@ namespace Texel
 
         void Start()
         {
+            _PopulateMissingReferences();
+
             infoIcon.color = normalColor;
             _DisableAllVideoControls();
 
@@ -160,7 +162,7 @@ namespace Texel
             loadIcon.color = disabledColor;
             resyncIcon.color = disabledColor;
             repeatIcon.color = disabledColor;
-            shuffleIcon.color = disabledColor;
+            //shuffleIcon.color = disabledColor;
             playCurrentIcon.color = disabledColor;
             playLastIcon.color = disabledColor;
             nextIcon.color = disabledColor;
@@ -874,6 +876,126 @@ namespace Texel
                 masterIcon.enabled = true;
             else if (acl.allowWhitelist && acl._LocalWhitelisted())
                 whitelistIcon.enabled = true;
+        }
+
+        void _PopulateMissingReferences()
+        {
+            // Volume
+
+            if (!Utilities.IsValid(volumeSliderControl))
+                volumeSliderControl = _FindGameObject("MainPanel/UpperRow/VolumeGroup/Slider");
+            if (!Utilities.IsValid(volumeSlider))
+                volumeSlider = (Slider)_FindComponent("MainPanel/UpperRow/VolumeGroup/Slider", typeof(Slider));
+            if (!Utilities.IsValid(muteToggleOn))
+                muteToggleOn = _FindGameObject("MainPanel/UpperRow/VolumeGroup/MuteButton/IconMuted");
+            if (!Utilities.IsValid(muteToggleOff))
+                muteToggleOff = _FindGameObject("MainPanel/UpperRow/VolumeGroup/MuteButton/IconVolume");
+
+            // Icons
+
+            if (!Utilities.IsValid(stopIcon))
+                stopIcon = (Image)_FindComponent("MainPanel/UpperRow/ControlGroup/StopButton/IconStop", typeof(Image));
+            if (!Utilities.IsValid(pauseIcon))
+                pauseIcon = (Image)_FindComponent("MainPanel/UpperRow/ControlGroup/PauseButton/IconPause", typeof(Image));
+            if (!Utilities.IsValid(lockedIcon))
+                lockedIcon = (Image)_FindComponent("MainPanel/LowerRow/InputProgress/MasterLockButton/IconLocked", typeof(Image));
+            if (!Utilities.IsValid(unlockedIcon))
+                unlockedIcon = (Image)_FindComponent("MainPanel/LowerRow/InputProgress/MasterLockButton/IconUnlocked", typeof(Image));
+            if (!Utilities.IsValid(loadIcon))
+                loadIcon = (Image)_FindComponent("MainPanel/LowerRow/InputProgress/LoadButton/IconLoad", typeof(Image));
+            if (!Utilities.IsValid(resyncIcon))
+                resyncIcon = (Image)_FindComponent("MainPanel/UpperRow/SyncGroup/ResyncButton/IconResync", typeof(Image));
+            if (!Utilities.IsValid(repeatIcon))
+                repeatIcon = (Image)_FindComponent("MainPanel/UpperRow/ButtonGroup/RepeatButton/IconRepeat", typeof(Image));
+            if (!Utilities.IsValid(playlistIcon))
+                playlistIcon = (Image)_FindComponent("MainPanel/UpperRow/ButtonGroup/PlaylistButton/IconPlaylist", typeof(Image));
+            if (!Utilities.IsValid(infoIcon))
+                infoIcon = (Image)_FindComponent("MainPanel/UpperRow/ButtonGroup/InfoButton/IconInfo", typeof(Image));
+            if (!Utilities.IsValid(nextIcon))
+                nextIcon = (Image)_FindComponent("MainPanel/UpperRow/ControlGroup/NextButton/IconNext", typeof(Image));
+            if (!Utilities.IsValid(prevIcon))
+                prevIcon = (Image)_FindComponent("MainPanel/UpperRow/ControlGroup/PrevButton/IconPrev", typeof(Image));
+            if (!Utilities.IsValid(masterIcon))
+                masterIcon = (Image)_FindComponent("MainPanel/LowerRow/InputProgress/PlayerAccess/IconMaster", typeof(Image));
+            if (!Utilities.IsValid(whitelistIcon))
+                whitelistIcon = (Image)_FindComponent("MainPanel/LowerRow/InputProgress/PlayerAccess/IconWhitelist", typeof(Image));
+
+            // Super Bar
+
+            if (!Utilities.IsValid(progressSliderControl))
+                progressSliderControl = _FindGameObject("MainPanel/LowerRow/InputProgress/TrackingSlider");
+            if (!Utilities.IsValid(progressSlider))
+                progressSlider = (Slider)_FindComponent("MainPanel/LowerRow/InputProgress/TrackingSlider", typeof(Slider));
+            if (!Utilities.IsValid(syncSliderControl))
+                syncSliderControl = _FindGameObject("MainPanel/LowerRow/InputProgress/SyncSlider");
+            if (!Utilities.IsValid(syncSlider))
+                syncSlider = (Slider)_FindComponent("MainPanel/LowerRow/InputProgress/SyncSlider", typeof(Slider));
+            if (!Utilities.IsValid(urlInputControl))
+                urlInputControl = _FindGameObject("MainPanel/LowerRow/InputProgress/InputField");
+            if (!Utilities.IsValid(urlInput))
+                urlInput = (VRCUrlInputField)_FindComponent("MainPanel/LowerRow/InputProgress/InputField", typeof(VRCUrlInputField));
+            if (!Utilities.IsValid(urlText))
+                urlText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/InputField/TextMask/Text", typeof(Text));
+            if (!Utilities.IsValid(statusText))
+                statusText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/StatusText", typeof(Text));
+            if (!Utilities.IsValid(placeholderText))
+                placeholderText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/InputField/TextMask/Placeholder", typeof(Text));
+            if (!Utilities.IsValid(modeText))
+                modeText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/SourceMode", typeof(Text));
+            if (!Utilities.IsValid(queuedText))
+                queuedText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/QueuedText", typeof(Text));
+            if (!Utilities.IsValid(playlistText))
+                playlistText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/PlaylistText", typeof(Text));
+
+            // Info Panel 
+
+            if (!Utilities.IsValid(infoPanel))
+                infoPanel = _FindGameObject("InfoPanel");
+            if (!Utilities.IsValid(instanceOwnerText))
+                instanceOwnerText = (Text)_FindComponent("InfoPanel/Fields/InstanceOwner/InstanceOwnerName", typeof(Text));
+            if (!Utilities.IsValid(masterText))
+                masterText = (Text)_FindComponent("InfoPanel/Fields/Master/MasterName", typeof(Text));
+            if (!Utilities.IsValid(playerOwnerText))
+                playerOwnerText = (Text)_FindComponent("InfoPanel/Fields/PlayerOwner/PlayerOwnerName", typeof(Text));
+            if (!Utilities.IsValid(videoOwnerText))
+                videoOwnerText = (Text)_FindComponent("InfoPanel/Fields/VideoOwner/VideoOwnerName", typeof(Text));
+            if (!Utilities.IsValid(currentVideoInput))
+                currentVideoInput = (InputField)_FindComponent("InfoPanel/Fields/CurrentVideo/InputField", typeof(InputField));
+            if (!Utilities.IsValid(currentVideoText))
+                currentVideoText = (Text)_FindComponent("InfoPanel/Fields/CurrentVideo/InputField/TextMask/Text", typeof(Text));
+            if (!Utilities.IsValid(playCurrentIcon))
+                playCurrentIcon = (Image)_FindComponent("InfoPanel/Fields/CurrentVideo/InputField/PlayButton/IconPlay", typeof(Image));
+            if (!Utilities.IsValid(lastVideoInput))
+                lastVideoInput = (InputField)_FindComponent("InfoPanel/Fields/LastVideo/InputField", typeof(InputField));
+            if (!Utilities.IsValid(lastVideoText))
+                lastVideoText = (Text)_FindComponent("InfoPanel/Fields/LastVideo/InputField/TextMask/Text", typeof(Text));
+            if (!Utilities.IsValid(playLastIcon))
+                playLastIcon = (Image)_FindComponent("InfoPanel/Fields/LastVideo/InputField/PlayButton/IconPlay", typeof(Image));
+
+        }
+
+        GameObject _FindGameObject (string path)
+        {
+            if (Utilities.IsValid(videoPlayer) && Utilities.IsValid(videoPlayer.debugLog))
+                videoPlayer.debugLog._Write("PlayerControls", $"Missing UI Game Object {path}");
+
+            Transform t = transform.Find(path);
+            if (!Utilities.IsValid(t))
+                return null;
+
+            return t.gameObject;
+        }
+
+        Component _FindComponent (string path, System.Type type)
+        {
+            if (Utilities.IsValid(videoPlayer) && Utilities.IsValid(videoPlayer.debugLog))
+                videoPlayer.debugLog._Write("PlayerControls", $"Missing UI Component {path}:{type}");
+
+            Transform t = transform.Find(path);
+            if (!Utilities.IsValid(t))
+                return null;
+
+            return t.GetComponent(type);
         }
     }
 

@@ -7,7 +7,7 @@ using VRC.SDKBase;
 namespace Texel
 {
     [AddComponentMenu("Texel/General/Zone Membership")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class ZoneMembership : UdonSharpBehaviour
     {
         [NonSerialized]

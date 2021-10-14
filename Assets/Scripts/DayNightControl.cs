@@ -11,7 +11,7 @@ public class DayNightControl : UdonSharpBehaviour
 	const int NumLightModes = 4;
 	public Light DirectionalLight;
 	
-	public Light PointLight0;
+//	public Light PointLight0;
 	public Light PointLight1;
 	public Light PointLight2;
 	
@@ -45,14 +45,17 @@ public class DayNightControl : UdonSharpBehaviour
 					BallMaterial.SetFloat( "_Smoothness", .77f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
 					
-					PointLight0.intensity = 0.2f;
+					PointLight1.enabled = (false);
+					PointLight2.enabled = (false);
+
+					//PointLight0.intensity = 0.2f;
 					PointLight1.intensity = 0.2f;
 					PointLight2.intensity = 0.2f;
-					PointLight0.range = 6;
+					//PointLight0.range = 6;
 					PointLight1.range = 6;
 					PointLight2.range = 6;
 					break;
-				case 1:
+				case 1: // Regular Night
 					DirectionalLight.color = new Color( 0.1654503f, 0.1958628f, 0.245283f, 1.0f );
 					//DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -120.73f, -20.39f);
 					DirectionalLight.transform.rotation = Quaternion.Euler( 70.0f, 0.0f, 0.0f );
@@ -65,14 +68,17 @@ public class DayNightControl : UdonSharpBehaviour
 					BallMaterial.SetFloat( "_Smoothness", 1.0f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
 
-					PointLight0.intensity = 1.0f;
+					PointLight1.enabled = (true);
+					PointLight2.enabled = (true);
+
+					//PointLight0.intensity = 1.0f;
 					PointLight1.intensity = 1.0f;
 					PointLight2.intensity = 1.0f;
-					PointLight0.range = 9;
+					//PointLight0.range = 9;
 					PointLight1.range = 9;
 					PointLight2.range = 9;
 					break;
-				case 2:
+				case 2: // Day Time 2
 					RenderSettings.skybox = SkyboxMaterial;
 					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
 					DirectionalLight.transform.rotation = Quaternion.Euler( 0, 128, 0 );
@@ -82,14 +88,18 @@ public class DayNightControl : UdonSharpBehaviour
 					BallMaterial.SetFloat( "_NightMode", 0.0f );
 					BallMaterial.SetFloat( "_Smoothness", .77f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
-					PointLight0.intensity = 0.2f;
+
+					PointLight1.enabled = (false);
+					PointLight2.enabled = (false);
+
+					//PointLight0.intensity = 0.2f;
 					PointLight1.intensity = 0.2f;
 					PointLight2.intensity = 0.2f;
-					PointLight0.range = 6;
+					//PointLight0.range = 6;
 					PointLight1.range = 6;
 					PointLight2.range = 6;
 					break;
-				case 3:
+				case 3:  // Dark Night
 					DirectionalLight.color = new Color( 0.1654503f, 0.1958628f, 0.245283f, 1.0f )*.2f;
 					//DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -120.73f, -20.39f);
 					DirectionalLight.transform.rotation = Quaternion.Euler( 70.0f, 0.0f, 0.0f );
@@ -101,12 +111,16 @@ public class DayNightControl : UdonSharpBehaviour
 					BallMaterial.SetFloat( "_NightMode", 1.0f );
 					BallMaterial.SetFloat( "_Smoothness", 1.0f );
 					BallMaterial.SetFloat( "_Metallic", 0.0f );
-					PointLight0.intensity = 1.35f;
-					PointLight1.intensity = 1.35f;
-					PointLight2.intensity = 1.35f;
-					PointLight0.range = 20;
-					PointLight1.range = 20;
-					PointLight2.range = 20;
+
+					PointLight1.enabled = (true);
+					PointLight2.enabled = (true);
+
+					//PointLight0.intensity = 1.35f;
+					PointLight1.intensity = 1.15f;
+					PointLight2.intensity = 1.15f;
+					//PointLight0.range = 20;
+					PointLight1.range = 26;
+					PointLight2.range = 26;
 					break;
 				case 4:
 					RenderSettings.skybox = SkyboxBlackMaterial;					

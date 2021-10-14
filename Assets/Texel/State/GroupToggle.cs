@@ -7,7 +7,7 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/State/Group Toggle")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class GroupToggle : UdonSharpBehaviour
     {
         public bool defaultState = false;

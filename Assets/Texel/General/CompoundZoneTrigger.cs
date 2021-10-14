@@ -14,7 +14,7 @@ using UdonSharpEditor;
 namespace Texel
 {
     [AddComponentMenu("Texel/General/Compound Zone Trigger")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class CompoundZoneTrigger : UdonSharpBehaviour
     {
         [Tooltip("If enabled, specify event handlers at edit time.  Handlers can still be registered at runtime.")]

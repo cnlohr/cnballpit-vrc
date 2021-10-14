@@ -19,7 +19,7 @@ using UdonSharpEditor;
 namespace Texel
 {
     [AddComponentMenu("VideoTXL/Specialty/Zoned Stream Player")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class LocalPlayer : UdonSharpBehaviour
     {
         [Tooltip("A proxy for dispatching video-related events to other listening behaviors, such as a screen manager")]
@@ -59,11 +59,8 @@ namespace Texel
 
         float retryTimeout = 6;
 
-        bool _rtsptSource = false;
-
         // Realtime state
 
-        short videoSource = VIDEO_SOURCE_NONE;
         short videoSourceOverride = VIDEO_SOURCE_NONE;
 
         [NonSerialized]
@@ -105,7 +102,6 @@ namespace Texel
         float playAt = 0;
         float playStartTime = 0;
         //float trackDuration = 0;
-        bool playingOrLoading = false;
 
         void Start()
         {
@@ -307,6 +303,9 @@ namespace Texel
 
         public override void OnVideoError(VideoError videoError)
         {
+            if (localPlayerState == PLAYER_STATE_STOPPED)
+                return;
+
             _currentPlayer.Stop();
 
             string code = "";

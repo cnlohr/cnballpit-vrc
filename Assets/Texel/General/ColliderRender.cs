@@ -7,10 +7,10 @@ using VRC.Udon;
 namespace Texel
 {
     [AddComponentMenu("Texel/General/Collider Render")]
-    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class ColliderRender : UdonSharpBehaviour
     {
-        public Collider collider;
+        public new Collider collider;
 
         public MeshRenderer boxRender;
         public MeshRenderer sphereRender;

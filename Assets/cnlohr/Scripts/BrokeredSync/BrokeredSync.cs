@@ -1,9 +1,21 @@
-﻿
+﻿// Brokered object sync for fast object sync over a ton of objects.
+// (C) 2021 CNLohr feel free to distribute under the MIT/x11 license.
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Common;
+using VRC.Udon.Common.Interfaces;
 using System;
+
+
+#if !COMPILER_UDONSHARP && UNITY_EDITOR
+using VRC.SDKBase.Editor.BuildPipeline;
+using UnityEditor;
+using UdonSharpEditor;
+using System.Collections.Immutable;
+#endif
 
 namespace BrokeredUpdates
 {
@@ -44,11 +56,10 @@ namespace BrokeredUpdates
 		{
 			Debug.Log( $"SYNCMARK\t{gameObject.name}\t{transform.localPosition.x:F3},{transform.localPosition.y:F3},{transform.localPosition.z:F3}\t{transform.localRotation.x:F3},{transform.localRotation.y:F3},{transform.localRotation.z:F3},{transform.localRotation.w:F3}" );
 		}
-		
+
+
 		void Start()
 		{
-			if( !Utilities.IsValid( brokeredUpdateManager ) )
-				brokeredUpdateManager = GameObject.Find( "BrokeredUpdateManager" ).GetComponent<BrokeredUpdateManager>();
 			brokeredUpdateManager._RegisterSlowObjectSyncUpdate( this );
 			brokeredUpdateManager._RegisterSnailUpdate( this );
 
@@ -194,6 +205,7 @@ namespace BrokeredUpdates
 		override public void OnPickup ()
 		{
 			if( bDisableColliderOnGrab ) thisCollider.enabled = false;
+			brokeredUpdateManager._UnregisterSubscription( this ); // In case it was already subscribed.
 			brokeredUpdateManager._RegisterSubscription( this );
 			Networking.SetOwner( Networking.LocalPlayer, gameObject );
 			fDeltaMasterSendUpdateTime = 10;
@@ -360,3 +372,78 @@ namespace BrokeredUpdates
 		}
 	}
 }
+
+
+#if !COMPILER_UDONSHARP && UNITY_EDITOR
+namespace UdonSharp
+{
+    public class UdonSharpBuildChecks : IVRCSDKBuildRequestedCallback
+    {
+        public int callbackOrder => -1;
+
+        public bool OnBuildRequested(VRCSDKRequestedBuildType requestedBuildType)
+        {
+			if (requestedBuildType == VRCSDKRequestedBuildType.Avatar) return true;
+			BrokeredUpdates.BrokeredSync [] bs = Resources.FindObjectsOfTypeAll( typeof( BrokeredUpdates.BrokeredSync ) ) as BrokeredUpdates.BrokeredSync[];
+			foreach( BrokeredUpdates.BrokeredSync b in bs )
+			{
+				b.UpdateProxy();
+				if( b.brokeredUpdateManager == null )
+				{
+					Debug.LogError($"[<color=#FF00FF>BrokeredSync</color>] Missing brokeredUpdateManager reference on {b.gameObject.name}");
+					typeof(UnityEditor.SceneView).GetMethod("ShowNotification", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { $"BrokeredSync missing brokeredUpdateManager reference on {b.gameObject.name}" });
+					return false;				
+				}
+			}
+			return true;
+		}
+	}
+}
+
+namespace BrokeredUpdates
+{
+    [CustomEditor(typeof(BrokeredUpdates.BrokeredSync))]
+    public class BrokeredUpdatesBrokeredSyncEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)) return;
+            EditorGUILayout.Space();
+			int ct = 0;
+            if (GUILayout.Button(new GUIContent("Attach brokeredUpdateManager to all Brokered Sync objects.", "Automatically finds all Brokered Sync objects and attaches the manager.")))
+			{
+				BrokeredSync [] bs = Resources.FindObjectsOfTypeAll( typeof( BrokeredSync ) ) as BrokeredSync[];
+				BrokeredUpdateManager [] managers = Resources.FindObjectsOfTypeAll( typeof( BrokeredUpdateManager ) ) as BrokeredUpdateManager[];
+				if( managers.Length < 1 )
+				{
+					Debug.LogError($"[<color=#FF00FF>UdonSharp</color>] Could not find a BrokeredUpdateManager. Did you add the prefab to your scene?");
+					return;
+				}
+				BrokeredUpdateManager manager = managers[0];
+				foreach( BrokeredSync b in bs )
+				{
+					b.UpdateProxy();
+					if( b.brokeredUpdateManager == null )
+					{
+						Debug.Log( $"Attaching to {b.gameObject.name}" );
+						//https://github.com/MerlinVR/UdonSharp/wiki/Editor-Scripting#non-inspector-editor-scripts
+						b.brokeredUpdateManager = manager;
+						b.ApplyProxyModifications();
+						ct++;
+					}
+				}
+			}
+			Debug.Log( $"Attached {ct} manager references." );
+            EditorGUILayout.Space();
+            base.OnInspectorGUI();
+        }
+
+        IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
+        {
+			Debug.Log( "CreateUdonVariable()" );
+            System.Type udonVariableType = typeof(UdonVariable<>).MakeGenericType(type);
+			return (IUdonVariable)Activator.CreateInstance(udonVariableType, symbolName, value);
+        }
+    }
+}
+#endif
