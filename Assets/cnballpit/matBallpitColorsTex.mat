@@ -60,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _VideoTexture:
-        m_Texture: {fileID: 2800000, guid: 20ea8c25d5668274cb0e6cadbf680aad, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2d94d52a04e3163469722875cf7d0fab, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:

@@ -1,5 +1,6 @@
 // MIT License
 // Copyright (c) 2021 Merlin
+// Modifications (c) 2021 cnlohr
 
 using UdonSharp;
 using UnityEngine;

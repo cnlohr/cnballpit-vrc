@@ -256,6 +256,14 @@ Reopen Unity
  * Moved camp to ball pit
  * Upgraded Texel video player for beta VRC
  * Upgraded the brokered object sync.
+ 
+## 29.0 12:38 AM / November 13, 2021
+ * Make balls have shadows during the day
+ * Only compute extra lights at night
+ * Add tartan goose
+ * Turn the pizza into a yeetza.
+ * Add some rocks that have neat effects.
+ * Make some rocks have gravity
 
 ## Interesting
  * shader_billboardout modes.

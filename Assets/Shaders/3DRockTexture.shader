@@ -6,8 +6,8 @@ Shader "Custom/3DRockTexture"
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
-		_TextureDetail ("Detail", float)=1.0
-		_TextureAnimation ("Animation Speed", float)=1.0
+		_TextureDetail ("Detail", Range(0,10))=2
+		_TextureAnimation ("Animation Speed", Range(0,2))=.5
 		_TANoiseTex ("TANoise", 2D) = "white" {}
 		_NoisePow ("Noise Power", float ) = 1.8
 		_RockAmbient ("Rock Ambient Boost", float ) = 0.1
@@ -53,6 +53,8 @@ Shader "Custom/3DRockTexture"
 		LOD 200
 		//"DisableBatching"="False"
 
+		Cull Off
+
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
 		#pragma surface surf Standard fullforwardshadows vertex:vert
@@ -60,7 +62,7 @@ Shader "Custom/3DRockTexture"
 		#pragma multi_compile_instancing
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 4.0
-		#include "/Assets/Shaders/tanoise/tanoise.cginc"
+		#include "/Assets/cnlohr/Shaders/tanoise/tanoise.cginc"
 
 		sampler2D _MainTex;
 		
@@ -68,6 +70,7 @@ Shader "Custom/3DRockTexture"
 		{
 			float2 uv_MainTex;
 			float3 worldPos;
+			float3 viewDir;
 			float3 objPos;
 			float4 color;
 			float4 extra;
@@ -147,7 +150,13 @@ Shader "Custom/3DRockTexture"
 			
 			float4 normpert = tanoise4( float4( calcpos.xyz*320.5, _Time.y*_TextureAnimation ) ) * .4 +
 				tanoise4( float4( calcpos.xyz*90.2, _Time.y*_TextureAnimation ) ) * .3;
-			
+
+
+            if( IN.viewDir.z < 0 )
+			{
+				c /= 5;
+			}
+			 
 			o.Normal = normalize( float3( normpert.xy-.35, 1.5 ) );
 
 			//c = frac( IN.extra.y*.25+.05 ).xxxx;

@@ -53,7 +53,7 @@ Shader "Custom/GenericInstancedRockTexture"
 		#pragma multi_compile_instancing
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 4.0
-		#include "/Assets/Shaders/tanoise/tanoise.cginc"
+		#include "/Assets/cnlohr/Shaders/tanoise/tanoise.cginc"
 
 		sampler2D _MainTex;
 		

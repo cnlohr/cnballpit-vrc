@@ -4,7 +4,7 @@ Shader "AudioLink/AudioLinkSandbox/BrazierParticleEffect"
 {
     Properties
     {
-        [HideInInspector] _TANoiseTex ("TANoise", 2D) = "white" {}
+        _TANoiseTex ("TANoise", 2D) = "white" {}
         _FlameSpeed ("Flame Speed", float ) = 8.0
     }
     SubShader
@@ -27,7 +27,7 @@ Shader "AudioLink/AudioLinkSandbox/BrazierParticleEffect"
 
             #include "UnityCG.cginc"
             #include "/Assets/AudioLink/Shaders/AudioLink.cginc"
-            #include "/Assets/Shaders/tanoise/tanoise.cginc"
+            #include "/Assets/cnlohr/Shaders/tanoise/tanoise.cginc"
 
             struct appdata
             {

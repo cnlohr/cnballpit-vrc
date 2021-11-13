@@ -56,7 +56,7 @@ Shader "Custom/SandTexture"
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
-		#include "tanoise/tanoise.cginc"
+		#include "/Assets/cnlohr/shaders/tanoise/tanoise.cginc"
 
 		sampler2D _MainTex;
 

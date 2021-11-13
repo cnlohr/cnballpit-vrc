@@ -19,8 +19,7 @@
 //  float2 tanoise3_2d( in float3 x ) //1 Texture Lookup
 //  float4 tanoise2( in float2 x )    //1 Texture Lookup
 //  float4 tanoise2_hq( in float2 x ) //4 Texture Lookup (For when hardware interpreters aren't good enough)
-//  float4 tanoise3_hq( in float3 x ) //8 Texture Lookups
-//  float4 tanoise4_hq( in float4 x ) //16 Texture Lookups
+//  float4 tanoise4_hq( in float4 x ) //12 texture lookups
 //
 //  The texture should be the noise texture bound. i.e. add this to properties
 //  Properties {
@@ -113,6 +112,8 @@
 sampler2D _TANoiseTex;
 uniform half4 _TANoiseTex_TexelSize; 
 uniform half4 _TANoiseTex_ST; 
+
+sampler2D _TANoiseTexNearest;
 
 static const float4x4 tanoiseM = 
 {
@@ -297,43 +298,68 @@ float4 tanoise2_hq( in float2 x )
 		uvmux.y);
 }
 
-
-float4 tanoise3_hq( in float3 x )
+// A very fast, but poorer quality than tasimplex3 - outputs+inputs are approx the same.
+float taquicksmooth3( float3 p )
 {
-	float3 c = mul(tanoiseM,x );
-	float3 p = floor(c);
-	float3 f = frac(c);
+	float x = tanoise3_1d( p*float3(2.7,2.7,1.9) ) * 2 - 1;
+	//Opposite-ish of smoothstep
+	return ((sin(asin(x)/2.8))*2);
+}
 
-	// First level smoothing for nice interpolation between levels. This
-	// gets rid of the sharp artifacts that will come from the bilinear
-	// interpolation.
-	f = f * f * ( 3.0 - 2.0 * f );
+// Used for tasimplex3
+float3 tahash33( int3 coord )
+{
+	float2 uva = (int2(coord.xy + coord.z*tanoiseZOff)) *_TANoiseTex_TexelSize.xy;
+	return tex2Dlod( _TANoiseTexNearest, float4( frac(uva), 0.0, 0.0 ) );
+}
 
-	// Compute a u,v coordinateback in
-	float2 uv = ( p.xy + p.z*tanoiseZOff ) + f.xy;
 
-	// Uncomment to debug final mnoise matrix.
-	
-	float2 uvfloor = floor((uv))+0.5;
-	float2 uvmux =   uv-uvfloor+0.5;
-	float4 A = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	float4 B = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	float4 C = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	float4 D = tex2Dlod( _TANoiseTex, float4( (uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	float4 r = lerp(
-		lerp( A, B, uvmux.x ),
-		lerp( C, D, uvmux.x ),
-		uvmux.y);
-	A = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(0.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	B = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(1.0, 0.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	C = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(0.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	D = tex2Dlod( _TANoiseTex, float4( (tanoiseZOff+uvfloor+float2(1.0, 1.0))*_TANoiseTex_TexelSize.xy, 0.0, 0.0 ) );
-	float4 g = lerp(
-		lerp( A, B, uvmux.x ),
-		lerp( C, D, uvmux.x ),
-		uvmux.y);
-		
-	return lerp( r, g, f.z );
+// Simplex3D noise by Nikita Miropolskiy
+// https://www.shadertoy.com/view/XsX3zB
+// Licensed under the MIT License
+// Copyright © 2013 Nikita Miropolskiy
+// Modified by cnlohr for HLSL and hashwithoutsine
+// Modified for TA by cnlohr / note this is ~1.5x to 2x faster than the non-TA version.
+float tasimplex3(float3 p) {
+	/* 1. find current tetrahedron T and it's four vertices */
+	/* s, s+i1, s+i2, s+1.0 - absolute skewed (integer) coordinates of T vertices */
+	/* x, x1, x2, x3 - unskewed coordinates of p relative to each of T vertices*/
+
+	/* calculate s and x */
+	uint3 s = floor(p + dot(p, (1./3.)));
+	float3 G3 = 1./6.;
+	float3 x = p - s + dot(s, float3(G3));
+
+	/* calculate i1 and i2 */
+	float3 e = step(0.0, x - x.yzx);
+	float3 i1 = e*(1.0 - e.zxy);
+	float3 i2 = 1.0 - e.zxy*(1.0 - e);
+
+	/* x1, x2, x3 */
+	float3 x1 = x - i1 + G3;
+	float3 x2 = x - i2 + 2.0*G3;
+	float3 x3 = x - 1.0 + 3.0*G3;
+
+	/* 2. find four surflets and store them in d */
+	float4 w = float4( dot(x,x), dot(x1,x1), dot(x2,x2), dot(x3,x3) );
+
+	/* w fades from 0.6 at the center of the surflet to 0.0 at the margin */
+	w = max(0.6 - w, 0.0);
+
+	/* calculate surflet components */
+	float4 d = float4( 
+		dot(tahash33(s)-0.5, x),
+		dot(tahash33(s + i1)-0.5, x1),
+		dot(tahash33(s + i2)-0.5, x2),
+		dot(tahash33(s + 1.0)-0.5, x3) );
+
+	/* multiply d by w^4 */
+	w *= w;
+	w *= w;
+	d *= w;
+
+	/* 3. return the sum of the four surflets */
+	return dot(d, 52.0);
 }
 
 

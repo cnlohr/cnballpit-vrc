@@ -29,7 +29,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 
 			CGINCLUDE
 			
-			#include "Assets/cnballpit/hashwithoutsine/hashwithoutsine.cginc"
+			#include "Assets/cnlohr/Shaders/hashwithoutsine/hashwithoutsine.cginc"
 			#include "Assets/AudioLink/Shaders/AudioLink.cginc"
 			#pragma vertex vert
 			#pragma geometry geo
@@ -102,6 +102,15 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			void geo(point v2g p[1], inout TriangleStream<g2f> triStream, uint id : SV_PrimitiveID)
 			{
 				int transadd;
+
+// No shadows at night.
+#ifdef UNITY_PASS_SHADOWCASTER
+				if( _NightMode > 0.5 )
+				{
+					return;
+				}
+#endif
+
 				for( transadd = 0; transadd < 8; transadd++ )
 				{
 					//based on https://github.com/MarekKowalski/LiveScan3D-Hololens/blob/master/HololensReceiver/Assets/GS%20Billboard.shader
@@ -160,7 +169,12 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 
 					float4x4 vp = mul( UNITY_MATRIX_MVP, unity_WorldToObject);
 
-					float4 colorDiffuse = float4( hash33((DataVel.www*10.+10.1)), 1. ) - .1;
+#ifdef UNITY_PASS_SHADOWCASTER
+					float4 colorDiffuse = 0;
+					float3 SmoothHue = 0;
+					float4 colorAmbient = 0;
+#else
+					float4 colorDiffuse = float4( chash33((DataVel.www*10.+10.1)), 1. ) - .1;
 					
 					float3 SmoothHue = AudioLinkHSVtoRGB( float3(  frac(ballid/1024. + AudioLinkDecodeDataAsSeconds(ALPASS_GENERALVU_NETWORK_TIME)*.05), 1, .8 ) );
 					float4 colorAmbient = 0.;
@@ -261,9 +275,9 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorAmbient += colorDiffuse * .7;
 						colorDiffuse = colorDiffuse * .75 + 0.01;
 					}
+#endif
 					g2f pIn;
-					
-					
+
 					pIn.pos = mul(vp, v[0]);
 					pIn.uv = float2(1.0f, 0.0f);
 					pIn.ballcenter = float4( DataPos.xyz, DataPos.w * RAIDUS_FUDGE_MUX + RADIUS_FUDGE_ADD + RADIUS_FUDGE_ADD_BY_DISTANCE * distance_to_ball );
@@ -318,9 +332,21 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 				float3 s0 = input.ballcenter;
 				float sr = input.ballcenter.w;
 				float3 hitworld = input.hitworld;
-				float3 ro = _WorldSpaceCameraPos;
-				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
+				
+				// Found by BenDotCom -
+				// I saw these ortho shadow substitutions in a few places, but bgolus explains them
+				// https://bgolus.medium.com/rendering-a-sphere-on-a-quad-13c92025570c
 
+				float howOrtho = UNITY_MATRIX_P._m33; // instead of unity_OrthoParams.w
+				float3 worldSpaceCameraPos = UNITY_MATRIX_I_V._m03_m13_m23; // instead of _WorldSpaceCameraPos
+				float3 worldPos = input.hitworld; // mul(unity_ObjectToWorld, v.vertex); (If in vertex shader)
+				float3 cameraToVertex = worldPos - worldSpaceCameraPos;
+				float3 orthoFwd = -UNITY_MATRIX_I_V._m02_m12_m22; // often seen: -UNITY_MATRIX_V[2].xyz;
+				float3 orthoRayDir = orthoFwd * dot(cameraToVertex, orthoFwd);
+				// start from the camera plane (can also just start from o.vertex if your scene is contained within the geometry)
+				float3 orthoCameraPos = worldPos - orthoRayDir;
+				float3 ro = lerp(worldSpaceCameraPos, orthoCameraPos, howOrtho );
+				float3 rd = lerp(cameraToVertex, orthoRayDir, howOrtho );
 
 				float a = dot(rd, rd);
 				float3 s0_r0 = ro - s0;
@@ -335,36 +361,18 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 				float2 answers = float2(-b - sqrt(disc), -b + sqrt(disc)) / (2.0 * a);
 				float minr = min( answers.x, answers.y );
 	
-	
 				float3 worldhit = ro + rd * minr;
 				float3 dist = worldhit.xyz - _LightPositionRange.xyz;
 
-#if 1
-				// Tricky - if we're doing the shadow pass, we're orthographic.
-				// compute outDepth this other way.
-				if ((UNITY_MATRIX_P[3].x == 0.0) && (UNITY_MATRIX_P[3].y == 0.0) && (UNITY_MATRIX_P[3].z == 0.0))
-				{
-					float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
-					if( length( input.uv-0.5) < SHADOW_SIZE )
-						outDepth = clipPos.z / clipPos.w;
-					else
-						outDepth = 0;
-					return 0.;
-				}
-#endif
 				//Charles way.
 				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
 				
-				//D4rkPl4y3r's way.				
+				//D4rkPl4y3r's shadow technique		
 				shadowHelper v;
 				v.vertex = mul(unity_WorldToObject, float4(worldhit, 1));
 				v.normal = normalize(mul((float3x3)unity_WorldToObject, worldhit - s0));
 				TRANSFER_SHADOW_CASTER_NOPOS(v, clipPos);
 				outDepth = clipPos.z / clipPos.w;
-
-				float dx = length( float2( ddx(disc), ddy(disc) ) );
-				float edge = disc/dx;
-				if( edge < 1.0 ) outDepth = 0;
 
 				//return colOut(v);
 				return 0;
@@ -525,9 +533,9 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 				float4 props = input.props;
 				float3 s0 = input.ballcenter;
 				float sr = input.ballcenter.w;
-				float3 hitworld = input.hitworld;
+				float3 hitworld_plane = input.hitworld;
 				float3 ro = _WorldSpaceCameraPos;
-				float3 rd = normalize(hitworld-_WorldSpaceCameraPos);
+				float3 rd = normalize(hitworld_plane-_WorldSpaceCameraPos);
 				
 				float a = dot(rd, rd);
 				float3 s0_r0 = ro - s0;
@@ -547,13 +555,12 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 	
 				float3 worldhit = ro + rd * minr;
 				float3 hitnorm = normalize(worldhit-s0);
-				float4 clipPos = mul(UNITY_MATRIX_VP, float4(hitworld, 1.0));
-				
+				float4 clipPos = mul(UNITY_MATRIX_VP, float4(worldhit, 1.0));
 				float4 albcolor = 1.;
 				
 				// Potentially subtract from shadowmap
 				
-				if( _ExtraPretty > 0.5 ) 
+				//if( _ExtraPretty > 0.5 ) 
 				{
 					float4 col = input.colorDiffuse;
 					float3 normal = hitnorm;
@@ -576,6 +583,42 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					indirectLight.diffuse = SHEvalL0L1Geomerics(normal);
 					indirectLight.specular = cubemapReflection(_Smoothness, reflect(dir, normal), wPos);
 
+					if( _NightMode <= 0.5 )
+					{
+						struct shadowonly
+						{
+							float4 pos;
+							float4 _LightCoord;
+							float4 _ShadowCoord;
+						} so;
+						so._LightCoord = 0.;
+						so.pos = clipPos;
+						so._ShadowCoord  = 0;
+						UNITY_TRANSFER_SHADOW( so, 0. );
+						attenuation = LIGHT_ATTENUATION( so );
+
+						if( 1 )
+						{
+							//GROSS: We actually need to sample adjacent pixels. 
+							//sometimes we are behind another object but our color.
+							//shows through because of the mask.
+							so.pos = clipPos + float4( 1/_ScreenParams.x, 0.0, 0.0, 0.0 );
+							UNITY_TRANSFER_SHADOW( so, 0. );
+							attenuation = min( attenuation, LIGHT_ATTENUATION( so ) );
+							so.pos = clipPos + float4( -1/_ScreenParams.x, 0.0, 0.0, 0.0 );
+							UNITY_TRANSFER_SHADOW( so, 0. );
+							attenuation = min( attenuation, LIGHT_ATTENUATION( so ) );
+							so.pos = clipPos + float4( 0, 1/_ScreenParams.y, 0.0, 0.0 );
+							UNITY_TRANSFER_SHADOW( so, 0. );
+							attenuation = min( attenuation, LIGHT_ATTENUATION( so ) );
+							so.pos = clipPos + float4( 0, 1/_ScreenParams.y, 0.0, 0.0 );
+							UNITY_TRANSFER_SHADOW( so, 0. );
+							attenuation = min( attenuation, LIGHT_ATTENUATION( so ) );
+						}
+					}
+
+					// No Light
+					#if 0
 					if (all(light.color == 0))
 					{
 						light.dir = normalize(unity_SHAr.xyz + unity_SHAg.xyz + unity_SHAb.xyz + 0.001);
@@ -583,12 +626,13 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						indirectLight.diffuse = ShadeSH9(float4(0, 0, 0, 1));
 					}
 					else
+					#endif
 					{
-						indirectLight.diffuse += light.color * .25;
+						indirectLight.diffuse += light.color * .025;
 						light.color *= .75 * attenuation;
 					}
 					
-					float EmissiveShift = 1. - length( input.uv - 0.5 )*.4; //setting this to .8 makes the balls look kinda glassy.
+					float EmissiveShift = 1. - length( input.uv - 0.5 )*0.8; //setting this to .8 makes the balls look kinda glassy.
 					
 					albcolor.rgb = UNITY_BRDF_PBS(
 						albedo, specularTint,
@@ -596,57 +640,63 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						normal, -dir,
 						light, indirectLight
 					).rgb + input.colorAmbient.xyz * EmissiveShift;
-					
-					float3 unityLightPositions[4] = { 
-						float3( unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x ),
-						float3( unity_4LightPosX0.y, unity_4LightPosY0.y, unity_4LightPosZ0.y ),
-						float3( unity_4LightPosX0.z, unity_4LightPosY0.z, unity_4LightPosZ0.z ),
-						float3( unity_4LightPosX0.w, unity_4LightPosY0.w, unity_4LightPosZ0.w )
-						};
-					float3 deltas[4] = {
-						unityLightPositions[0].xyz - wPos,
-						unityLightPositions[1].xyz - wPos,
-						unityLightPositions[2].xyz - wPos,
-						unityLightPositions[3].xyz - wPos };
 
-					float4 comps = float4(
-						length( deltas[0] ),
-						length( deltas[1] ),
-						length( deltas[2] ),
-						length( deltas[3] ) );
+					if( _NightMode > 0.5 )
+					{
+						//Handle up to 4 additional lights if at night.
 						
-					deltas[0] = normalize( deltas[0] );
-					deltas[1] = normalize( deltas[1] );
-					deltas[2] = normalize( deltas[2] );
-					deltas[3] = normalize( deltas[3] );
+						float3 unityLightPositions[4] = { 
+							float3( unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x ),
+							float3( unity_4LightPosX0.y, unity_4LightPosY0.y, unity_4LightPosZ0.y ),
+							float3( unity_4LightPosX0.z, unity_4LightPosY0.z, unity_4LightPosZ0.z ),
+							float3( unity_4LightPosX0.w, unity_4LightPosY0.w, unity_4LightPosZ0.w )
+							};
+						float3 deltas[4] = {
+							unityLightPositions[0].xyz - wPos,
+							unityLightPositions[1].xyz - wPos,
+							unityLightPositions[2].xyz - wPos,
+							unityLightPositions[3].xyz - wPos };
+
+						float4 comps = float4(
+							length( deltas[0] ),
+							length( deltas[1] ),
+							length( deltas[2] ),
+							length( deltas[3] ) );
+							
+						deltas[0] = normalize( deltas[0] );
+						deltas[1] = normalize( deltas[1] );
+						deltas[2] = normalize( deltas[2] );
+						deltas[3] = normalize( deltas[3] );
+							
+						float4 ndotls = float4(
+							dot( normal, normalize( deltas[0] ) ),
+							dot( normal, normalize( deltas[1] ) ),
+							dot( normal, normalize( deltas[2] ) ),
+							dot( normal, normalize( deltas[3] ) ) );
+
+						float4 squaredDistance = comps * comps;
 						
-					float4 ndotls = float4(
-						dot( normal, normalize( deltas[0] ) ),
-						dot( normal, normalize( deltas[1] ) ),
-						dot( normal, normalize( deltas[2] ) ),
-						dot( normal, normalize( deltas[3] ) ) );
+						float4 attenuations_base = 1.0 / (1.0 + 
+							unity_4LightAtten0 * squaredDistance);
 
-					float4 squaredDistance = comps * comps;
-					
-					float4 attenuations_base = 1.0 / (1.0 + 
-						unity_4LightAtten0 * squaredDistance);
+						float4 attenuations = attenuations_base * (saturate( ndotls )+.03);
+						attenuations = saturate( attenuations - .1 );
 
-					float4 attenuations = attenuations_base * (saturate( ndotls )+.03);
-					attenuations = saturate( attenuations - .1 );
-
-					//specularReflection = attenuations * _LightColor0.rgb * _SpecColor.rgb * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), _Shininess);
-					float _Shininess = 5;
-					
-					float4 attenuationspec = saturate( attenuations_base/2 - 0.1 ) ;
-					
-					float3 basergb = saturate( input.colorAmbient.xyz * 20 );
-					albcolor.rgb += unity_LightColor[0] * ( attenuations.x * basergb + attenuationspec.x * pow(max(0.0, dot(reflect(-deltas[0], normal), -dir)), _Shininess) ); 
-					albcolor.rgb += unity_LightColor[1] * ( attenuations.y * basergb + attenuationspec.y * pow(max(0.0, dot(reflect(-deltas[1], normal), -dir)), _Shininess) );
-					albcolor.rgb += unity_LightColor[2] * ( attenuations.z * basergb + attenuationspec.z * pow(max(0.0, dot(reflect(-deltas[2], normal), -dir)), _Shininess) );
-					albcolor.rgb += unity_LightColor[3] * ( attenuations.w * basergb + attenuationspec.w * pow(max(0.0, dot(reflect(-deltas[3], normal), -dir)), _Shininess) );
-					
-										
+						//specularReflection = attenuations * _LightColor0.rgb * _SpecColor.rgb * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), _Shininess);
+						float _Shininess = 5;
+						
+						float4 attenuationspec = saturate( attenuations_base/2 - 0.1 ) ;
+						
+						float3 basergb = saturate( input.colorAmbient.xyz * 20 );
+						albcolor.rgb += unity_LightColor[0] * ( attenuations.x * basergb + attenuationspec.x * pow(max(0.0, dot(reflect(-deltas[0], normal), -dir)), _Shininess) ); 
+						albcolor.rgb += unity_LightColor[1] * ( attenuations.y * basergb + attenuationspec.y * pow(max(0.0, dot(reflect(-deltas[1], normal), -dir)), _Shininess) );
+						albcolor.rgb += unity_LightColor[2] * ( attenuations.z * basergb + attenuationspec.z * pow(max(0.0, dot(reflect(-deltas[2], normal), -dir)), _Shininess) );
+						albcolor.rgb += unity_LightColor[3] * ( attenuations.w * basergb + attenuationspec.w * pow(max(0.0, dot(reflect(-deltas[3], normal), -dir)), _Shininess) );
+						
+					}
 				}
+				#if 0
+				//Not pretty mode.
 				else
 				{
 					const float shininessVal = 8;
@@ -676,7 +726,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					float attenuation = 1;
 
 					//XXX TODO FIX SHADOWS
-					#if 0
+					#if 1
 					struct shadowonly
 					{
 						float4 pos;
@@ -692,6 +742,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					
 					albcolor *= attenuation;
 				}
+				#endif
 
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				outDepth = clipPos.z / clipPos.w;
@@ -702,7 +753,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 
 				float fakealpha = saturate(disc/dx);
 				float dist_to_surface = length( worldhit - ro );
-				float distalpha = dist_to_surface*10. - _ProjectionParams.y - hash22(input.uv*1000.).y*.5;
+				float distalpha = dist_to_surface*10. - _ProjectionParams.y - chash22(input.uv*1000.).y*.5;
 				fakealpha = min( distalpha, fakealpha );
 				//Thanks, D4rkPl4y3r.
 				Coverage[0] = ( 1u << ((uint)(fakealpha*GetRenderTargetSampleCount() + 0.5)) ) - 1;

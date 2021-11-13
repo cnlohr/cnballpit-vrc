@@ -89,8 +89,6 @@ namespace Texel
         const short VIDEO_SOURCE_AVPRO = 1;
         const short VIDEO_SOURCE_UNITY = 2;
 
-        Playlist playlist;
-
         bool infoPanelOpen = false;
 
         string statusOverride = null;
@@ -118,9 +116,6 @@ namespace Texel
 
             if (Utilities.IsValid(videoPlayer))
             {
-                if (Utilities.IsValid(videoPlayer.playlist))
-                    playlist = videoPlayer.playlist;
-
                 if (Utilities.IsValid(videoPlayer.dataProxy))
                 {
                     dataProxy = videoPlayer.dataProxy;
@@ -151,6 +146,8 @@ namespace Texel
             _FindOwners();
             SendCustomEventDelayedFrames("_RefreshPlayerAccessIcon", 1);
 #endif
+
+            _UpdateAll();
         }
 
         void _DisableAllVideoControls()
@@ -258,8 +255,8 @@ namespace Texel
                 return;
 
             videoPlayer._ChangeUrl(url);
-            if (Utilities.IsValid(playlist))
-                playlist._SetEnabled(false);
+            if (Utilities.IsValid(videoPlayer.playlist))
+                videoPlayer.playlist._SetEnabled(false);
             loadActive = false;
             _UpdateAll();
         }
@@ -460,32 +457,42 @@ namespace Texel
 
         public void _HandlePlaylist()
         {
-            if (!Utilities.IsValid(playlist) || !Utilities.IsValid(videoPlayer))
+            if (!Utilities.IsValid(videoPlayer) || !Utilities.IsValid(videoPlayer.playlist))
                 return;
 
-            playlist._SetEnabled(true);
-            if (!playlist.playlistEnabled)
+            videoPlayer.playlist._SetEnabled(true);
+            if (!videoPlayer.playlist.playlistEnabled)
                 return;
 
-            videoPlayer._ChangeUrl(playlist._GetCurrent());
+            if (videoPlayer.playlist.holdOnReady)
+                videoPlayer._HoldNextVideo();
+            videoPlayer._ChangeUrl(videoPlayer.playlist._GetCurrent());
         }
 
         public void _HandlePlaylistNext()
         {
-            if (!Utilities.IsValid(playlist) || !Utilities.IsValid(videoPlayer))
+            if (!Utilities.IsValid(videoPlayer) || !Utilities.IsValid(videoPlayer.playlist))
                 return;
 
-            if (playlist._MoveNext())
-                videoPlayer._ChangeUrl(playlist._GetCurrent());
+            if (videoPlayer.playlist._MoveNext())
+            {
+                if (videoPlayer.playlist.holdOnReady)
+                    videoPlayer._HoldNextVideo();
+                videoPlayer._ChangeUrl(videoPlayer.playlist._GetCurrent());
+            }
         }
 
         public void _HandlePlaylistPrev()
         {
-            if (!Utilities.IsValid(playlist) || !Utilities.IsValid(videoPlayer))
+            if (!Utilities.IsValid(videoPlayer) || !Utilities.IsValid(videoPlayer.playlist))
                 return;
 
-            if (playlist._MovePrev())
-                videoPlayer._ChangeUrl(playlist._GetCurrent());
+            if (videoPlayer.playlist._MovePrev())
+            {
+                if (videoPlayer.playlist.holdOnReady)
+                    videoPlayer._HoldNextVideo();
+                videoPlayer._ChangeUrl(videoPlayer.playlist._GetCurrent());
+            }
         }
 
         void _SetStatusOverride(string msg, float timeout)
@@ -546,7 +553,7 @@ namespace Texel
                     syncSliderControl.SetActive(false);
 
                     _updatingProgressSlider = true;
-                    progressSlider.value = Mathf.Clamp01(dataProxy.trackPosition / dataProxy.trackDuration);
+                    progressSlider.value = (dataProxy.trackDuration <= 0) ? 0f : Mathf.Clamp01(dataProxy.trackPosition / dataProxy.trackDuration);
                     _updatingProgressSlider = false;
                 }
             }
@@ -596,6 +603,7 @@ namespace Texel
             bool enableControl = !videoPlayer.locked || canControl;
 
             repeatIcon.color = videoPlayer.repeatPlaylist ? activeColor : normalColor;
+            Playlist playlist = videoPlayer.playlist;
 
             if (Utilities.IsValid(playlist) && playlist.trackCount > 0)
             {
@@ -667,7 +675,7 @@ namespace Texel
 
                     if (!loadActive)
                     {
-                        SetPlaceholderText("Loading...");
+                        SetPlaceholderText(dataProxy.heldReady ? "Ready" : "Loading...");
                         urlInput.readOnly = true;
                         SetStatusText("");
                     }
@@ -880,6 +888,15 @@ namespace Texel
 
         void _PopulateMissingReferences()
         {
+            if (!Utilities.IsValid(videoPlayer))
+            {
+                videoPlayer = transform.parent.GetComponent<SyncPlayer>();
+                if (Utilities.IsValid(videoPlayer))
+                    videoPlayer.debugLog._Write("PlayerControls", $"Missing syncplayer reference, found one on parent");
+                else
+                    Debug.LogError("Missing syncplayer reference, also could not find one on parent!");
+            }
+
             // Volume
 
             if (!Utilities.IsValid(volumeSliderControl))
@@ -946,6 +963,9 @@ namespace Texel
                 queuedText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/QueuedText", typeof(Text));
             if (!Utilities.IsValid(playlistText))
                 playlistText = (Text)_FindComponent("MainPanel/LowerRow/InputProgress/PlaylistText", typeof(Text));
+
+            if (!Utilities.IsValid(urlInput) && Utilities.IsValid(videoPlayer.debugLog))
+                videoPlayer.debugLog._Write("PlayerControls", "Could not resolve URL input component: is your VRC SDK missing VRCUrlInput?");
 
             // Info Panel 
 

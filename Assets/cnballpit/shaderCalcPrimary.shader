@@ -51,7 +51,7 @@ Shader "cnballpit/shaderCalcPrimary"
 			#pragma fragment frag
 
 			#include "UnityCG.cginc"
-			#include "/Assets/cnballpit/hashwithoutsine/hashwithoutsine.cginc"
+			#include "/Assets/cnlohr/Shaders/hashwithoutsine/hashwithoutsine.cginc"
 
 			struct appdata
 			{
@@ -171,7 +171,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				if( _Time.y < 3 || Position.w == 0 || _ResetBalls > 0 )
 				//if( 0 )
 				{
-					ret.Pos = float4( hash33( ballid.xxx ) * float3( 12, 2.5, 12 ) + float3( -6, 0, -6 ), _BallRadius );
+					ret.Pos = float4( chash33( ballid.xxx ) * float3( 12, 2.5, 12 ) + float3( -6, 0, -6 ), _BallRadius );
 					ret.Vel = float4( 0., 0., 0., ballid );
 					return ret;
 				}

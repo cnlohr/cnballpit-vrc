@@ -35,7 +35,7 @@ Shader "SCRN_Aurora MatCap"
 
             float4 _NoiseTex_ST;
 
-			#include "Assets/Shaders/tanoise/tanoise.cginc"
+			#include "Assets/cnlohr/Shaders/tanoise/tanoise.cginc"
 			#include "Assets/AudioLink/Shaders/AudioLink.cginc"
 
 			float _GeneralBrightness;

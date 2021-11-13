@@ -22,17 +22,16 @@ namespace BrokeredUpdates
 	[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 	public class BrokeredSync : UdonSharpBehaviour
 	{
-		[UdonSynced] private Vector3    syncPosition = new Vector3( 0, 0, 0 );
-		[UdonSynced] private bool       syncMoving;
+		[UdonSynced] private Vector3	syncPosition = new Vector3( 0, 0, 0 );
+		[UdonSynced] private bool	   syncMoving;
 		[UdonSynced] private Quaternion syncRotation;
 
-		private Vector3                 lastSyncPosition;
-		private Quaternion              lastSyncRotation;
+		private Vector3				 lastSyncPosition;
+		private Quaternion			  lastSyncRotation;
 
 		private float fTimeStill;
 
 		public bool bDebug;
-		public bool bSnap;
 		public bool bHeld;
 		public bool bDisableColliderOnGrab = true;
 		public float fResetWhenHittingY = -1000;
@@ -41,16 +40,19 @@ namespace BrokeredUpdates
 		
 		private bool wasMoving;
 		private Collider thisCollider;
+		private Rigidbody thisRigidBody;
 		public BrokeredUpdateManager brokeredUpdateManager;
 		private bool masterMoving;
 		private bool firstUpdateSlave;
 		private float fDeltaMasterSendUpdateTime;
 		
-		private bool bUseGravityOnRelease;
-		private bool bKinematicOnRelease;
+		[HideInInspector]
+		public bool bUseGravityOnRelease;
+		[HideInInspector]
+		public bool bKinematicOnRelease;
 		
-		private Vector3               resetPosition;
-		private Quaternion            resetQuaternion;
+		private Vector3			   resetPosition;
+		private Quaternion			resetQuaternion;
 
 		public void _LogBlockState()
 		{
@@ -63,6 +65,7 @@ namespace BrokeredUpdates
 			brokeredUpdateManager._RegisterSlowObjectSyncUpdate( this );
 			brokeredUpdateManager._RegisterSnailUpdate( this );
 
+			thisRigidBody = GetComponent<Rigidbody>();
 			thisCollider = GetComponent<Collider>();
 
 			resetPosition = transform.localPosition;
@@ -90,10 +93,17 @@ namespace BrokeredUpdates
 				// For whatever reason, we've checked but the sync'd variables are not
 				// here populated on Start.  Don't trust their data.
 			}
-			if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
+
+			if( Utilities.IsValid( thisRigidBody ) )
 			{
-				bUseGravityOnRelease = GetComponent<Rigidbody>().useGravity;
-				bKinematicOnRelease = GetComponent<Rigidbody>().isKinematic;
+				bUseGravityOnRelease = thisRigidBody.useGravity;
+				bKinematicOnRelease = thisRigidBody.isKinematic;
+			}
+			else
+			{
+				Debug.Log( $"CNL WARNING: Rigid Body Invalid for object {gameObject.name}" );
+				bUseGravityOnRelease = false;
+				bKinematicOnRelease = true;
 			}
 			wasMoving = false;
 			masterMoving = false;
@@ -107,8 +117,28 @@ namespace BrokeredUpdates
 			RequestSerialization();
 		}
 
+		private void _CheckReset()
+		{
+			if( transform.localPosition.y < fResetWhenHittingY )
+			{
+				if( Networking.GetOwner( gameObject ) == Networking.LocalPlayer )
+				{
+					transform.localPosition = resetPosition;
+					transform.localRotation = resetQuaternion;
+
+					if( Utilities.IsValid( thisRigidBody ) )
+					{
+						thisRigidBody.velocity = new Vector3( 0, 0, 0 );
+						thisRigidBody.angularVelocity = new Vector3( 0, 0, 0 );
+					}
+					SendUpdateSystemAsMaster();
+				}
+			}
+		}
+		
 		public void _SnailUpdate()
 		{
+			_CheckReset();
 			//SLOWLY, over the course of many seconds get clients to resend
 			//all their objects if they're master.  **THIS SHOULD NOT BE REQUIRED**
 			//but something with photon is just broken.
@@ -127,8 +157,7 @@ namespace BrokeredUpdates
 			// This function will force all of the client's blocks to eventually line up to where
 			// they're supposed to be.
 			
-			// XXX TODO: REVISIT THIS WITH MORE TESTING!!!  It seems buggy when you cause motion to
-			// happen but Unity is unaware of it.
+			// It seems buggy when you cause motion to happen but Unity is unaware of it.
 			
 			// But, don't accidentally move it.  (note: syncPosition.magnitude > 0 is a not great way...
 			if( !masterMoving )
@@ -146,16 +175,40 @@ namespace BrokeredUpdates
 						SendUpdateSystemAsMaster();
 						
 						//Also pause object.
-						if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
-						{
-							GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
-							GetComponent<Rigidbody>().Sleep();
-						}
+						//if( Utilities.IsValid( thisRigidBody ) )
+						//{
+						//	thisRigidBody.velocity = new Vector3( 0, 0, 0 );
+						//	thisRigidBody.Sleep();
+						//}
 					}
 				}
 				else
 				{
 					if( syncPosition.magnitude > 0 ) OnDeserialization();
+				}
+
+				if( !syncMoving )
+				{
+					_ReturnToQuescentState();
+				}
+			}
+		}
+		
+		private void _ReturnToQuescentState()
+		{
+			// Make sure eventually, things become how the quescent state is.
+			// XXX TODO: This needs to happen when someone steals your ball
+			// then they release it.  The stealer then does not normally hit this
+			// code through the normal path. ->> Once that is resolved, try removing
+			// this code.
+			if( Utilities.IsValid( thisRigidBody ) )
+			{
+				thisRigidBody.useGravity = bUseGravityOnRelease;
+				thisRigidBody.isKinematic = bKinematicOnRelease;
+				if( bKinematicOnRelease )
+				{
+					thisRigidBody.velocity = new Vector3( 0, 0, 0 );
+					thisRigidBody.Sleep();
 				}
 			}
 		}
@@ -173,16 +226,16 @@ namespace BrokeredUpdates
 				fTimeStill += Time.deltaTime;
 				
 				// Make sure we're still for a while before we actually disable the object.
-				if( fTimeStill > 1 || !Utilities.IsValid( GetComponent<Rigidbody>() ) || GetComponent<Rigidbody>().isKinematic )
+				if( fTimeStill > 1 || !Utilities.IsValid( thisRigidBody ) || thisRigidBody.isKinematic )
 				{
 					// Stop Updating
 					brokeredUpdateManager._UnregisterSubscription( this );
 					
-					// Do this so if we were moving SUPER slowly, we actually stop.  TODO: How to disable motion?
-					if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
+					// Do this so if we were moving SUPER slowly, we actually stop.
+					if( Utilities.IsValid( thisRigidBody ) )
 					{
-						GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
-						GetComponent<Rigidbody>().Sleep();
+						thisRigidBody.velocity = new Vector3( 0, 0, 0 );
+						thisRigidBody.Sleep();
 					}
 
 					syncMoving = false;
@@ -224,8 +277,18 @@ namespace BrokeredUpdates
 		
 		public override void OnDeserialization()
 		{
-			//Shouldn't really happen.
-			if( masterMoving ) return;
+			// This happens if it was stolen.  We should release it.
+			if( masterMoving && Networking.GetOwner( gameObject ) != Networking.LocalPlayer )
+			{
+				Debug.Log( $"Received OnDeserialization() after master masterMoving on {gameObject.name}" );
+				masterMoving = false;
+				brokeredUpdateManager._UnregisterSubscription( this );
+				syncMoving = false;
+				if( bDisableColliderOnGrab ) thisCollider.enabled = true;
+				OnDrop();
+				_ReturnToQuescentState();
+				return;
+			}
 
 			if( firstUpdateSlave )
 			{
@@ -236,9 +299,10 @@ namespace BrokeredUpdates
 			
 			if( bDebug )
 			{
-				Vector4 col = GetComponent<MeshRenderer>().material.GetVector( "_Color" );
+				MeshRenderer mr = GetComponent<MeshRenderer>();
+				Vector4 col = mr.material.GetVector( "_Color" );
 				col.z = ( col.z + 0.01f ) % 1;
-				GetComponent<MeshRenderer>().material.SetVector( "_Color", col );
+				mr.material.SetVector( "_Color", col );
 			}
 			
 			if( !syncMoving )
@@ -248,13 +312,7 @@ namespace BrokeredUpdates
 				transform.localRotation = syncRotation;
 				wasMoving = false;
 				brokeredUpdateManager._UnregisterSubscription( this );
-				if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
-				{
-					GetComponent<Rigidbody>().useGravity = bUseGravityOnRelease;
-					GetComponent<Rigidbody>().isKinematic = bKinematicOnRelease;
-					GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
-					GetComponent<Rigidbody>().Sleep();
-				}
+				_ReturnToQuescentState();
 			}
 
 			if( !masterMoving )
@@ -262,12 +320,15 @@ namespace BrokeredUpdates
 				if( !wasMoving && syncMoving )
 				{
 					// If we start being moved by the master, then disable gravity.
-					if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
+					if( Utilities.IsValid( thisRigidBody ) )
 					{
-						bUseGravityOnRelease = GetComponent<Rigidbody>().useGravity;
-						bKinematicOnRelease = GetComponent<Rigidbody>().isKinematic;
-						GetComponent<Rigidbody>().useGravity = false;
-						GetComponent<Rigidbody>().isKinematic = true;
+						//XXX XXX TODO This is temporarily commented out because sometimes this breaks.
+						//KNOWN ISSUE: But it appears like it's with VRC.  So, we compromise.  We can't
+						//change the gravity or kinematic after we start, without changing this.
+						//bUseGravityOnRelease = thisRigidBody.useGravity;
+						//bKinematicOnRelease =  thisRigidBody.isKinematic;
+						thisRigidBody.useGravity = false;
+						thisRigidBody.isKinematic = true;
 					}
 					brokeredUpdateManager._RegisterSubscription( this );
 					wasMoving = true;
@@ -285,40 +346,16 @@ namespace BrokeredUpdates
 		
 		public void _BrokeredUpdate()
 		{
-			if( transform.localPosition.y < fResetWhenHittingY )
-			{
-				if( Networking.GetOwner( gameObject ) == Networking.LocalPlayer )
-				{
-					transform.localPosition = resetPosition;
-					transform.localRotation = resetQuaternion;
-					if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
-					{
-						GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
-					}
-					SendUpdateSystemAsMaster();
-				}
-			}
+			_CheckReset();
 
 			if( masterMoving )
 			{
-				if( bSnap )
-				{
-					Vector3 ea = transform.localRotation.eulerAngles;
-					transform.localPosition = new Vector3( 
-						Mathf.Round( transform.localPosition.x / .35f ) * .35f,
-						Mathf.Round( transform.localPosition.y / .35f ) * .35f,
-						Mathf.Round( transform.localPosition.z / .35f ) * .35f
-					);
-					ea.x = Mathf.Round( ea.x / 30.0f ) * 30.0f;
-					ea.y = Mathf.Round( ea.y / 30.0f ) * 30.0f;
-					ea.z = Mathf.Round( ea.z / 30.0f ) * 30.0f;
-					transform.localRotation =  Quaternion.Euler( ea );
-				}
 				if( bDebug )
 				{
-					Vector4 col = GetComponent<MeshRenderer>().material.GetVector( "_Color" );
+					MeshRenderer mr = GetComponent<MeshRenderer>();
+					Vector4 col = mr.material.GetVector( "_Color" );
 					col.x = ( col.x + 0.01f ) % 1;
-					GetComponent<MeshRenderer>().material.SetVector( "_Color", col );
+					mr.material.SetVector( "_Color", col );
 				}
 				fDeltaMasterSendUpdateTime += Time.deltaTime;
 				
@@ -338,9 +375,10 @@ namespace BrokeredUpdates
 
 					if( bDebug )
 					{
-						Vector4 col = GetComponent<MeshRenderer>().material.GetVector( "_Color" );
+						MeshRenderer mr = GetComponent<MeshRenderer>();
+						Vector4 col = mr.material.GetVector( "_Color" );
 						col.y = ( col.y + 0.01f ) % 1;
-						GetComponent<MeshRenderer>().material.SetVector( "_Color", col );
+						mr.material.SetVector( "_Color", col );
 					}
 
 					float iir = Mathf.Pow( Snappyness, Time.deltaTime );
@@ -358,13 +396,7 @@ namespace BrokeredUpdates
 						transform.localPosition = syncPosition;
 						transform.localRotation = syncRotation;
 						wasMoving = false;
-						if( Utilities.IsValid( GetComponent<Rigidbody>() ) )
-						{
-							GetComponent<Rigidbody>().useGravity = bUseGravityOnRelease;
-							GetComponent<Rigidbody>().isKinematic = bKinematicOnRelease;
-							GetComponent<Rigidbody>().velocity = new Vector3( 0, 0, 0 );
-							GetComponent<Rigidbody>().Sleep();
-						}
+						_ReturnToQuescentState();
 						brokeredUpdateManager._UnregisterSubscription( this );
 					}
 				}
@@ -377,22 +409,24 @@ namespace BrokeredUpdates
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
 namespace UdonSharp
 {
-    public class UdonSharpBuildChecks : IVRCSDKBuildRequestedCallback
-    {
-        public int callbackOrder => -1;
+	public class UdonSharpBuildChecks_BrokeredSync : IVRCSDKBuildRequestedCallback
+	{
+		public int callbackOrder => -1;
 
-        public bool OnBuildRequested(VRCSDKRequestedBuildType requestedBuildType)
-        {
+		public bool OnBuildRequested(VRCSDKRequestedBuildType requestedBuildType)
+		{
 			if (requestedBuildType == VRCSDKRequestedBuildType.Avatar) return true;
-			BrokeredUpdates.BrokeredSync [] bs = Resources.FindObjectsOfTypeAll( typeof( BrokeredUpdates.BrokeredSync ) ) as BrokeredUpdates.BrokeredSync[];
-			foreach( BrokeredUpdates.BrokeredSync b in bs )
+			foreach( UnityEngine.GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)) as UnityEngine.GameObject[] )
 			{
-				b.UpdateProxy();
-				if( b.brokeredUpdateManager == null )
+				foreach( BrokeredUpdates.BrokeredSync b in go.GetUdonSharpComponentsInChildren< BrokeredUpdates.BrokeredSync >() )
 				{
-					Debug.LogError($"[<color=#FF00FF>BrokeredSync</color>] Missing brokeredUpdateManager reference on {b.gameObject.name}");
-					typeof(UnityEditor.SceneView).GetMethod("ShowNotification", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { $"BrokeredSync missing brokeredUpdateManager reference on {b.gameObject.name}" });
-					return false;				
+					b.UpdateProxy();
+					if( b.brokeredUpdateManager == null )
+					{
+						Debug.LogError($"[<color=#FF00FF>BrokeredSync</color>] Missing brokeredUpdateManager reference on {b.gameObject.name}");
+						typeof(UnityEditor.SceneView).GetMethod("ShowNotification", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { $"BrokeredSync missing brokeredUpdateManager reference on {b.gameObject.name}" });
+						return false;				
+					}
 				}
 			}
 			return true;
@@ -402,48 +436,60 @@ namespace UdonSharp
 
 namespace BrokeredUpdates
 {
-    [CustomEditor(typeof(BrokeredUpdates.BrokeredSync))]
-    public class BrokeredUpdatesBrokeredSyncEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)) return;
-            EditorGUILayout.Space();
+	[CustomEditor(typeof(BrokeredUpdates.BrokeredSync))]
+	public class BrokeredUpdatesBrokeredSyncEditor : Editor
+	{
+		public override void OnInspectorGUI()
+		{
+			if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)) return;
+			EditorGUILayout.Space();
 			int ct = 0;
-            if (GUILayout.Button(new GUIContent("Attach brokeredUpdateManager to all Brokered Sync objects.", "Automatically finds all Brokered Sync objects and attaches the manager.")))
+			if (GUILayout.Button(new GUIContent("Attach brokeredUpdateManager to all Brokered Sync objects.", "Automatically finds all Brokered Sync objects and attaches the manager.")))
 			{
-				BrokeredSync [] bs = Resources.FindObjectsOfTypeAll( typeof( BrokeredSync ) ) as BrokeredSync[];
-				BrokeredUpdateManager [] managers = Resources.FindObjectsOfTypeAll( typeof( BrokeredUpdateManager ) ) as BrokeredUpdateManager[];
-				if( managers.Length < 1 )
+				UnityEngine.Object [] gos = GameObject.FindObjectsOfType(typeof(GameObject)); 
+
+				BrokeredUpdateManager manager = null;
+				foreach( UnityEngine.GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)) as UnityEngine.GameObject[] )
+				{
+					foreach( BrokeredUpdateManager b in go.GetUdonSharpComponentsInChildren<BrokeredUpdateManager>() )
+					{
+						manager = b;
+					}
+				}
+				if( manager == null )
 				{
 					Debug.LogError($"[<color=#FF00FF>UdonSharp</color>] Could not find a BrokeredUpdateManager. Did you add the prefab to your scene?");
 					return;
 				}
-				BrokeredUpdateManager manager = managers[0];
-				foreach( BrokeredSync b in bs )
+
+				foreach( UnityEngine.GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)) as UnityEngine.GameObject[] )
 				{
-					b.UpdateProxy();
-					if( b.brokeredUpdateManager == null )
+					foreach( BrokeredSync b in go.GetUdonSharpComponentsInChildren< BrokeredSync >() )
 					{
-						Debug.Log( $"Attaching to {b.gameObject.name}" );
-						//https://github.com/MerlinVR/UdonSharp/wiki/Editor-Scripting#non-inspector-editor-scripts
-						b.brokeredUpdateManager = manager;
-						b.ApplyProxyModifications();
-						ct++;
+						b.UpdateProxy();
+						if( b.brokeredUpdateManager == null )
+						{
+							Debug.Log( $"Attaching to {b.gameObject.name}" );
+							//https://github.com/MerlinVR/UdonSharp/wiki/Editor-Scripting#non-inspector-editor-scripts
+							b.brokeredUpdateManager = manager;
+							b.ApplyProxyModifications();
+							ct++;
+						}
 					}
 				}
 			}
-			Debug.Log( $"Attached {ct} manager references." );
-            EditorGUILayout.Space();
-            base.OnInspectorGUI();
-        }
+			if( ct > 0 )
+				Debug.Log( $"Attached {ct} manager references." );
+			EditorGUILayout.Space();
+			base.OnInspectorGUI();
+		}
 
-        IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
-        {
-			Debug.Log( "CreateUdonVariable()" );
-            System.Type udonVariableType = typeof(UdonVariable<>).MakeGenericType(type);
-			return (IUdonVariable)Activator.CreateInstance(udonVariableType, symbolName, value);
-        }
-    }
+		//IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
+		//{
+		//	Debug.Log( "CreateUdonVariable()" );
+		//	System.Type udonVariableType = typeof(UdonVariable<>).MakeGenericType(type);
+		//	return (IUdonVariable)Activator.CreateInstance(udonVariableType, symbolName, value);
+		//}
+	}
 }
 #endif

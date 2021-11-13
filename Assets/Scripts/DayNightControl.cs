@@ -38,6 +38,7 @@ public class DayNightControl : UdonSharpBehaviour
 					RenderSettings.skybox = SkyboxMaterial;
 					DirectionalLight.transform.rotation = Quaternion.Euler( 140.686f, -268.419f, -19.71997f );
 					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
+					DirectionalLight.shadows = LightShadows.Soft;
 					RenderSettings.ambientIntensity = 1.0f;
 					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
 					//WaterMaterial.SetFloat( "_Glossiness", 1.0f );
@@ -59,6 +60,7 @@ public class DayNightControl : UdonSharpBehaviour
 					DirectionalLight.color = new Color( 0.1654503f, 0.1958628f, 0.245283f, 1.0f );
 					//DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -120.73f, -20.39f);
 					DirectionalLight.transform.rotation = Quaternion.Euler( 70.0f, 0.0f, 0.0f );
+					DirectionalLight.shadows = LightShadows.Hard;
 					//SkyboxMaterial.SetFloat( "_AtmosphereThickness", 0.5f );
 					RenderSettings.skybox = SkyboxMaterialNight;
 					SkyboxMaterialNight.SetFloat( "_GeneralBrightness", 1.0f );
@@ -82,6 +84,7 @@ public class DayNightControl : UdonSharpBehaviour
 					RenderSettings.skybox = SkyboxMaterial;
 					DirectionalLight.color = new Color( 1.0f, 0.9177405f, 0.6933962f, 1.0f );
 					DirectionalLight.transform.rotation = Quaternion.Euler( 0, 128, 0 );
+					DirectionalLight.shadows = LightShadows.Soft;
 					SkyboxMaterial.SetFloat( "_AtmosphereThickness", 1.0f );
 					RenderSettings.ambientIntensity = 1.0f;
 					//WaterMaterial.SetFloat( "_Glossiness", 1.0f );
@@ -103,6 +106,7 @@ public class DayNightControl : UdonSharpBehaviour
 					DirectionalLight.color = new Color( 0.1654503f, 0.1958628f, 0.245283f, 1.0f )*.2f;
 					//DirectionalLight.transform.rotation = Quaternion.Euler( 164.79f, -120.73f, -20.39f);
 					DirectionalLight.transform.rotation = Quaternion.Euler( 70.0f, 0.0f, 0.0f );
+					DirectionalLight.shadows = LightShadows.Hard;
 					//SkyboxMaterial.SetFloat( "_AtmosphereThickness", 0.5f );
 					RenderSettings.skybox = SkyboxMaterialNight;
 					SkyboxMaterialNight.SetFloat( "_GeneralBrightness", 0.0f );

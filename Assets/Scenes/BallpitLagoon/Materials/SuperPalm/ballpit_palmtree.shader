@@ -27,7 +27,7 @@ Shader "SuperPalm/ballpit_palmtree"
 		
 		CGINCLUDE
 
-		#include "/Assets/Shaders/tanoise/tanoise.cginc"
+		#include "/Assets/cnlohr/Shaders/tanoise/tanoise.cginc"
 		#include "UnityCG.cginc"
 		#pragma multi_compile_instancing
         #pragma target 4.0

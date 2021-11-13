@@ -14,13 +14,14 @@ namespace Texel
 {
     [AddComponentMenu("VideoTXL/Sync Player")]
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [DefaultExecutionOrder(-1)]
     public class SyncPlayer : UdonSharpBehaviour
     {
         [Tooltip("A proxy for dispatching video-related events to other listening behaviors, such as a screen manager")]
         public VideoPlayerProxy dataProxy;
 
         [Header("Optional Components")]
-        [Tooltip("Pre-populated playlist to iterate through.  Overrides default URL option")]
+        [Tooltip("Pre-populated playlist to iterate through.  If default URL is set, the playlist will be disabled by default, otherwise it will auto-play.")]
         public Playlist playlist;
 
         [Tooltip("Control access to player controls based on player type or whitelist")]
@@ -110,6 +111,8 @@ namespace Texel
         float _videoTargetTime = 0;
 
         bool _waitForSync;
+        bool _holdReadyState = false;
+        bool _heldVideoReady = false;
         float _lastSyncTime;
         float _playStartTime = 0;
 
@@ -196,13 +199,49 @@ namespace Texel
             if (Networking.IsOwner(gameObject))
             {
                 if (Utilities.IsValid(playlist) && playlist.trackCount > 0)
-                    _PlayVideo(playlist._GetCurrent());
+                {
+                    if (_IsUrlValid(defaultUrl))
+                    {
+                        playlist._SetEnabled(false);
+                        _PlayVideoAfter(defaultUrl, 3);
+                    }
+                    else
+                        SendCustomEventDelayedFrames("_PlayPlaylistUrl", 3);
+                }
                 else
-                    _PlayVideo(defaultUrl);
+                    _PlayVideoAfter(defaultUrl, 3);
             }
 
             if (autoInternalAVSync)
                 SendCustomEventDelayedSeconds("_AVSyncStart", 1);
+        }
+
+        public void _SetPlaylist(Playlist list)
+        {
+            if (Utilities.IsValid(list))
+                DebugLog($"Set playlist {list.gameObject.name}");
+            else
+                DebugLog("Remove playlist");
+
+            playlist = list;
+
+            if (Networking.IsOwner(gameObject))
+            {
+                if (!Utilities.IsValid(playlist))
+                {
+                    dataProxy._EmitPlaylistUpdate();
+                    return;
+                }
+
+                DebugLog("Setting up playlist as owner");
+                playlist._SetEnabled(true);
+                playlist._MoveFirst();
+
+                dataProxy._EmitPlaylistUpdate();
+
+                if (playlist.holdOnReady)
+                    _PlayPlaylistUrl();
+            }
         }
 
         public void _TriggerPlay()
@@ -301,6 +340,20 @@ namespace Texel
             _PlayVideo(url);
         }
 
+        public void _HoldNextVideo()
+        {
+            DebugLog("Holding next video");
+            _UpdatePlayerHold(true, _heldVideoReady);
+        }
+
+        public void _ReleaseHold()
+        {
+            if (_heldVideoReady && Networking.IsOwner(gameObject))
+                _VideoPlay();
+
+            _UpdatePlayerHold(false, false);
+        }
+
         public void _UpdateQueuedUrl(VRCUrl url)
         {
             if (_syncLocked && !_CanTakeControl())
@@ -355,6 +408,11 @@ namespace Texel
 
         void _PlayVideo(VRCUrl url)
         {
+            _PlayVideoAfter(url, 0);
+        }
+
+        void _PlayVideoAfter(VRCUrl url, float delay)
+        {
             _pendingPlayTime = 0;
             if (!_IsUrlValid(url))
                 return;
@@ -400,7 +458,7 @@ namespace Texel
                     _VideoStop();
             }
 
-            _StartVideoLoad();
+            _StartVideoLoadDelay(delay);
         }
 
         public void _LoopVideo()
@@ -418,7 +476,12 @@ namespace Texel
         public void _PlayPlaylistUrl()
         {
             _syncQueuedUrl = VRCUrl.Empty;
-            _PlayVideo(playlist._GetCurrent());
+            if (Utilities.IsValid(playlist))
+            {
+                if (playlist.holdOnReady && Networking.IsOwner(gameObject))
+                    _HoldNextVideo();
+                _PlayVideo(playlist._GetCurrent());
+            }
         }
 
         bool _IsUrlValid(VRCUrl url)
@@ -518,7 +581,7 @@ namespace Texel
                 _lastVideoPosition = _currentPlayer.GetTime();
 
             _UpdatePlayerState(PLAYER_STATE_STOPPED);
-            
+
             _VideoStop();
             _videoTargetTime = 0;
             _pendingPlayTime = 0;
@@ -553,7 +616,12 @@ namespace Texel
             //   TODO: Streamline by always doing this in update instead?
 
             if (Networking.IsOwner(gameObject))
-                _VideoPlay();
+            {
+                if (!_holdReadyState)
+                    _VideoPlay();
+                else
+                    _UpdatePlayerHold(true, true);
+            }
             else
             {
                 // TODO: Stream bypass owner
@@ -631,9 +699,7 @@ namespace Texel
                 if (_IsUrlValid(_syncQueuedUrl))
                     SendCustomEventDelayedFrames("_PlayQueuedUrl", 1);
                 else if (hasPlaylist && playlist._MoveNext())
-                {
                     SendCustomEventDelayedFrames("_PlayPlaylistUrl", 1);
-                }
                 else if (!hasPlaylist && _syncRepeatPlaylist)
                     SendCustomEventDelayedFrames("_LoopVideo", 1);
                 else
@@ -711,6 +777,9 @@ namespace Texel
                 return accessControl._LocalHasAccess();
 
             VRCPlayerApi player = Networking.LocalPlayer;
+            if (!Utilities.IsValid(player))
+                return false;
+
             return player.isMaster || player.isInstanceOwner;
         }
 
@@ -720,6 +789,9 @@ namespace Texel
                 return !_syncLocked || accessControl._LocalHasAccess();
 
             VRCPlayerApi player = Networking.LocalPlayer;
+            if (!Utilities.IsValid(player))
+                return false;
+
             return player.isMaster || player.isInstanceOwner || !_syncLocked;
         }
 
@@ -895,7 +967,8 @@ namespace Texel
                     _ForceResync();
                     return;
                 }
-            } else
+            }
+            else
                 previousTarget = offsetTime;
 
             previousCurrent = current;
@@ -1021,12 +1094,14 @@ namespace Texel
                 DebugLogAs("AVPro", "Auto AV Sync");
                 avProVideo.EnableAutomaticResync = true;
                 SendCustomEventDelayedSeconds("_AVSyncEndAVPro", 1);
-            } else if (_currentPlayer == unityVideo)
+            }
+            else if (_currentPlayer == unityVideo)
             {
                 DebugLogAs("UnityVideo", "Auto AV Sync");
                 unityVideo.EnableAutomaticResync = true;
                 SendCustomEventDelayedSeconds("_AVSyncEndUnity", 1);
-            } else
+            }
+            else
                 SendCustomEventDelayedSeconds("_AVSyncStart", 30);
         }
 
@@ -1209,6 +1284,15 @@ namespace Texel
         void _UpdatePlayerSyncing(bool syncing)
         {
             dataProxy.syncing = syncing;
+            dataProxy._EmitStateUpdate();
+        }
+
+        void _UpdatePlayerHold(bool holding, bool ready)
+        {
+            _holdReadyState = holding;
+            _heldVideoReady = ready;
+
+            dataProxy.heldReady = _heldVideoReady;
             dataProxy._EmitStateUpdate();
         }
 

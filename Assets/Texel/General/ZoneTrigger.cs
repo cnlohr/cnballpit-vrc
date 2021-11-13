@@ -47,7 +47,7 @@ namespace Texel
 
         public override void OnPlayerTriggerExit(VRCPlayerApi player)
         {
-            if (!hasPlayerEnter)
+            if (!hasPlayerLeave)
                 return;
             if (localPlayerOnly && !player.isLocal)
                 return;

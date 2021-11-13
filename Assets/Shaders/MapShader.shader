@@ -25,7 +25,7 @@ Shader "Custom/MapShader"
 		
 		CGINCLUDE
 		
-		#include "tanoise/tanoise.cginc"
+		#include "/Assets/cnlohr/Shaders/tanoise/tanoise.cginc"
 
 		float _FrawnDensity;
         half _Glossiness;

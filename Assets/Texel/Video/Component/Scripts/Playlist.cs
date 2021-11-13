@@ -18,7 +18,10 @@ namespace Texel
         [Tooltip("Log debug statements to a world object")]
         public DebugLog debugLog;
 
+        [Tooltip("Shuffle track order on load")]
         public bool shuffle;
+        [Tooltip("Hold videos in ready state until released by an external input")]
+        public bool holdOnReady = false;
 
         public VRCUrl[] playlist;
 
@@ -76,15 +79,17 @@ namespace Texel
             DebugLog("Master initialization");
             syncEnabled = true;
 
-            if (!syncPlayer._TakeControl())
-                return;
-            if (!Networking.IsOwner(gameObject))
-                Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            if (Networking.IsOwner(syncPlayer.gameObject))
+            {
+                if (!Networking.IsOwner(gameObject))
+                    Networking.SetOwner(Networking.LocalPlayer, gameObject);
 
-            if (syncShuffle)
-                _Shuffle();
+                if (syncShuffle)
+                    _Shuffle();
 
-            RequestSerialization();
+                RequestSerialization();
+            }
+
             _UpdateLocal();
         }
 
@@ -96,6 +101,23 @@ namespace Texel
         public bool _HasPrevTrack()
         {
             return syncCurrentIndex > 0 || syncPlayer.repeatPlaylist;
+        }
+
+        public bool _MoveFirst()
+        {
+            if (!syncPlayer._TakeControl())
+                return false;
+            if (!Networking.IsOwner(gameObject))
+                Networking.SetOwner(Networking.LocalPlayer, gameObject);
+
+            syncCurrentIndex = 0;
+
+            DebugLog($"Move first track {syncCurrentIndex}");
+
+            RequestSerialization();
+            _UpdateLocal();
+
+            return true;
         }
 
         public bool _MoveNext()
