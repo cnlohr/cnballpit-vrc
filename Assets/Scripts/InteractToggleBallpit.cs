@@ -25,10 +25,12 @@ public class InteractToggleBallpit : UdonSharpBehaviour
 	public override void Interact()
 	{
 		Debug.Log( "BallpitUtils IntearactToggleBallpit Start Interact" );
+		bool lastActive = false;
 		foreach (GameObject toggleObject in toggleObjects)
 		{
-			toggleObject.SetActive(!toggleObject.activeSelf);
+			toggleObject.SetActive(lastActive = !toggleObject.activeSelf);
 		}
+		GetComponent<MeshRenderer> ().material.SetFloat( "_SelMode", lastActive?1:0 );
 		if( Utilities.IsValid( hideOnClickObject ) )
 			hideOnClickObject.SetActive( false );
 	}
