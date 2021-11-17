@@ -265,6 +265,12 @@ Reopen Unity
  * Add some rocks that have neat effects.
  * Make some rocks have gravity
 
+## 30.0 7:19 PM / November 16, 2021
+ * Make balls cast shadows always (oops!)
+ * Update to AudioLink 0.2.7
+ * Remove some random blocks.
+ * Update sacc flight.
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.

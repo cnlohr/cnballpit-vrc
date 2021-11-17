@@ -103,15 +103,16 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			{
 				int transadd;
 
-// No shadows at night.
+// No shadows at night, at least not from the directional light.
 #ifdef UNITY_PASS_SHADOWCASTER
-				if( _NightMode > 0.5 )
+				if( _NightMode > 0.5 && UNITY_MATRIX_P._m33 > 0 )
 				{
 					return;
 				}
 #endif
 
-				for( transadd = 0; transadd < 8; transadd++ )
+				#define GEO_MUX 8
+				for( transadd = 0; transadd < GEO_MUX; transadd++ )
 				{
 					//based on https://github.com/MarekKowalski/LiveScan3D-Hololens/blob/master/HololensReceiver/Assets/GS%20Billboard.shader
 
@@ -122,7 +123,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					
 					// Set based on data
 					//int ballid = oposid.x + oposid.y * 32 + oposid.z * 1024;
-					uint ballid = id * 8 + transadd;
+					uint ballid = id * GEO_MUX + transadd;
 					
 					float4 DataPos = GetPosition(ballid);
 					float3 PositionRelativeToCenterOfBallpit = DataPos;
