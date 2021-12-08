@@ -227,9 +227,9 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					*/
 						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
 						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
-						static const float3 ballcolors[4] = { float3( 1., .8, 0 ), float3( 0.05, .05, .05 ), float3( 1., .3, 0 ), float3( 0.9, .9, .9 ) };
+						static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 0.00, 1.0, 0.00 ), float3( 1., 1., 1. ) };
 
-						colorDiffuse.xyz = ballcolors[ballid%4];
+						colorDiffuse.xyz = ballcolors[ballid%3];
 
 						//colorDiffuse *= intensity; 
 						colorAmbient += colorDiffuse * intensity * .35;
