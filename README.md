@@ -271,6 +271,12 @@ Reopen Unity
  * Remove some random blocks.
  * Update sacc flight.
 
+## 31.0 
+ * Update texel player
+ 
+## 32.0 
+ * Switch to Christmas
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.
