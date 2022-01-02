@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: InteractToggleBallpit
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: f785a4ce0de933b4ca44ba3ad5ecef2c,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 688c69570e4cbc8418c168a2c044b471,
     type: 2}
   udonAssembly: 
   assemblyError: 

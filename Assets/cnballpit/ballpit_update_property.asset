@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ballpit_update_property
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 70d3588f1b0c1204b9a1093bc0403aad,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: bcf67c45bd28953448b29ca7a4dd3df6,
     type: 2}
   udonAssembly: 
   assemblyError: 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ClearAllButton
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: f481d46ab4ec97e41bdb0504e881b91e,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 3f23f2772f6ca594ea002b2febb89ce8,
     type: 2}
   udonAssembly: 
   assemblyError: 
