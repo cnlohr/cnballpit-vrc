@@ -485,16 +485,14 @@ Shader "cnballpit/shaderCalcPrimary"
 						float3 FanVector = normalize( qtransform( q_inverse( FanQuat[i] ), float3( 0, 1, 0 ) ) );
 						
 						float3 RelPos = Position - FanStart;
-						float t = dot( RelPos, FanVector )/WorldSize.z; //Distance along fan vector
+						float t = dot( RelPos, FanVector ); //Distance along fan vector
 						float3 lpos = FanVector * t;
-						float d = length( RelPos - lpos )/WorldSize.z; //Distance from fan vector
+						float d = length( RelPos - lpos ); //Distance from fan vector
 						
 						float dforce = 1 - d;
 						dforce = min( dforce, (5*FanStrength-t)*.5 ); //Force contribution at extent
 						dforce = min( t + 1, dforce ); //Force contribution behind.
-						
-						dforce /= WorldSize.z;
-						
+												
 						if( dforce > 0 )
 						{
 							Velocity.xyz += FanVector.xyz * dforce * .15;

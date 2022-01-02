@@ -118,6 +118,7 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _GravityValue: 9.8
+    - _HeightmapCFM: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -138,9 +139,9 @@ Material:
     - _DragDropPos2: {r: -85.4, g: 0.365, b: -23.3, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FanPosition: {r: -4.13, g: -0.002, b: 1.46, a: 0}
-    - _FanPosition0: {r: -4.62, g: -0.002, b: 222.044, a: 1}
-    - _FanPosition1: {r: -9.83, g: 0.8, b: 222.914, a: 1}
-    - _FanPosition2: {r: -3.151, g: 0.67, b: 228.404, a: 1}
+    - _FanPosition0: {r: -4.62, g: -0.002, b: 1.5, a: 1}
+    - _FanPosition1: {r: -9.83, g: 0.8, b: 2.37, a: 1}
+    - _FanPosition2: {r: -3.36, g: 0.472, b: 4.74, a: 1}
     - _FanRotation: {r: 0, g: 0, b: 0, a: 1}
     - _FanRotation0: {r: -0, g: -0, b: -0, a: 1}
     - _FanRotation1: {r: 0.26363128, g: -0.07654698, b: 0.26812735, a: 0.92344296}
@@ -148,15 +149,15 @@ Material:
     - _Magnet0: {r: -1000, g: 0, b: 0, a: 1}
     - _Magnet1: {r: -1000, g: 0, b: 0, a: 1}
     - _Magnet2: {r: -1000, g: 0, b: 0, a: 1}
-    - _MagnetPos0: {r: -3.9899998, g: 0.03999999, b: 304.884, a: 0.99999994}
-    - _MagnetPos1: {r: 87.990005, g: 1.151, b: 263.914, a: 1}
-    - _MagnetPos2: {r: -85.89, g: 0.365, b: 197.28401, a: 1}
-    - _ShroomPos0: {r: -47.22, g: 0.35000002, b: 132.264, a: 1}
-    - _ShroomPos1: {r: 97.08, g: 0.96000004, b: 219.744, a: 1}
-    - _ShroomPos2: {r: 36.96, g: 0.15, b: 138.664, a: 1}
-    - _ShroomPos3: {r: -84.76, g: 0.86399996, b: 198.89401, a: 1}
-    - _ShroomPos4: {r: 42.149002, g: 0.98, b: 294.667, a: 1}
-    - _ShroomPos5: {r: -48.809998, g: 0.70000005, b: 291.31403, a: 1}
+    - _MagnetPos0: {r: -3.9899998, g: 0.03999999, b: 84.340004, a: 0.99999994}
+    - _MagnetPos1: {r: 87.990005, g: 1.151, b: 43.370003, a: 1}
+    - _MagnetPos2: {r: -85.89, g: 0.365, b: -23.259998, a: 1}
+    - _ShroomPos0: {r: -47.22, g: 0.35000002, b: -88.28001, a: 1}
+    - _ShroomPos1: {r: 97.08, g: 0.96000004, b: -0.80000114, a: 1}
+    - _ShroomPos2: {r: 36.96, g: 0.15, b: -81.88, a: 1}
+    - _ShroomPos3: {r: -84.76, g: 0.86399996, b: -21.65, a: 1}
+    - _ShroomPos4: {r: 42.149002, g: 0.98, b: 74.123, a: 1}
+    - _ShroomPos5: {r: -48.809998, g: 0.70000005, b: 70.770004, a: 1}
     - _TopCenter: {r: 0, g: 2.5, b: 0, a: 0}
     - _TopSize: {r: 3, g: 2, b: 3, a: 0}
     - _TubCenter: {r: 0, g: -0.5, b: 0, a: 0}
