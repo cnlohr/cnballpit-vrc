@@ -16,6 +16,9 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 		
 		_VideoTexture ("Video Texture", 2D) = "black" {}
 		_IsAVProInput ("IsAVProInput", float) = 0
+		_BallpitRescale( "BallpitRescale", float ) = 1
+		_MinimumDistance( "Minimum distance", float ) = 0
+		_DistanceGradient( "Distance Gradient", float ) = 1
 	}
 
 	SubShader 
@@ -85,6 +88,9 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 			float _ExtraPretty;
 			float _ScreenshotMode;
 			float _NightMode;
+			float _BallpitRescale;
+			float _MinimumDistance;
+			float _DistanceGradient;
 			
 			v2g vert(appdata_base v)
 			{
@@ -125,7 +131,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					//int ballid = oposid.x + oposid.y * 32 + oposid.z * 1024;
 					uint ballid = id * GEO_MUX + transadd;
 					
-					float4 DataPos = GetPosition(ballid);
+					float4 DataPos = GetPosition(ballid)*_BallpitRescale;
 					float3 PositionRelativeToCenterOfBallpit = DataPos;
 					float4 DataVel = GetVelocity(ballid);
 					DataPos.xyz += worldoffset ;
@@ -156,7 +162,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					up = normalize(cross( look, right ));
 					right = normalize(right);
 
-					float size = DataPos.w*2+EXPAND_FUDGE+ RADIUS_FUDGE_ADD_BY_DISTANCE_BOUNDING * distance_to_ball; //DataPos.w is radius. (Add a little to not clip edges.)
+					float size = DataPos.w*2+EXPAND_FUDGE*DataPos.w/.08+ RADIUS_FUDGE_ADD_BY_DISTANCE_BOUNDING * distance_to_ball; //DataPos.w is radius. (Add a little to not clip edges.)
 					float halfS = 0.5f * size * OVERDRAW_FUDGE;
 					
 					//Pushthe view plane away a tiny bit, to prevent nastiness when doing the SV_DepthLessEqual for perf.
@@ -754,7 +760,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 
 				float fakealpha = saturate(disc/dx);
 				float dist_to_surface = length( worldhit - ro );
-				float distalpha = dist_to_surface*10. - _ProjectionParams.y - chash22(input.uv*1000.).y*.5;
+				float distalpha = dist_to_surface*10. - _ProjectionParams.y - chash22(input.uv*1000.).y*.5*_DistanceGradient - _MinimumDistance;
 				fakealpha = min( distalpha, fakealpha );
 				//Thanks, D4rkPl4y3r.
 				Coverage[0] = ( 1u << ((uint)(fakealpha*GetRenderTargetSampleCount() + 0.5)) ) - 1;

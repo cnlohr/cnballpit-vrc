@@ -12,7 +12,7 @@ Shader "cnballpit/shaderCalcPrimary"
 {
 	Properties
 	{
-		_BallRadius( "Default Ball Radius", float ) = 0.1
+		_BallRadius( "Default Ball Radius", float ) = 0.08
 		_PositionsIn ("Positions", 2D) = "white" {}
 		_VelocitiesIn ("Velocities", 2D) = "white" {}
 		_Adjacency0 ("Adjacencies0", 2D) = "white" {}
@@ -23,6 +23,14 @@ Shader "cnballpit/shaderCalcPrimary"
 		_GravityValue( "Gravity", float ) = 9.8
 		_TargetFPS ("Target FPS", float ) = 120
 		[ToggleUI] _DontPerformStep( "Don't Perform Step", float ) = 0
+
+		_BallpitBoundaryMode("Ballpit Boundary Mode", int ) = 1
+		_TubCenter("Tub Center", Vector) = ( 0, -.5, 0, 0 )
+		_TubSize( "Tub Size", Vector ) = ( 1, 1, 1, 0 )
+		_TopCenter( "Top Center", Vector ) = ( 0, 2.5, 0, 0 )
+		_TopSize( "Top Size", Vector ) = ( 3, 2, 3, 0 )
+
+
 		_FanPosition0( "Fan Position 0", Vector ) = ( -1000, 0, 0, 0 )
 		_FanRotation0( "Fan Rotation 0", Vector ) = ( -1000, 0, 0, 1 )
 		_FanPosition1( "Fan Position 1", Vector ) = ( -1000, 0, 0, 0 )
@@ -38,6 +46,9 @@ Shader "cnballpit/shaderCalcPrimary"
 		_ShroomPos3( "Shroom Pos3", Vector ) = ( -1000, 0, 0, 0 )
 		_ShroomPos4( "Shroom Pos4", Vector ) = ( -1000, 0, 0, 0 )
 		_ShroomPos5( "Shroom Pos4", Vector ) = ( -1000, 0, 0, 0 )
+		WorldSize("Camera Span Size", Vector) = (16, 16, 1, 0 )
+		_BallForceRating( "Ball Force Rating", float ) = 1.0
+		_HeightmapCFM( "Heightmap CFM", float ) = 1
 	}
 	SubShader
 	{
@@ -112,6 +123,15 @@ Shader "cnballpit/shaderCalcPrimary"
 			float4 _ShroomPos3;			
 			float4 _ShroomPos4;			
 			float4 _ShroomPos5;
+			float3 _TubCenter;
+			float3 _TubSize;
+			float3 _TopCenter;
+			float3 _TopSize;
+			float3 WorldSize;
+			float _BallForceRating;
+			float _HeightmapCFM;
+			int _BallpitBoundaryMode;
+
 
 			float SDFBoundary( float3 position )
 			{
@@ -242,11 +262,13 @@ Shader "cnballpit/shaderCalcPrimary"
 							//Do we collide AND are we NOT the other ball?
 							if( len > 0.02 )
 							{
-								if( len < otherball.w + Position.w )
+								float penetration = ( otherball.w + Position.w ) - len;
+								penetration *= _BallForceRating;
+								
+								if( penetration > 0 )
 								{
 									// Collision! (Todo, smarter)
 									// We only edit us, not the other ball.
-									float penetration = ( otherball.w + Position.w ) - len;
 									float3 vectortome = normalize(Position.xyz - otherball.xyz);
 									Velocity.xyz += penetration * vectortome * cfmVelocity;
 									Position.xyz += penetration * vectortome * cfmPosition;
@@ -378,10 +400,10 @@ Shader "cnballpit/shaderCalcPrimary"
 				//Use depth cameras (Totals around 150us per camera on a 2070 laptop)
 				if( 1 ) 
 				{
-					const float2 WorldSize = float2( 16, 16 );
+					//const float2 WorldSize = float2( 16, 16 );
 
-					float heightcfm = 0.48 * vcfmfpsP;
-					float heightcfmv = 200. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
+					float heightcfm = _HeightmapCFM * 0.48 * vcfmfpsP;
+					float heightcfmv = _HeightmapCFM * 200. * 1 * vcfmfpsV; //Should have been *4 because we /4'd our texture?
 					
 					float4 StorePos = Position;
 					float4 StoreVel = Velocity;
@@ -416,6 +438,8 @@ Shader "cnballpit/shaderCalcPrimary"
 
 						//coord + 0.5 because we went from 2048 to 1024 here.
 						float2 xzWorldPos = (((coord + 0.5)* _DepthMapComposite_TexelSize.xy) - 0.5 ) * WorldSize;
+
+						Y *= WorldSize.z;
 						
 						//Figure out which side we're coming from.
 						float CenterY = (Y.y + Y.x) / 2;
@@ -446,9 +470,9 @@ Shader "cnballpit/shaderCalcPrimary"
 				{
 					float4 FanPos[3];
 					float4 FanQuat[3];
-					FanPos[0] = _FanPosition0;
-					FanPos[1] = _FanPosition1;
-					FanPos[2] = _FanPosition2;
+					FanPos[0] = _FanPosition0*WorldSize.z;
+					FanPos[1] = _FanPosition1*WorldSize.z;
+					FanPos[2] = _FanPosition2*WorldSize.z;
 					FanQuat[0] = _FanRotation0;
 					FanQuat[1] = _FanRotation1;
 					FanQuat[2] = _FanRotation2;
@@ -461,14 +485,15 @@ Shader "cnballpit/shaderCalcPrimary"
 						float3 FanVector = normalize( qtransform( q_inverse( FanQuat[i] ), float3( 0, 1, 0 ) ) );
 						
 						float3 RelPos = Position - FanStart;
-						float t = dot( RelPos, FanVector ); //Distance along fan vector
+						float t = dot( RelPos, FanVector )/WorldSize.z; //Distance along fan vector
 						float3 lpos = FanVector * t;
-						float d = length( RelPos - lpos ); //Distance from fan vector
+						float d = length( RelPos - lpos )/WorldSize.z; //Distance from fan vector
 						
 						float dforce = 1 - d;
 						dforce = min( dforce, (5*FanStrength-t)*.5 ); //Force contribution at extent
 						dforce = min( t + 1, dforce ); //Force contribution behind.
 						
+						dforce /= WorldSize.z;
 						
 						if( dforce > 0 )
 						{

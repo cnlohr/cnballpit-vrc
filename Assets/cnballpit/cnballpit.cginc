@@ -1,14 +1,4 @@
 
-// General configuration stuff.
-static const float3 _TubCenter = float3( 0, -.5f, 0 );
-static const float3 _TubSize = float3( 1, 1, 1 );
-static const float3 _TopCenter = float3( 0, 2.5f, 0 );
-static const float3 _TopSize = float3( 3, 2, 3 );
-
-//0: Slow slopey bowl
-//1: Official bowl, flat on bottom.
-//2: Boxes.
-#define _BallpitBoundaryMode 1
 #define _BallpitCameraHeight 20
 #define MAX_BALLS 32768
 #define CAMERA_Y_OFFSET -1
