@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: GroupToggle
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 0a966f5d19dd84b4d817f0658674ee92,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 280e25ea749baaf4fa00989ec0b06527,
     type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: fb96c35fc97c17d4ba533eca5816dc57, type: 3}
-  behaviourSyncMode: 2
+  behaviourSyncMode: 1
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
   hasInteractEvent: 0

@@ -24,6 +24,9 @@ namespace Texel
         [Tooltip("Pre-populated playlist to iterate through.  If default URL is set, the playlist will be disabled by default, otherwise it will auto-play.")]
         public Playlist playlist;
 
+        [Tooltip("Set of input URLs to remap to alternate URLs on a per-platform basis")]
+        public UrlRemapper urlRemapper;
+
         [Tooltip("Control access to player controls based on player type or whitelist")]
         public AccessControl accessControl;
 
@@ -32,6 +35,10 @@ namespace Texel
 
         [Tooltip("When present and enabled, operate for native Quest")]
         public GameObject questCheckObject;
+
+        [Tooltip("Optional trigger zone the player must be in to sustain playback.  Disables playing audio on world load.")]
+        [HideInInspector]
+        public CompoundZoneTrigger playbackZone;
 
         //[Tooltip("Optional component to start or stop player based on common trigger events")]
         //public TriggerManager triggerManager;
@@ -121,6 +128,9 @@ namespace Texel
         VRCUrl _pendingPlayUrl;
 
         bool _hasAccessControl = false;
+        bool _hasSustainZone = false;
+        bool _inSustainZone = false;
+        bool _initDeserialize = false;
 
         // Realtime state
 
@@ -159,12 +169,26 @@ namespace Texel
         const short VIDEO_SOURCE_AVPRO = 1;
         const short VIDEO_SOURCE_UNITY = 2;
 
+        const int GAME_MODE_PC = 0;
+        const int GAME_MODE_QUEST = 1;
+
         void Start()
         {
             dataProxy._Init();
             dataProxy.quest = Utilities.IsValid(questCheckObject) && questCheckObject.activeInHierarchy;
 
             _hasAccessControl = Utilities.IsValid(accessControl);
+            _hasSustainZone = Utilities.IsValid(playbackZone);
+            if (_hasSustainZone)
+            {
+                _inSustainZone = playbackZone._LocalPlayerInZone();
+                playbackZone._Register((UdonBehaviour)(Component)this, "_PlaybackZoneEnter", "_PlaybackZoneExit", null);
+            }
+            else
+                _inSustainZone = true;
+
+            if (Utilities.IsValid(urlRemapper))
+                urlRemapper._SetGameMode(dataProxy.quest ? GAME_MODE_QUEST : GAME_MODE_PC);
 
             if (Utilities.IsValid(avProVideo))
             {
@@ -214,6 +238,30 @@ namespace Texel
 
             if (autoInternalAVSync)
                 SendCustomEventDelayedSeconds("_AVSyncStart", 1);
+
+            if (!Networking.IsOwner(gameObject))
+                SendCustomEventDelayedSeconds("_InitCheck", 5);
+        }
+
+        public void _InitCheck()
+        {
+            if (!_initDeserialize)
+            {
+                DebugLog("Deserialize not received in reasonable time");
+                SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Owner, "RequestOwnerSync");
+            }
+        }
+
+        public void _PlaybackZoneEnter()
+        {
+            _inSustainZone = true;
+            _StartVideoLoad();
+        }
+
+        public void _PlaybackZoneExit()
+        {
+            _inSustainZone = false;
+            _StopVideo();
         }
 
         public void _SetPlaylist(Playlist list)
@@ -569,7 +617,15 @@ namespace Texel
             _UpdatePlayerState(PLAYER_STATE_LOADING);
 
             //#if !UNITY_EDITOR
-            _VideoLoadURL(_syncUrl);
+            VRCUrl url = _syncUrl;
+            if (Utilities.IsValid(urlRemapper))
+            {
+                url = urlRemapper._Remap(url);
+                if (Utilities.IsValid(url) && _syncUrl.Get() != url.Get())
+                    DebugLog("Remapped URL");
+            }
+
+            _VideoLoadURL(url);
             //#endif
         }
 
@@ -813,10 +869,15 @@ namespace Texel
 
         public override void OnDeserialization()
         {
-            if (Networking.IsOwner(gameObject))
-                return;
-
             DebugLog($"Deserialize: video #{_syncVideoNumber}");
+
+            if (Networking.IsOwner(gameObject))
+            {
+                DebugLog("But you're the owner.  This should not happen.");
+                return;
+            }
+
+            _initDeserialize = true;
 
             _UpdateVideoSource(_syncVideoSource, _syncVideoSourceOverride);
             _UpdateLockState(_syncLocked);
@@ -825,17 +886,20 @@ namespace Texel
 
             if (_syncVideoNumber == _loadedVideoNumber)
             {
-                if (localPlayerState == PLAYER_STATE_PLAYING && !_syncOwnerPlaying)
-                    SendCustomEventDelayedFrames("_StopVideo", 1);
-                else if (dataProxy.paused && !_syncOwnerPaused)
+                if (_inSustainZone)
                 {
-                    _VideoPlay();
-                    _UpdatePlayerPaused(false);
-                }
-                else if (localPlayerState == PLAYER_STATE_PLAYING && _syncOwnerPaused)
-                {
-                    _VideoPause();
-                    _UpdatePlayerPaused(true);
+                    if (localPlayerState == PLAYER_STATE_PLAYING && !_syncOwnerPlaying)
+                        SendCustomEventDelayedFrames("_StopVideo", 1);
+                    else if (dataProxy.paused && !_syncOwnerPaused)
+                    {
+                        _VideoPlay();
+                        _UpdatePlayerPaused(false);
+                    }
+                    else if (localPlayerState == PLAYER_STATE_PLAYING && _syncOwnerPaused)
+                    {
+                        _VideoPause();
+                        _UpdatePlayerPaused(true);
+                    }
                 }
 
                 return;
@@ -846,9 +910,11 @@ namespace Texel
             _loadedVideoNumber = _syncVideoNumber;
             _UpdateLastUrl();
 
-            DebugLog("Starting video load from sync");
-
-            _StartVideoLoad();
+            if (_inSustainZone)
+            {
+                DebugLog("Starting video load from sync");
+                _StartVideoLoad();
+            }
         }
 
         public override void OnPostSerialization(SerializationResult result)
@@ -860,8 +926,18 @@ namespace Texel
             }
         }
 
+        public void RequestOwnerSync()
+        {
+            DebugLog("RequestOwnerSync");
+            if (Networking.IsOwner(gameObject))
+                RequestSerialization();
+        }
+
         void Update()
         {
+            if (!_inSustainZone)
+                return;
+
             bool isOwner = Networking.IsOwner(gameObject);
             float time = Time.time;
 

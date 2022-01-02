@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: StaticUrlSource
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 965d5613bd37dce43b67b001ac5f7cfe,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 628baecb75a981e419ef662eaf019e99,
     type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 40f6e04ea41341c499c89b575e6485d9, type: 3}
-  behaviourSyncMode: 2
+  behaviourSyncMode: 1
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
   hasInteractEvent: 0

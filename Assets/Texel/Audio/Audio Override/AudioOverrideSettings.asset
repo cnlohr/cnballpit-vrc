@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: AudioOverrideSettings
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: bef55998736e61e43aad5e9d1d500738,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 20757fa278bb48a478ba27f1ed7e7966,
     type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 3c7ef8090b3a40341b290ae4529d8375, type: 3}
-  behaviourSyncMode: 2
+  behaviourSyncMode: 1
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
   hasInteractEvent: 0

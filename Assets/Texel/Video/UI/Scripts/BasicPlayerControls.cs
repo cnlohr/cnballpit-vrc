@@ -108,7 +108,8 @@ namespace Texel
 
             VRCUrl url = urlInput.GetUrl();
             if (url.Get().Length > 0)
-                videoPlayer._UpdateQueuedUrl(urlInput.GetUrl());
+                videoPlayer._AddPlaylistUrl(urlInput.GetUrl());
+                //videoPlayer._UpdateQueuedUrl(urlInput.GetUrl());
         }
 
         public void _HandleSync()
@@ -228,7 +229,7 @@ namespace Texel
                     string positionStr = System.TimeSpan.FromSeconds(videoPlayer.trackPosition).ToString(@"hh\:mm\:ss");
                     SetStatusText(positionStr + "/" + durationStr);
                     progressSliderControl.SetActive(true);
-                    progressSlider.value = Mathf.Clamp01(videoPlayer.trackPosition / videoPlayer.trackDuration);
+                    progressSlider.value = (videoPlayer.trackDuration <= 0) ? 0f : Mathf.Clamp01(videoPlayer.trackPosition / videoPlayer.trackDuration);
                 }
                 progressSlider.interactable = enableControl;
             }

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: SyncAudioManager
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: b7e12be3ea51b6b4ebf2f86aaf24c0b2,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 653697a934f2549438c8030f679ae592,
     type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: b5bf2e0f1e2436a47b87d35db939b594, type: 3}
-  behaviourSyncMode: 4
+  behaviourSyncMode: 3
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
   hasInteractEvent: 0
