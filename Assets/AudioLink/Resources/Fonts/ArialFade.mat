@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Arial
-  m_Shader: {fileID: 4800000, guid: a1ba7af6e65cb7b4fa20104ec4958438, type: 3}
+  m_Name: ArialFade
+  m_Shader: {fileID: 4800000, guid: bfbf2ef08c1cbf144891cfa07c234411, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -61,9 +61,9 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _FadeCull: 3
-    - _FadeNear: 1.5
+    - _FadeNear: 2
     - _FadeRange: 0.5
-    - _FadeSharpness: 0.5
+    - _FadeSharpness: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
