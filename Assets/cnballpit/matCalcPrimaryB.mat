@@ -141,7 +141,7 @@ Material:
     - _FanPosition: {r: -4.13, g: -0.002, b: 1.46, a: 0}
     - _FanPosition0: {r: -4.62, g: -0.002, b: 1.5, a: 1}
     - _FanPosition1: {r: -9.83, g: 0.8, b: 2.37, a: 1}
-    - _FanPosition2: {r: -3.36, g: 0.472, b: 4.74, a: 1}
+    - _FanPosition2: {r: -3.151, g: 0.67, b: 7.86, a: 1}
     - _FanRotation: {r: 0, g: 0, b: 0, a: 1}
     - _FanRotation0: {r: -0, g: -0, b: -0, a: 1}
     - _FanRotation1: {r: 0.26363128, g: -0.07654698, b: 0.26812735, a: 0.92344296}
