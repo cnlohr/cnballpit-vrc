@@ -77,6 +77,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 				float4  props : TEXCOORD3;
 				float4  colorDiffuse : TEXCOORD4;
 				float4  colorAmbient : TEXCOORD5;
+				int     ballid : TEXCOORD6;
 			};
 
 			float4x4 _VP;
@@ -285,6 +286,8 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 #endif
 					g2f pIn;
 
+
+					pIn.ballid = ballid;
 					pIn.pos = mul(vp, v[0]);
 					pIn.uv = float2(1.0f, 0.0f);
 					pIn.ballcenter = float4( DataPos.xyz, DataPos.w * RAIDUS_FUDGE_MUX + RADIUS_FUDGE_ADD + RADIUS_FUDGE_ADD_BY_DISTANCE * distance_to_ball );

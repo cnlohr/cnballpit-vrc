@@ -188,10 +188,14 @@ Shader "cnballpit/shaderCalcPrimary"
 				
 				float4 Position = GetPosition( ballid );
 				float4 Velocity = GetVelocity( ballid );
+
+
+				float sbr = _BallRadius;
+
 				if( _Time.y < 3 || Position.w == 0 || _ResetBalls > 0 )
 				//if( 0 )
 				{
-					ret.Pos = float4( chash33( ballid.xxx ) * float3( 12, 2.5, 12 ) + float3( -6, 0, -6 ), _BallRadius );
+					ret.Pos = float4( chash33( ballid.xxx ) * float3( 12, 2.5, 12 ) + float3( -6, 0, -6 ), sbr );
 					ret.Vel = float4( 0., 0., 0., ballid );
 					return ret;
 				}
@@ -204,7 +208,7 @@ Shader "cnballpit/shaderCalcPrimary"
 					return ret;
 				}
 				
-				Position.w = _BallRadius;
+				Position.w = sbr;
 				int did_find_self = 0;
 				
 				
@@ -501,7 +505,7 @@ Shader "cnballpit/shaderCalcPrimary"
 				}
 				
 				//Attract to dragdropper
-				if( 1 )
+				if( ballid < 3 )
 				{
 					const static float dragdropforce = 0.008;
 					float l, intensity;
@@ -509,13 +513,13 @@ Shader "cnballpit/shaderCalcPrimary"
 					
 					diff = _MagnetPos0.xyz - Position.xyz;
 					l = length( diff );
-					intensity = 5.*sqrt(_MagnetPos0.w) - l;					
+					intensity = 10;//5.*sqrt(_MagnetPos0.w) - l;					
 					if( intensity > 0 )
 					{
 						diff = normalize( diff )*.8;
 						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
 					}
-
+/*
 
 					diff = _MagnetPos1.xyz - Position.xyz;
 					l = length( diff );
@@ -535,7 +539,7 @@ Shader "cnballpit/shaderCalcPrimary"
 						diff = normalize( diff )*.8;
 						Velocity.xyz += diff * dragdropforce * pow( intensity, 1.55 );
 					}
-
+*/
 				}
 
 				// Disperse from shrooms because having drugs in your balls are bad.
@@ -672,7 +676,72 @@ Shader "cnballpit/shaderCalcPrimary"
 						diff = normalize( diff );
 						Velocity.xyz += diff * repelforce * exp(1.-intensity*intensity*intensity*intensity*intensity);
 					}												
-				}				
+				}
+				
+				// Bind balls
+				//vcfmfpsP / vcfmfpsV
+				int moddie = 3;
+				int muddie = 400000000;
+				{
+					//Select pair ball
+					int ob = 0;
+					for( ob = 0; ob < moddie-1; ob++ )
+					{
+						int otherball = ((ballid / moddie)*moddie) + ((ballid+1+ob)%moddie);
+						if( otherball < 32768 )
+						{
+							float4 OPosition = GetPosition( otherball );
+							float4 OVelocity = GetVelocity( otherball );
+							float3 vdiff = OPosition.xyz - Position.xyz;
+							float vdt = OPosition.w + Position.w;
+							if( length( vdiff ) > .01 )
+							{
+								vdiff = vdiff - normalize( vdiff ) * vdt;
+								Velocity.xyz += vdiff * vcfmfpsV * .5;
+								Position.xyz += vdiff * vcfmfpsP * .01;
+							}
+						}
+					}
+					
+					if( ( ballid%moddie) == 1 )
+					{
+						if( ((ballid/moddie)%muddie) !=  muddie-1 )
+						{
+							int otherball = ballid+moddie;
+							if( otherball < 32768 )
+							{
+								float4 OPosition = GetPosition( otherball );
+								float4 OVelocity = GetVelocity( otherball );
+								float3 vdiff = OPosition.xyz - Position.xyz;
+								float vdt = OPosition.w + Position.w;
+								if( length( vdiff ) > .01 )
+								{
+									vdiff = vdiff - normalize( vdiff ) * vdt;					
+									Velocity.xyz += vdiff * vcfmfpsV * 1.8;
+									Position.xyz += vdiff * vcfmfpsP * .01;
+								}
+							}
+						}
+
+						if( ((ballid/moddie)%muddie) != 0 )
+						{
+							int otherball = ballid-moddie;
+							if( otherball >= 0 )
+							{
+								float4 OPosition = GetPosition( otherball );
+								float4 OVelocity = GetVelocity( otherball );
+								float3 vdiff = OPosition.xyz - Position.xyz;
+								float vdt = OPosition.w + Position.w;
+								if( length( vdiff ) > .01 )
+								{
+									vdiff = vdiff - normalize( vdiff ) * vdt;					
+									Velocity.xyz += vdiff * vcfmfpsV * 1.8;
+									Position.xyz += vdiff * vcfmfpsP * .01;
+								}
+							}
+						}
+					}
+				}
 
 				// Step 2: Actually perform physics.
 				Velocity.y -= _GravityValue*dt;
