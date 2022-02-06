@@ -186,14 +186,24 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					float3 SmoothHue = AudioLinkHSVtoRGB( float3(  frac(ballid/1024. + AudioLinkDecodeDataAsSeconds(ALPASS_GENERALVU_NETWORK_TIME)*.05), 1, .8 ) );
 					float4 colorAmbient = 0.;
 
+					//Christmas
+					//static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 0.00, 1.0, 0.00 ), float3( 1., 1., 1. ) };
+					//#define NR_BALL_COLORS 3
+
+					// Valentine's
+					static const float3 ballcolors[2] = { float3( 1., .0, 0 ), float3( 1., 1., 1. ) };
+					#define NR_BALL_COLORS 2
+
+					//Default 
+					static const float3 ballcolors_default[7] = { float3( .984, .784, 0 ), float3( 0.0, .635, .820 ), float3( .918, .271, .263 ), float3( .729, .739, .059 ), float3( .941, .490, .024 ), float3( .682, .859, .941 ), float3( .537, .451, .776 ) };
+					#define NR_BALL_COLORS_DEFAULT 7
+
 					if( _ScreenshotMode > 0.5 )
 					{
 						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
 						float intensity = saturate(sin(dfc*15.+2.5)+0.3);//(glsl_mod( dfc * 5, 1.0 )>0.5)?1:0;
-						static const float3 ballcolors[7] = { float3( .984, .784, 0 ), float3( 0.0, .635, .820 ), float3( .918, .271, .263 ),
-							float3( .729, .739, .059 ), float3( .941, .490, .024 ), float3( .682, .859, .941 ), float3( .537, .451, .776 ) };
 
-						colorDiffuse.xyz = ballcolors[ballid%7];
+						colorDiffuse.xyz = ballcolors[ballid%NR_BALL_COLORS];
 
 						//colorDiffuse *= intensity; 
 						colorAmbient += colorDiffuse * intensity * .3;
@@ -233,9 +243,8 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					*/
 						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
 						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
-						static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 0.00, 1.0, 0.00 ), float3( 1., 1., 1. ) };
 
-						colorDiffuse.xyz = ballcolors[ballid%3];
+						colorDiffuse.xyz = ballcolors[ballid%NR_BALL_COLORS];
 
 						//colorDiffuse *= intensity; 
 						colorAmbient += colorDiffuse * intensity * .35;
@@ -265,10 +274,8 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					{
 						float dfc = length( PositionRelativeToCenterOfBallpit.xz ) / 15;
 						float intensity = saturate( AudioLinkData( ALPASS_AUDIOLINK + uint2( dfc * 128, (ballid / 128)%4 ) ) * 6 + .05 );
-						static const float3 ballcolors[7] = { float3( .984, .784, 0 ), float3( 0.0, .635, .820 ), float3( .918, .271, .263 ),
-							float3( .729, .739, .059 ), float3( .941, .490, .024 ), float3( .682, .859, .941 ), float3( .537, .451, .776 ) };
 
-						colorDiffuse.xyz = ballcolors[ballid%7];
+						colorDiffuse.xyz = ballcolors_default[ballid%NR_BALL_COLORS_DEFAULT];
 
 						//colorDiffuse *= intensity; 
 						colorAmbient += colorDiffuse * intensity * .35;
