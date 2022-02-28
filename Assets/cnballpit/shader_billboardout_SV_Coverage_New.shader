@@ -191,8 +191,12 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					//#define NR_BALL_COLORS 3
 
 					// Valentine's
-					static const float3 ballcolors[2] = { float3( 1., .0, 0 ), float3( 1., 1., 1. ) };
-					#define NR_BALL_COLORS 2
+					//static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 1., 1., 1. ),float3( 1., .5, .5 ) };
+					//#define NR_BALL_COLORS 3
+
+					// St. Patrick's Day
+					static const float3 ballcolors[3] = { float3( 0., .6, 0 ), float3( .1, 1., .1 ), float3( .5,  1., .5 ) };
+					#define NR_BALL_COLORS 3
 
 					//Default 
 					static const float3 ballcolors_default[7] = { float3( .984, .784, 0 ), float3( 0.0, .635, .820 ), float3( .918, .271, .263 ), float3( .729, .739, .059 ), float3( .941, .490, .024 ), float3( .682, .859, .941 ), float3( .537, .451, .776 ) };
