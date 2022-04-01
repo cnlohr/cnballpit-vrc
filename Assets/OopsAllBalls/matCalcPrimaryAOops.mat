@@ -111,7 +111,7 @@ Material:
     - _Cutoff: 0.5
     - _DebugFloat: -6.49
     - _DetailNormalMapScale: 1
-    - _DontPerformStep: 1
+    - _DontPerformStep: 0
     - _DstBlend: 0
     - _Friction: 0.005
     - _GlossMapScale: 1
