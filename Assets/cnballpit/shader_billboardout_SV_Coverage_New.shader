@@ -296,6 +296,14 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 						colorDiffuse = GetColorTex(ballid);
 						//colorDiffuse = GetPosition(ballid);
 						//colorDiffuse = (ballid/1024)%2;
+						
+						float dist_from_1 = abs( rvpos.y - 0.2 );
+						//float4 alc = AudioLinkLerp( ALPASS_CCSTRIP + float2( length( PositionRelativeToCenterOfBallpit.xz )/10 * AUDIOLINK_WIDTH, 0 ) ).rgba * length( DataVel.xyz )*.5;
+						
+						float falloff = .5 / pow( (dist_from_1+.01), 2 );
+						
+						colorDiffuse = lerp( 0, colorDiffuse, saturate( falloff ) );
+						
 						colorAmbient += colorDiffuse * .7;
 						colorDiffuse = colorDiffuse * .75 + 0.01;
 					}

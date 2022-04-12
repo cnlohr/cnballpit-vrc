@@ -104,13 +104,13 @@ Material:
     - _Metallic: 0
     - _MinimumDistance: 0
     - _Mode: 3
-    - _NightMode: 0
+    - _NightMode: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PlaidWatch: 0
     - _ScreenshotMode: 0
     - _Size: 0.5
-    - _Smoothness: 0.77
+    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
