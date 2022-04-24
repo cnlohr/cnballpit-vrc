@@ -277,6 +277,21 @@ Reopen Unity
 ## 32.0 
  * Switch to Christmas
 
+## 33.0
+ * Switch to Valentine's day.
+ 
+## 34.0
+ * Switch to St. Patrick's day
+ 
+## 35.0
+ * Switch to Ukraine Colors
+ 
+## 36.0 
+ * Oops all balls switcharoo for April 1
+ 
+## 37.0
+ * Update to Texel Video Player 1.3.0
+
 ## Interesting
  * shader_billboardout modes.
  * Ben Code Catch.

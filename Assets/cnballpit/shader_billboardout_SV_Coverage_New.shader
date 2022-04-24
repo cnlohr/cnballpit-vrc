@@ -199,7 +199,7 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					//#define NR_BALL_COLORS 3
 
 					// Ukraine
-					static const float3 ballcolors[2] = { float3( .15, .15, 1.0 ), float3( 1.0, 1.0, .0 ) };
+					static const float3 ballcolors[2] = { float3( .1, .1, 0.7 ), float3( .7, .7, .0 ) };
 					#define NR_BALL_COLORS 2
 					
 					//NOTE: Light was 255, 152, 31 FOR ALL OTHER CASES (Except ukraine)
