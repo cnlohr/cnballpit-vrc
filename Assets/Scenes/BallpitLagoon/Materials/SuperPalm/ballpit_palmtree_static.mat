@@ -79,7 +79,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SwaySpeed: 0.75
-    - _SwayStrength: 0.18
+    - _SwayStrength: 5
     - _TextureAnimation: 0.3
     - _TextureDetail: 1
     - _UVSec: 0

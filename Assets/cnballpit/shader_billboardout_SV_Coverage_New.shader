@@ -186,6 +186,10 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					float3 SmoothHue = AudioLinkHSVtoRGB( float3(  frac(ballid/1024. + AudioLinkDecodeDataAsSeconds(ALPASS_GENERALVU_NETWORK_TIME)*.05), 1, .8 ) );
 					float4 colorAmbient = 0.;
 
+					// Halloween
+					static const float3 ballcolors[2] = { float3( 1., .5, 0 ), float3( 0., 0., 0. ) };
+					#define NR_BALL_COLORS 2
+
 					//Christmas
 					//static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 0.00, 1.0, 0.00 ), float3( 1., 1., 1. ) };
 					//#define NR_BALL_COLORS 3
@@ -199,14 +203,24 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					//#define NR_BALL_COLORS 3
 
 					// Ukraine
-					static const float3 ballcolors[2] = { float3( .1, .1, 0.7 ), float3( .7, .7, .0 ) };
-					#define NR_BALL_COLORS 2
+					//static const float3 ballcolors[2] = { float3( .1, .1, 0.7 ), float3( .7, .7, .0 ) };
+					//#define NR_BALL_COLORS 2
+
+					// 4th of July
+					//static const float3 ballcolors[3] = { float3( .9, 0, 0 ), float3( 0, 0., .9 ), float3( .9,  .9, .9 ) };
+					//#define NR_BALL_COLORS 3
 					
 					//NOTE: Light was 255, 152, 31 FOR ALL OTHER CASES (Except ukraine)
 
 					//Default 
 					static const float3 ballcolors_default[7] = { float3( .984, .784, 0 ), float3( 0.0, .635, .820 ), float3( .918, .271, .263 ), float3( .729, .739, .059 ), float3( .941, .490, .024 ), float3( .682, .859, .941 ), float3( .537, .451, .776 ) };
 					#define NR_BALL_COLORS_DEFAULT 7
+					
+					// FYI Light color: 1, 0.8042696, 0.3215686, Intensity 0.8
+					// Palm tree sway .18
+					
+					//#define ballcolors ballcolors_default
+					//#define NR_BALL_COLORS NR_BALL_COLORS_DEFAULT
 
 					if( _ScreenshotMode > 0.5 )
 					{
