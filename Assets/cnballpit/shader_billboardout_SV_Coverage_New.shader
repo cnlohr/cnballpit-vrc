@@ -187,12 +187,16 @@ Shader "cnballpit/billboardoutSV_Coverage_New"
 					float4 colorAmbient = 0.;
 
 					// Halloween
-					static const float3 ballcolors[2] = { float3( 1., .5, 0 ), float3( 0., 0., 0. ) };
-					#define NR_BALL_COLORS 2
+					//static const float3 ballcolors[2] = { float3( 1., .5, 0 ), float3( 0., 0., 0. ) };
+					//#define NR_BALL_COLORS 2
 
 					//Christmas
 					//static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 0.00, 1.0, 0.00 ), float3( 1., 1., 1. ) };
 					//#define NR_BALL_COLORS 3
+
+					// Autumn
+					static const float3 ballcolors[5] = { float3( .922, .471, .106 ), float3( .800, .322, .129 ), float3( .443, .145, .055 ), float3( .435, .396, .204 ), float3( .212, .325, .396 ) };
+					#define NR_BALL_COLORS 5
 
 					// Valentine's
 					//static const float3 ballcolors[3] = { float3( 1., .0, 0 ), float3( 1., 1., 1. ),float3( 1., .5, .5 ) };
